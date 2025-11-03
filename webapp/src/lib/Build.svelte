@@ -42,8 +42,10 @@
     .sort((a, b) => (a.id + (3 - a.rarity) * 1000) - (b.id + (3 - b.rarity) * 1000));
 </script>
 
-<h3>{buildName}</h3>
-<p>{buildDesc}</p>
+<h3 class="build-name">{buildName}</h3>
+{#if buildDesc!.length > 0}
+<p class="build-desc">{buildDesc}</p>
+{/if}
 <div class="potentials-container">
 {#each potentials as potential}
     <div class="potential"
@@ -69,6 +71,18 @@
         grid-template-columns: repeat(auto-fill, 300px);
         justify-content: start;
     }
+}
+
+.build-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    padding: 0.5rem 0;
+}
+
+.build-desc {
+    font-size: 1rem;
+    font-weight: normal;
+    margin-bottom: 1rem;
 }
 
 .potential {

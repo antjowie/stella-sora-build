@@ -3,17 +3,9 @@
   import {database, CharacterElement, CharacterClass, characterClassColor, characterElementColor} from "$lib/database.svelte";
   import BuildCollection from "$lib/BuildCollection.svelte";
   import { browser } from "$app/environment";
+    import { loadPreference } from "$lib/util";
 
   let character = database.data.find(c => c.name === page.params.name);
-
-  // Load preferences from localStorage
-  const loadPreference = (key: string, defaultValue: boolean): boolean => {
-    if (browser) {
-      const stored = localStorage.getItem(key);
-      return stored !== null ? stored === 'true' : defaultValue;
-    }
-    return defaultValue;
-  };
 
   let showDesc = $state(loadPreference('showDesc', false));
   let showBrief = $state(loadPreference('showBrief', true));
@@ -33,7 +25,6 @@
   });
 </script>
 
-<h1>Database</h1>
 {#if character === undefined}
 <p>Can't find character</p>
 {:else}
@@ -78,7 +69,7 @@
     		/>Show Brief
     </label>
 </div>
-<BuildCollection {character} {showDesc} {showBrief} {showMain} />
+<BuildCollection title={""} {character} {showDesc} {showBrief} {showMain} />
 {/if}
 
 <style>

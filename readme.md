@@ -1,8 +1,9 @@
+[![Deploy to GitHub Pages](https://github.com/antjowie/stella-sora-build/actions/workflows/deploy.yml/badge.svg)](https://github.com/antjowie/stella-sora-build/actions/workflows/deploy.yml)
 # Stella Sora build
 An app to create and share custom builds for Stella Sora
 
 ## Roadmap
-- [] extract data and generate database
+- [x] extract data and generate database
 - [] build editor with import and export
 - [] figure out how to parse potential values
 - [] integration with game to track build during ascension and tell u which option to take

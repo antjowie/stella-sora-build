@@ -16,7 +16,8 @@
 
 <div class="layout-wrapper">
 	<nav>
-		<a href="/" aria-current={page.url.pathname === '/'}>Builds</a>
+		<a href="/" aria-current={page.url.pathname === '/'}>Home</a>
+		<a href="/build" aria-current={page.url.pathname.search('/build') >= 0}>Build Editor</a>
 		<a href="/database" aria-current={page.url.pathname.search('/database') >= 0}>Database</a>
 	</nav>
 
@@ -31,13 +32,13 @@
 	</main>
 
 	<footer>
-		<a href="https://github.com/yourusername/stella-sora-build">GitHub</a>
+		<a href="https://github.com/antjowie/stella-sora-build">GitHub</a>
 	</footer>
 </div>
 
 <style>
     :global(html, body) {
-        background-color: #bbcfef;
+        background-color: #fbf9f3;
         font-family: "Sora", sans-serif;
         font-optical-sizing: auto;
         font-weight: 450;
@@ -58,24 +59,45 @@
     :global(*) {
         color: #3e4566;
         box-sizing: border-box;
+        padding: 0;
+        margin: 0;
     }
 
-    nav a[aria-current=true]{border-bottom:2px solid}
+    :global(input) {
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 32px;
+        outline: none;
+        transition: border-color 0.2s ease-in-out;
+    }
+
+    :global(label:has(input)) {
+        padding: 0.5rem;
+        border-radius: 64px;
+        background-color: #f3efe7;
+    }
+
+    nav a[aria-current=true]{
+        border-bottom:2px solid
+    }
 
     nav {
         display: flex;
         gap: 1rem;
         padding: 1rem;
-        background-color: #9cadc8;
+        background-color: #49568b;
+        border-bottom: solid 12px #f9ebb3;
+        z-index: 1;
     }
 
-    nav a {
+    a {
         display: inline-block;
-        color: #3e4566;
+        color: #f9f9f7;
         text-decoration: none;
     }
 
     main {
+        position: relative;
         padding: 1rem;
         flex: 1;
     }
@@ -85,13 +107,12 @@
         justify-content: center;
         align-items: center;
         padding: 1rem;
-        background-color: #9cadc8;
+        background-color: #e7e3db;
         width: 100%;
+        z-index: 1;
     }
 
-    :global(label:has(input)) {
-        padding: 0.5rem;
-        border-radius: 64px;
-        background-color: #9cadc8;
+    footer a {
+        color: #264278
     }
 </style>

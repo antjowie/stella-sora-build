@@ -3,7 +3,15 @@
   import { fade } from "svelte/transition";
   import Build from "./Build.svelte";
 
-  let { character, showDesc, showBrief, showMain }: { character: Character, showDesc: boolean, showBrief: boolean, showMain: boolean } = $props();
+  type BuildCollectionProps = {
+    character: Character;
+    showDesc: boolean;
+    showBrief: boolean;
+    showMain: boolean;
+    title: string;
+  };
+
+  let { character, showDesc, showBrief, showMain, title = "" }: BuildCollectionProps = $props();
 
   const build1 = $derived({buildIndex: 1, isMain: true, showDesc, showBrief, character});
   const build2 = $derived({buildIndex: 2, isMain: true, showDesc, showBrief, character});
@@ -17,12 +25,12 @@
 {#key showMain}
 <div in:fade={{ duration: 300, delay: 150 }} out:fade={{ duration: 150 }}>
 {#if showMain}
-    <h1>Main builds</h1>
+    <h1 class="title">{title.length == 0 ? "Main builds" : title}</h1>
     <Build {...build1} />
     <Build {...build2} />
     <Build {...build3} />
 {:else}
-    <h1>Support builds</h1>
+    <h1 class="title">{title.length == 0 ? "Support builds" : title}</h1>
     <Build {...build4} />
     <Build {...build5} />
     <Build {...build6} />
@@ -31,4 +39,9 @@
 {/key}
 
 <style>
+    .title {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-top: 1rem;
+    }
 </style>

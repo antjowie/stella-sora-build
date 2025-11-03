@@ -5,7 +5,7 @@ export const prerender = true;
 export async function load() {
   // This runs at build time for static generation
   // The database will be fetched once during build and baked into the HTML
-  await loadDatabase(true);
+  await loadDatabase();
 
   return {};
 }
