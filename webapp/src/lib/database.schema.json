@@ -1,0 +1,132 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Database",
+  "type": "object",
+  "required": ["lastFetch", "data"],
+  "additionalProperties": false,
+  "properties": {
+    "lastFetch": {
+      "type": "integer"
+    },
+    "data": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Character"
+      }
+    }
+  },
+  "$defs": {
+    "Character": {
+      "type": "object",
+      "required": [
+        "characterId",
+        "name",
+        "class",
+        "element",
+        "grade",
+        "portraitUrl",
+        "mainBuild1Name",
+        "mainBuild1Desc",
+        "mainBuild2Name",
+        "supportBuild2Desc",
+        "supportBuild1Name",
+        "supportBuild1Desc",
+        "supportBuild2Name",
+        "supportBuild2Desc",
+        "potentials"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "characterId": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "class": {
+          "$comment": "one of 3 classes",
+          "type": "integer"
+        },
+        "element": {
+          "$comment": "one of 6 elemental types",
+          "type": "integer"
+        },
+        "grade": {
+          "$comment": "SR or R",
+          "type": "integer"
+        },
+        "portraitUrl": {
+          "type": "string"
+        },
+        "mainBuild1Name": {
+          "type": "string"
+        },
+        "mainBuild1Desc": {
+          "type": "string"
+        },
+        "mainBuild2Name": {
+          "type": "string"
+        },
+        "mainBuild2Desc": {
+          "type": "string"
+        },
+        "supportBuild1Name": {
+          "type": "string"
+        },
+        "supportBuild1Desc": {
+          "type": "string"
+        },
+        "supportBuild2Name": {
+          "type": "string"
+        },
+        "supportBuild2Desc": {
+          "type": "string"
+        },
+        "potentials": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Potential"
+          }
+        }
+      }
+    },
+    "Potential": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "descShort",
+        "descLong",
+        "rarity",
+        "build",
+        "type"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "descShort": {
+          "type": "string"
+        },
+        "descLong": {
+          "type": "string"
+        },
+        "rarity": {
+          "type": "integer"
+        },
+        "build": {
+          "$comment": "which of the 3 standard builds",
+          "type": "integer"
+        },
+        "type": {
+          "$comment": "1 is main, 2 is support, 3 is both",
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

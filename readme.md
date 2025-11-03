@@ -1,0 +1,13 @@
+# Stella Sora build
+An app to create and share custom builds for Stella Sora
+
+## Roadmap
+- [] extract data and generate database
+- [] build editor with import and export
+- [] figure out how to parse potential values
+- [] integration with game to track build during ascension and tell u which option to take
+- [] builds browser where users can publish their builds
+
+## Credits
+- Hiro420 for providing game data used to generate database [GitHub](https://github.com/Hiro420/StellaSoraData.git)
+- Miraheze for providing character portraits [Miraheze](https://stellasora.miraheze.org/wiki/Category:Characters)
