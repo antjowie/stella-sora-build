@@ -8,7 +8,7 @@
 </svelte:head>
 
 <div class="background" style="background-image: url({landing});"></div>
-<div class="main">
+<div class="text-container">
     <h1>No custom builds found</h1>
     <div>
         <a class="button primary" href={resolve("/build")}>Make a build</a>
@@ -17,11 +17,6 @@
 </div>
 
 <style>
-    .primary {
-        background-color: #49568b !important;
-        color: white;
-    }
-
     .background {
         position: absolute;
         background-size: cover;
@@ -36,24 +31,25 @@
         bottom: 0;
     }
 
-    .main {
+    .text-container {
+        display: flex;
         position: relative;
         z-index: 100;
         font-size: 2rem;
-        display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         padding: 1rem;
-        /*padding-top: 4rem;*/
+        padding-top: 4rem;
+        text-align: center;
     }
 
-    .main h1 {
-        color: white;
+    .text-container h1 {
+        color: var(--secondary);
         padding: 2rem;
     }
 
-    .main div {
+    .text-container div {
         display: flex;
         flex-direction: row;
         justify-content: center;
@@ -61,35 +57,32 @@
         text-align: center;
     }
 
-    .button {
+    @media (max-width: 768px) {
+        .text-container div {
+            flex-direction: column;
+        }
+    }
+
+    a.button {
         padding: 1rem 2rem;
         border-radius: 100px;
-        background-color: #f3efe7;
+        background-color: var(--primary-bg-dark);
         text-decoration: none;
         transition: 0.2s;
     }
 
-    .button:hover {
-        background-color: #f3efe7;
+    a.button:hover {
+        filter: brightness(0.95);
         transform: scale(1.05);
     }
 
-    /*.button:hover:active {
-        background-color: #f3efe7;
-        transform: scale(0.8);
-    }*/
+    a.button:hover:active {
+        filter: brightness(1.05);
+        transform: scale(0.9);
+    }
 
-    @media (max-width: 768px) {
-        .main {
-            font-size: 1.5rem;
-        }
-
-        .button {
-            font-size: 1rem;
-        }
-
-        .main div {
-            flex-direction: column;
-        }
+    a.primary {
+        color: var(--secondary);
+        background-color: var(--secondary-bg);
     }
 </style>

@@ -101,7 +101,6 @@
 }
 
 .potential .description {
-    font-weight: normal;
     text-align: left;
     margin: 0.5rem 0 0 0;
 }

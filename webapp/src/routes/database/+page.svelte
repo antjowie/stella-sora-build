@@ -18,18 +18,19 @@
     <title>Stella Sora Build</title>
 </svelte:head>
 
+<div class="main-container">
 <div class="filter-container">
     <input type="text" placeholder="Search..." bind:value={searchQuery} />
     {#each allElements as element}
-	<label>
-		<input
-			type="checkbox"
-			name="element"
-			value={element}
-			bind:group={elements}
-		/>
-		{element}
-	</label>
+   	<label>
+  		<input
+ 			type="checkbox"
+ 			name="element"
+ 			value={element}
+ 			bind:group={elements}
+  		/>
+  		{element}
+   	</label>
     {/each}
 
 </div>
@@ -38,8 +39,14 @@
         <Portrait {character}/>
     {/each}
 </div>
+</div>
 
 <style>
+    .main-container {
+        display: flex;
+        flex-direction: column;
+    }
+
     .filter-container {
         display: flex;
         flex-wrap: wrap;
@@ -49,7 +56,7 @@
     }
 
     .filter-container > input:focus {
-        border-color: #49568b;
+        border-color: var(--secondary-bg);
     }
 
     .filter-container label {
@@ -58,8 +65,15 @@
 
     .character-container {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
-        gap: 1rem;
+        /* Need a better approch for this... */
+        /*height: calc(100vh - 200px);*/
+        overflow-y: auto;
+        grid-template-columns: repeat(auto-fill, 140px);
+        /*grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));*/
+        justify-content: center;
+
+        gap: 1.5rem;
         width: 100%;
+        padding: 1rem;
     }
 </style>

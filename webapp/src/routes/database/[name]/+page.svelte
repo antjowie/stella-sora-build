@@ -36,12 +36,10 @@
         <div class="character-info">
             <li
                 style:background-color="{characterElementColor[character.element]}"
-                style:color="white"
             >
                     {CharacterElement[character.element]}</li>
             <li
                 style:background-color="{characterClassColor[character.class]}"
-                style:color="white"
             >
                     {CharacterClass[character.class]}</li>
         </div>
@@ -96,9 +94,11 @@
     }
 
     .character-info li {
+        color: var(--secondary);
+        font-weight: 600;
         margin-right: 0.2rem;
         padding: 0.5rem;
-        border-radius: 2px;
+        border-radius: 4px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 

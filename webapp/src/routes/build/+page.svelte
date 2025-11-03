@@ -244,7 +244,6 @@
         border: none;
         border-radius: 0.5rem;
         cursor: pointer;
-        font-family: "Sora", sans-serif;
         font-weight: 600;
         transition: background-color 0.2s;
     }

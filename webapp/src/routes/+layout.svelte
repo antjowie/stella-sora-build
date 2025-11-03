@@ -21,16 +21,16 @@
     <meta property="og:url" content={page.url.href} />
     <meta property="og:image" content={page.data.ogImage} />
 
-	<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </svelte:head>
 
-<div class="layout-wrapper">
+<div class="main-container">
 	<nav>
-		<a href={resolve("/")} aria-current={page.url.pathname === resolve(`/`)}>Home</a>
-		<a href={resolve("/build")} aria-current={page.url.pathname.search('/build') >= 0}>Build Editor</a>
-		<a href={resolve("/database")} aria-current={page.url.pathname.search('/database') >= 0}>Database</a>
+		<a class="underline" href={resolve("/")} aria-current={page.url.pathname === resolve(`/`)}>Home</a>
+		<a class="underline" href={resolve("/build")} aria-current={page.url.pathname.search('/build') >= 0}>Build Editor</a>
+		<a class="underline" href={resolve("/database")} aria-current={page.url.pathname.search('/database') >= 0}>Database</a>
 	</nav>
 
 	<main>
@@ -49,69 +49,112 @@
 </div>
 
 <style>
-    :global(html, body) {
-        background-color: #fbf9f3;
-        font-family: "Sora", sans-serif;
+    :global(*, *::before, *::after) {
+        --primary: #264278;
+        --secondary: #f9f9f7;
+        --primary-bg: #fbf9f3;
+        --primary-bg-dark: #f3efe7;
+        --primary-bg-darker: #e7e3db;
+        --secondary-bg: #49568b;
+        --bg-stripe: #f9ebb3;
+        font-family: "Noto Sans", sans-serif;
         font-optical-sizing: auto;
-        font-weight: 450;
-        font-style: normal;
-        margin: 0;
-        padding: 0;
-        overflow-x: hidden;
-        width: 100%;
-        height: 100%;
-    }
-
-    .layout-wrapper {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-    }
-
-    :global(*) {
-        color: #3e4566;
+        color: var(--primary);
         box-sizing: border-box;
         padding: 0;
         margin: 0;
     }
 
+    :global(html) {
+      font-size: 16px;
+    }
+
+    @media (max-width: 768px) {
+      :global(html) {
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      :global(html) {
+        font-size: 10px;
+      }
+    }
+
+    :global(html, body) {
+        background-color: var(--primary-bg);
+        overflow-x: hidden;
+    }
+
     :global(input) {
         padding: 0.5rem;
-        border: 1px solid #ccc;
+        border: 1px solid var(--primary-bg-dark);
         border-radius: 32px;
         outline: none;
-        transition: border-color 0.2s ease-in-out;
+        transition: 0.2s;
     }
 
     :global(label:has(input)) {
         padding: 0.5rem;
         border-radius: 64px;
-        background-color: #f3efe7;
+        background-color: var(--primary-bg-dark);
     }
 
-    nav a[aria-current=true]{
-        border-bottom:2px solid
+    :global(a) {
+        text-decoration: none;
+    }
+
+    :global(.underline)  {
+        position: relative;
+        transition: 0.2s;
+    }
+
+    :global(.underline::before) {
+        content: "";
+        position: absolute;
+        border-color: var(--secondary);
+        border-style: solid;
+        border-width: 1px;
+        width: 100%;
+        bottom: -3px;
+        transition: 0.2s;
+        transform: scaleX(0);
+    }
+
+    :global(.underline:hover::before) {
+        transform: scaleX(1);
+    }
+
+    :global(.underline[aria-current=true]::before) {
+        transform: scaleX(1);
+    }
+
+    .main-container {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        min-height: 100vh;
     }
 
     nav {
         display: flex;
         gap: 1rem;
         padding: 1rem;
-        background-color: #49568b;
-        border-bottom: solid 12px #f9ebb3;
+        background-color: var(--secondary-bg);
+        border-bottom: solid 12px var(--bg-stripe);
         z-index: 1;
     }
 
-    a {
-        display: inline-block;
-        color: #f9f9f7;
-        text-decoration: none;
+    nav a {
+        color: var(--secondary);
     }
 
     main {
+        /*
+        My recommendation is to do all layout with grid, since you can avoid wrappers.
+        This is just in case you do want to use position absolute
+        */
         position: relative;
         padding: 1rem;
-        flex: 1;
     }
 
     footer {
@@ -119,12 +162,7 @@
         justify-content: center;
         align-items: center;
         padding: 1rem;
-        background-color: #e7e3db;
-        width: 100%;
+        background-color: var(--primary-bg-darker);
         z-index: 1;
-    }
-
-    footer a {
-        color: #264278
     }
 </style>

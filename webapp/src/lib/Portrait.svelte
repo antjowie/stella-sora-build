@@ -14,9 +14,6 @@ let {character}: {character: Character} = $props();
 	transition:scale
 	style:--grade-color={characterGradeColor[character.grade]}
 	style:background-image="url({character.portraitUrl})"
-    style:background-repeat="no-repeat"
-    style:background-size="110%"
-    style:background-position="50% 0%"
 	>
 	<div class="character-info">
     <li
@@ -36,17 +33,19 @@ let {character}: {character: Character} = $props();
 <style>
 	.button {
         display: grid;
-        overflow: hidden;
         grid-template-rows: 1fr 6fr;
-        background-color: #f0f7fa;
-        text-decoration: none;
         border-radius: 0.5rem;
-        transition: transform 0.2s;
-        min-height: 16rem;
+        transition: 0.2s;
+        height: 220px;
+        /*width: 9rem;*/
         border-top: solid 0.5rem var(--grade-color);
-        border-bottom: solid 1.5rem var(--grade-color);
-        box-shadow: 0 4px 0 rgba(0,0,0, 0.2);
+        border-bottom: solid 1.25rem var(--grade-color);
+        box-shadow: 0 4px 0 hsl(from var(--grade-color) h calc(s - 50) calc(l - 20)), 0 6px 5px rgba(0,0,0, 0.3);
         position: relative;
+        font-weight: 600;
+        background-repeat: no-repeat;
+        background-size: 120% 120%;
+        background-position: 50% 0%;
     }
 
     .button::before {
@@ -56,7 +55,6 @@ let {character}: {character: Character} = $props();
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(240, 247, 250, 0.6);
         background: linear-gradient(to top,
         rgba(240, 247, 250, 0.8) 10%,
         rgba(240, 247, 250, 0) 25%);
@@ -64,18 +62,18 @@ let {character}: {character: Character} = $props();
     }
 
     .button:hover {
-        transform: scale(1.02);
+        transform: scale(1.05);
     }
 
     .button:active:hover {
-        background-color: #f1f1f1;
         transform: scale(0.9);
     }
 
     .character-info {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 2fr 3fr;
         z-index: 1;
+        /*overflow-x: hidden;*/
     }
 
     .character-info li {
@@ -83,19 +81,15 @@ let {character}: {character: Character} = $props();
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
+        color: var(--secondary);
+        box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
         /*text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;*/
-    }
-
-    .character-name {
-        position: relative;
-        z-index: 1;
     }
 
     .character-name p {
         position: absolute;
-        right: 10px;
-        bottom: 0px;
+        right: 6px;
+        bottom: 2px;
         margin: 0;
     }
 </style>

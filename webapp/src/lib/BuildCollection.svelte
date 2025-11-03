@@ -40,8 +40,6 @@
 
 <style>
     .title {
-        font-size: 2rem;
-        font-weight: bold;
-        margin-top: 1rem;
+        padding-top: 1rem;
     }
 </style>
