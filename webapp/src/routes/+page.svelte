@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { resolve, asset } from "$app/paths";
+    import { resolve } from "$app/paths";
+    import landing from "$lib/assets/landing.webp";
 </script>
 
-<div class="background" style="background-image: url({asset("/landing.webp")});"></div>
+<div class="background" style="background-image: url({landing});"></div>
 <div class="main">
     <h1>No custom builds found</h1>
     <div>

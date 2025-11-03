@@ -1,15 +1,33 @@
 <script lang="ts">
-	import favicon from "$lib/assets/favicon.svg";
 	import { databaseLoading, databaseError } from "$lib/database.svelte";
 	import { page } from "$app/state";
-	import { resolve } from "$app/paths";
+	import { resolve, base } from "$app/paths";
 
 	let { children } = $props();
+	const title = "Stella Sora Build";
+	const description = "Build editor and database for Stella Sora game by Yostar";
 
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
+	<link rel="icon" type="image/png" href={`${base}/favicon/favicon-96x96.png`} sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon/favicon.svg`} />
+    <link rel="shortcut icon" href={`${base}/favicon/favicon.ico`} />
+    <link rel="apple-touch-icon" sizes="180x180" href={`${base}/favicon/apple-touch-icon.png`} />
+    <meta name="apple-mobile-web-app-title" content="MyWebSite" />
+    <link rel="manifest" href={`${base}/favicon/site.webmanifest`} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={page.url.href} />
+    <meta property="og:image" content="{`${base}/og-image.webp`}" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="{`${base}/og-image.webp`}" />
+
 	<link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap" rel="stylesheet">
