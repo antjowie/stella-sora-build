@@ -17,9 +17,9 @@
 
 <div class="layout-wrapper">
 	<nav>
-		<a href={resolve("/",{})} aria-current={page.url.pathname === resolve(`/`,{})}>Home</a>
-		<a href={resolve("/build",{})} aria-current={page.url.pathname.search('/build') >= 0}>Build Editor</a>
-		<a href={resolve("/database",{})} aria-current={page.url.pathname.search('/database') >= 0}>Database</a>
+		<a href={resolve("/")} aria-current={page.url.pathname === resolve(`/`)}>Home</a>
+		<a href={resolve("/build")} aria-current={page.url.pathname.search('/build') >= 0}>Build Editor</a>
+		<a href={resolve("/database")} aria-current={page.url.pathname.search('/database') >= 0}>Database</a>
 	</nav>
 
 	<main>

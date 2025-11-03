@@ -9,7 +9,7 @@ let {character}: {character: Character} = $props();
 
 <a
 	class="button"
-	href={resolve(`/database/${character.name}`,{})}
+	href={resolve(`/database/${character.name}`)}
 	data-sveltekit-preload-data="hover"
 	transition:scale
 	style:--grade-color={characterGradeColor[character.grade]}

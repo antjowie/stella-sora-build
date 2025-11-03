@@ -1,13 +1,13 @@
 <script lang="ts">
-    import { resolve } from "$app/paths";
+    import { resolve, asset } from "$app/paths";
 </script>
 
-<div class="background" style="background-image: url({resolve('/landing.jpg',{})});"></div>
+<div class="background" style="background-image: url({asset("/landing.webp")});"></div>
 <div class="main">
     <h1>No custom builds found</h1>
     <div>
-        <a class="button primary" href={resolve("/build",{})}>Make a build</a>
-        <a class="button" href={resolve("/database",{})}>Check out Database</a>
+        <a class="button primary" href={resolve("/build")}>Make a build</a>
+        <a class="button" href={resolve("/database")}>Check out Database</a>
     </div>
 </div>
 

@@ -4,7 +4,7 @@ import type {
   Potential as GeneratedPotential,
 } from "$lib/database.types";
 import databaseSchema from "$lib/database.schema.json";
-import { base } from "$app/paths";
+import { asset } from "$app/paths";
 import Ajv from "ajv";
 const ajv = new Ajv();
 
@@ -289,7 +289,7 @@ async function _loadDatabaseInternal(forceFetch: boolean): Promise<{}> {
           class: parseIntStrict((charData as any).Class),
           element: parseIntStrict((charData as any).EET),
           grade: parseIntStrict((charData as any).Grade),
-          portraitUrl: `${base}/portrait/150px-${name}.webp`,
+          portraitUrl: asset(`/portrait/150px-${name}.webp`),
           mainBuild1Name: data.langCharacterDes[`CharacterDes.${charId}.4`],
           mainBuild1Desc: data.langCharacterDes[`CharacterDes.${charId}.9`],
           mainBuild2Name: data.langCharacterDes[`CharacterDes.${charId}.5`],
