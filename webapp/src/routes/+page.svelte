@@ -3,6 +3,10 @@
     import landing from "$lib/assets/landing.webp";
 </script>
 
+<svelte:head>
+    <title>Stella Sora Build</title>
+</svelte:head>
+
 <div class="background" style="background-image: url({landing});"></div>
 <div class="main">
     <h1>No custom builds found</h1>

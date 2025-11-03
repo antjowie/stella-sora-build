@@ -1,13 +1,14 @@
 <script lang="ts">
-  import {page} from "$app/state";
-  import {database, CharacterElement, CharacterClass, characterClassColor, characterElementColor} from "$lib/database.svelte";
+  import { page } from "$app/state";
+  import { database, CharacterElement, CharacterClass, characterClassColor, characterElementColor } from "$lib/database.svelte";
   import BuildCollection from "$lib/BuildCollection.svelte";
   import { browser } from "$app/environment";
-    import { loadPreference } from "$lib/util";
+  import { loadPreference } from "$lib/util";
+  import { url } from "$lib/global";
 
   let character = database.data.find(c => c.name === page.params.name);
 
-  let showDesc = $state(loadPreference('showDesc', false));
+  let showDesc = $state(loadPreference('showDesc', true));
   let showBrief = $state(loadPreference('showBrief', true));
   let showMain = $state(true);
 

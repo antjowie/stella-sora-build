@@ -13,6 +13,11 @@
         &&(elements.length === 0 || elements.find(element => element === CharacterElement[character.element]) !== undefined))
     );
 </script>
+
+<svelte:head>
+    <title>Stella Sora Build</title>
+</svelte:head>
+
 <div class="filter-container">
     <input type="text" placeholder="Search..." bind:value={searchQuery} />
     {#each allElements as element}

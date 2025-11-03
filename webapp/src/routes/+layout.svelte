@@ -4,9 +4,6 @@
 	import { resolve, base } from "$app/paths";
 
 	let { children } = $props();
-	const title = "Stella Sora Build";
-	const description = "Build editor and database for Stella Sora game by Yostar";
-
 </script>
 
 <svelte:head>
@@ -16,17 +13,13 @@
     <link rel="apple-touch-icon" sizes="180x180" href={`${base}/favicon/apple-touch-icon.png`} />
     <meta name="apple-mobile-web-app-title" content="MyWebSite" />
     <link rel="manifest" href={`${base}/favicon/site.webmanifest`} />
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <title>{page.data.title}</title>
+    <meta name="description" content={page.data.description} />
+    <meta property="og:title" content={page.data.title} />
+    <meta property="og:description" content={page.data.description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={page.url.href} />
-    <meta property="og:image" content="{`${base}/og-image.webp`}" />
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content="{`${base}/og-image.webp`}" />
+    <meta property="og:image" content={page.data.ogImage} />
 
 	<link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">

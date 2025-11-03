@@ -3,7 +3,6 @@
     import BuildCollection from "$lib/BuildCollection.svelte";
     import CharacterSelectModal from "$lib/CharacterSelectModal.svelte";
     import type { Character, Potential } from "$lib/database.svelte";
-    import { potentialRarityColor } from "$lib/database.svelte";
     import Portrait from "$lib/Portrait.svelte";
     import { loadPreference } from "$lib/util";
 
@@ -25,7 +24,7 @@
     let buildName = $state("My Build");
 
     let showOnlySelected = $state(false);
-    let showDesc = $state(loadPreference('showDesc', false));
+    let showDesc = $state(loadPreference('showDesc', true));
     let showBrief = $state(loadPreference('showBrief', true));
 
     // Save to localStorage when values change
@@ -109,6 +108,10 @@
         }
     }
 </script>
+
+<svelte:head>
+    <title>Stella Sora Build</title>
+</svelte:head>
 
 <div class="build-editor">
     <h1>Build Editor is still work in progress!!!</h1>
