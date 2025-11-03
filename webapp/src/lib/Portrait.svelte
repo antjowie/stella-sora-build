@@ -2,13 +2,14 @@
   import type {  Character } from '$lib/database.types';
   import { CharacterElement, characterGradeColor, characterElementColor, characterClassColor, CharacterClass  } from './database.svelte';
   import { scale } from 'svelte/transition';
+  import { resolve } from '$app/paths';
 
 let {character}: {character: Character} = $props();
 </script>
 
 <a
 	class="button"
-	href="/database/{character.name}"
+	href={resolve(`/database/${character.name}`,{})}
 	data-sveltekit-preload-data="hover"
 	transition:scale
 	style:--grade-color={characterGradeColor[character.grade]}

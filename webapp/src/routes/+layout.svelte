@@ -2,6 +2,7 @@
 	import favicon from "$lib/assets/favicon.svg";
 	import { databaseLoading, databaseError } from "$lib/database.svelte";
 	import { page } from "$app/state";
+	import { resolve } from "$app/paths";
 
 	let { children } = $props();
 
@@ -16,9 +17,9 @@
 
 <div class="layout-wrapper">
 	<nav>
-		<a href="/" aria-current={page.url.pathname === '/'}>Home</a>
-		<a href="/build" aria-current={page.url.pathname.search('/build') >= 0}>Build Editor</a>
-		<a href="/database" aria-current={page.url.pathname.search('/database') >= 0}>Database</a>
+		<a href={resolve("/",{})} aria-current={page.url.pathname === resolve(`/`,{})}>Home</a>
+		<a href={resolve("/build",{})} aria-current={page.url.pathname.search('/build') >= 0}>Build Editor</a>
+		<a href={resolve("/database",{})} aria-current={page.url.pathname.search('/database') >= 0}>Database</a>
 	</nav>
 
 	<main>
