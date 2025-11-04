@@ -7,12 +7,15 @@
 </script>
 
 <svelte:head>
+    <!-- Favicon -->
 	<link rel="icon" type="image/png" href={`${base}/favicon/favicon-96x96.png`} sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href={`${base}/favicon/favicon.svg`} />
     <link rel="shortcut icon" href={`${base}/favicon/favicon.ico`} />
     <link rel="apple-touch-icon" sizes="180x180" href={`${base}/favicon/apple-touch-icon.png`} />
     <meta name="apple-mobile-web-app-title" content="MyWebSite" />
     <link rel="manifest" href={`${base}/favicon/site.webmanifest`} />
+
+    <!-- Meta data -->
     <title>{page.data.title}</title>
     <meta name="description" content={page.data.description} />
     <meta property="og:title" content={page.data.title} />
@@ -21,9 +24,20 @@
     <meta property="og:url" content={page.url.href} />
     <meta property="og:image" content={page.data.ogImage} />
 
+    <!-- Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5K7K71DCG5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-5K7K71DCG5');
+    </script>
 </svelte:head>
 
 <div class="main-container">
