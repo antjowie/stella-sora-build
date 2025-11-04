@@ -12,5 +12,6 @@ export async function load() {
     title: title,
     description: "Build editor and database for Stella Sora game by Yostar",
     ogImage: `${url}/og-image.webp`,
+    disableMainPadding: false,
   };
 }

@@ -1,9 +1,8 @@
 <script lang="ts">
     import { browser } from "$app/environment";
-    import BuildCollection from "$lib/BuildCollection.svelte";
-    import CharacterSelectModal from "$lib/CharacterSelectModal.svelte";
+    import BuildCollection from "$lib/components/BuildCollection.svelte";
+    import CharacterSelectModal from "$lib/components/CharacterSelectModal.svelte";
     import type { Character, Potential } from "$lib/database.svelte";
-    import Portrait from "$lib/Portrait.svelte";
     import { loadPreference } from "$lib/util";
 
     type BuildData = {
@@ -196,26 +195,6 @@
              showMain={data.showMain}
              />
          {/if}
-        <!-- <div class="potentials-grid">
-            {#if mainCharacter}
-            {#each mainCharacter!.potentials as potential}
-                <button
-                    class="potential-card"
-                    class:selected={selectedPotentialIds.includes(potential.id)}
-                    onclick={() => togglePotential(potential.id)}
-                    style:background-color={potentialRarityColor[potential.rarity]}
-                >
-                    <div class="potential-header">
-                        <p class="potential-name">{potential.name}</p>
-                        {#if selectedPotentialIds.includes(potential.id)}
-                            <span class="checkmark">✓</span>
-                        {/if}
-                    </div>
-                    <p class="potential-desc">{potential.descShort}</p>
-                </button>
-            {/each}
-            {/if}
-        </div> -->
         {/each}
     </div>
 </div>
@@ -224,7 +203,7 @@
     <CharacterSelectModal
         onSelect={handleCharacterSelect}
         onClose={() => showCharacterModal = false}
-        selectedCharacters={[mainCharacter, supportCharacter1, supportCharacter1].filter(x => x !== null)}
+        excludedCharacter={[mainCharacter, supportCharacter1, supportCharacter1].filter(x => x !== null)}
     />
 {/if}
 
@@ -286,16 +265,21 @@
 
     .character-selector {
         position: relative;
-        width: 200px;
-        height: 280px;
+        width: 140px;
+        height: 200px;
         border: 3px solid #f3efe7;
         border-radius: 0.5rem;
         overflow: hidden;
         cursor: pointer;
-        transition: transform 0.2s, box-shadow 0.2s;
-        background-color: #f0f7fa;
+        transition: 0.2s;
+        background-color: var(--primary-bg-dark);
         padding: 0;
         display: flex;
+        background-size: cover;
+    }
+
+    .character-selector img {
+        transform: scale(1.2);
     }
 
     .character-selector :global(.button) {
@@ -359,62 +343,5 @@
         flex-wrap: wrap;
         gap: 0.5rem;
         padding-bottom: 1rem;
-    }
-
-    .potentials-grid {
-        gap: 1rem;
-    }
-
-    @media (min-width: 768px) {
-        .potentials-grid {
-            grid-template-columns: repeat(auto-fill, 250px);
-        }
-    }
-
-    .potential-card {
-        border: 3px solid transparent;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        cursor: pointer;
-        transition: all 0.2s;
-        text-align: left;
-        background-color: white;
-    }
-
-    .potential-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .potential-card.selected {
-        border-color: #7d81e3;
-        box-shadow: 0 0 0 2px #7d81e3;
-    }
-
-    .potential-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: start;
-        margin-bottom: 0.5rem;
-    }
-
-    .potential-name {
-        margin: 0;
-        font-weight: 700;
-        flex: 1;
-    }
-
-    .checkmark {
-        font-size: 1.5rem;
-        color: #7d81e3;
-        font-weight: 700;
-        line-height: 1;
-    }
-
-    .potential-desc {
-        margin: 0;
-        font-size: 0.9rem;
-        opacity: 0.8;
-        line-height: 1.4;
     }
 </style>

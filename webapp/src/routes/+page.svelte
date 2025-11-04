@@ -3,32 +3,33 @@
     import landing from "$lib/assets/landing.webp";
 </script>
 
-<svelte:head>
-    <title>Stella Sora Build</title>
-</svelte:head>
-
-<div class="background" style="background-image: url({landing});"></div>
-<div class="text-container">
-    <h1>No custom builds found</h1>
-    <div>
-        <a class="button primary" href={resolve("/build")}>Make a build</a>
-        <a class="button" href={resolve("/database")}>Check out Database</a>
+<div class="main-container">
+    <img src={landing} alt="Landing" class="background-image" />
+    <div class="text-container">
+        <h1>No custom builds found</h1>
+        <div>
+            <a class="button primary" href={resolve("/build")}>Make a build</a>
+            <a class="button" href={resolve("/database")}>Check out Database</a>
+        </div>
     </div>
 </div>
 
 <style>
-    .background {
+    .main-container {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+    }
+
+    img {
         position: absolute;
-        background-size: cover;
-        background-position: bottom;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+        object-position: center;
         filter: blur(6px) brightness(0.7);
         transform: scale(1.1);
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
     }
 
     .text-container {

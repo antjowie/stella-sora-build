@@ -37,7 +37,7 @@
 		<a class="underline" href={resolve("/database")} aria-current={page.url.pathname.search('/database') >= 0}>Database</a>
 	</nav>
 
-	<main>
+	<main style:padding={page.data.disableMainPadding ? "0" : "1rem"}>
 	{#if databaseLoading.value}
 		<p>Loading database...</p>
 	{:else if databaseError.value}
@@ -71,6 +71,10 @@
 
     :global(html) {
       font-size: 16px;
+      background-color: var(--primary-bg);
+      overflow: scroll;
+      scrollbar-color: var(--secondary-bg) rgba(0, 0, 0, 0);
+      scrollbar-width: thin;
     }
 
     @media (max-width: 768px) {
@@ -83,11 +87,6 @@
       :global(html) {
         font-size: 10px;
       }
-    }
-
-    :global(html, body) {
-        background-color: var(--primary-bg);
-        overflow-x: hidden;
     }
 
     :global(input) {
@@ -140,12 +139,14 @@
     }
 
     nav {
+        position: sticky;
+        top: 0;
         display: flex;
         gap: 1rem;
         padding: 1rem;
         background-color: var(--secondary-bg);
         border-bottom: solid 12px var(--bg-stripe);
-        z-index: 1;
+        z-index: 100;
     }
 
     nav a {
@@ -158,7 +159,6 @@
         This is just in case you do want to use position absolute
         */
         position: relative;
-        padding: 1rem;
     }
 
     footer {
