@@ -4,7 +4,7 @@
 </script>
 
 <div class="main-container">
-    <img src={landing} alt="Landing" class="background-image" />
+    <img src={landing} alt="Landing" fetchpriority="high" class="background-image" />
     <div class="text-container">
         <h1>Stella Sora Build</h1>
         <p>Browse Trekker potentials and create custom builds to share!</p>
@@ -21,6 +21,7 @@
         overflow: hidden;
         width: 100%;
         height: 100%;
+        background-color: var(--secondary-bg);
     }
 
     img {

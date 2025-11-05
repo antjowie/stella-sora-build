@@ -22,11 +22,6 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content={page.url.href} />
     <meta property="og:image" content={page.data.ogImage} />
-
-    <!-- Font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </svelte:head>
 
 <div class="main-container">
@@ -46,6 +41,34 @@
 </div>
 
 <style>
+    /* Generated with https://gwfh.mranftl.com/fonts/noto-sans?subsets=latin */
+    /* noto-sans-regular - latin */
+    @font-face {
+      font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+      font-family: 'Noto Sans';
+      font-style: normal;
+      font-weight: 400;
+      src: url('/fonts/noto-sans-v42-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    }
+
+    /* noto-sans-600 - latin */
+    @font-face {
+      font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+      font-family: 'Noto Sans';
+      font-style: normal;
+      font-weight: 600;
+      src: url('/fonts/noto-sans-v42-latin-600.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    }
+
+    /* noto-sans-700 - latin */
+    @font-face {
+      font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+      font-family: 'Noto Sans';
+      font-style: normal;
+      font-weight: 700;
+      src: url('/fonts/noto-sans-v42-latin-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    }
+
     :global(*, *::before, *::after) {
         --primary: #264278;
         --secondary: #f9f9f7;
@@ -128,7 +151,7 @@
     .main-container {
         display: grid;
         grid-template-rows: auto 1fr auto;
-        min-height: 100vh;
+        min-height: 100dvh;
         min-width: 100vw;
     }
 
