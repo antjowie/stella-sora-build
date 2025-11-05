@@ -42,8 +42,9 @@
         grid-template-rows: 1fr 6fr;
         border-radius: 0.5rem;
         transition: 0.2s;
-        height: 220px;
-        /*width: 9rem;*/
+        /*height: 220px;*/
+        /*width: 150px;*/
+        aspect-ratio: auto 140/200;
         border-top: solid 0.5rem var(--grade-color);
         border-bottom: solid 1.25rem var(--grade-color);
         box-shadow: 0 4px 0 hsl(from var(--grade-color) h calc(s - 50) calc(l - 20)), 0 6px 5px rgba(0,0,0, 0.3);

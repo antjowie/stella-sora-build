@@ -81,4 +81,10 @@
         justify-content: space-between;
         width: 100%;
     }
+
+    @media (max-width: 480px) {
+        .character-container {
+            grid-template-columns: repeat(auto-fill, 30%);
+        }
+    }
 </style>

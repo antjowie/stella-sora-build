@@ -6,6 +6,7 @@ import type {
 import databaseSchema from "$lib/database.schema.json";
 import { base } from "$app/paths";
 import Ajv from "ajv";
+import { building } from "$app/environment";
 const ajv = new Ajv();
 
 export const database: Database = $state({
@@ -132,7 +133,7 @@ async function fetchData(): Promise<{}> {
 
 export async function loadDatabase(forceFetch: boolean = false): Promise<{}> {
   // If already loading and not forcing a fetch, return the existing promise
-  if (loadPromise !== null && !forceFetch) {
+  if (loadPromise !== null && forceFetch === false) {
     return loadPromise;
   }
 
@@ -145,6 +146,15 @@ export async function loadDatabase(forceFetch: boolean = false): Promise<{}> {
 }
 
 async function _loadDatabaseInternal(forceFetch: boolean): Promise<{}> {
+  // Wait a few second for testing purposes
+  // Please don't push this to prod
+  // if (building) {
+  //   throw new Error(
+  //     "You forget to remove the timeout test in _loadDatabaseInternal",
+  //   );
+  // }
+  // await new Promise((resolve) => setTimeout(resolve, 3000));
+
   try {
     // Check if database is stored in localStorage in the future
     const data =
@@ -167,9 +177,6 @@ async function _loadDatabaseInternal(forceFetch: boolean): Promise<{}> {
         }
       }
     }
-
-    // Wait a few second for testing
-    // await new Promise((resolve) => setTimeout(resolve, 3000));
 
     console.log("Fetching and parsing external data...");
     return fetchData().then((data: any) => {
