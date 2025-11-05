@@ -6,10 +6,11 @@
 <div class="main-container">
     <img src={landing} alt="Landing" class="background-image" />
     <div class="text-container">
-        <h1>No custom builds found</h1>
+        <h1>Stella Sora Build</h1>
+        <p>Browse Trekker potentials and create custom builds to share!</p>
         <div>
             <a class="button primary" href={resolve("/build")}>Make a build</a>
-            <a class="button" href={resolve("/database")}>Check out Database</a>
+            <a class="button" href={resolve("/trekker")}>Check out Trekkers</a>
         </div>
     </div>
 </div>
@@ -36,7 +37,6 @@
         display: flex;
         position: relative;
         z-index: 100;
-        font-size: 2rem;
         flex-direction: column;
         align-items: center;
         justify-content: center;
@@ -47,7 +47,14 @@
 
     .text-container h1 {
         color: var(--secondary);
-        padding: 2rem;
+        padding-top: 2rem;
+        font-size: 4rem;
+    }
+
+    .text-container p {
+        color: var(--secondary);
+        padding-bottom: 2rem;
+        font-size: 2rem;
     }
 
     .text-container div {
@@ -55,6 +62,7 @@
         flex-direction: row;
         justify-content: center;
         gap: 1rem;
+        font-size: 1.5rem;
         text-align: center;
     }
 

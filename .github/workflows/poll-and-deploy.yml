@@ -1,0 +1,54 @@
+name: Poll External Repo and Deploy
+
+on:
+  schedule:
+    - cron: "0 * * * *" # Every 60 minutes
+  workflow_dispatch:
+
+jobs:
+  poll-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      EXTERNAL_REPO: Hiro420/StellaSoraData
+      LAST_COMMIT_FILE: .last_commit
+
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v3
+
+      - name: Get latest commit from external repo
+        id: get_commit
+        run: |
+          echo "Fetching latest commit from $EXTERNAL_REPO..."
+          response=$(curl -s -w "%{http_code}" -o latest_commit.json https://api.github.com/repos/$EXTERNAL_REPO/commits)
+          status_code="${response: -3}"
+          if [ "$status_code" != "200" ]; then
+            echo "Error: Received HTTP $status_code"
+            exit 1
+          fi
+          latest_commit=$(jq -r '.[0].sha' latest_commit.json)
+          echo "latest_commit=$latest_commit" >> $GITHUB_OUTPUT
+
+      - name: Check if commit has changed
+        id: check_commit
+        run: |
+          changed=true
+          if [ -f $LAST_COMMIT_FILE ]; then
+            old_commit=$(cat $LAST_COMMIT_FILE)
+            if [ "$old_commit" = "${{ steps.get_commit.outputs.latest_commit }}" ]; then
+              echo "No new commit. Exiting."
+              changed=false
+            fi
+          fi
+          echo "${{ steps.get_commit.outputs.latest_commit }}" > $LAST_COMMIT_FILE
+          echo "changed=$changed" >> $GITHUB_OUTPUT
+
+      - name: Trigger deploy.yml
+        if: steps.check_commit.outputs.changed == 'true'
+        run: |
+          echo "Triggering deploy.yml..."
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/deploy.yml/dispatches \
+            -d '{"ref":"master"}'

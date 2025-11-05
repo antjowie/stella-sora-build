@@ -6,7 +6,7 @@
  */
 
 export interface Database {
-  lastFetch: number;
+  timestamp: string;
   data: Character[];
 }
 export interface Character {

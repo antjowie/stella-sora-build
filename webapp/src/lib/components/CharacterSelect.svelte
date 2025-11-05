@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { database, CharacterElement, type Character } from "$lib/database.svelte";
+    import { database, CharacterElement, type Character } from "$lib/database";
     import Portrait from "$lib/components/Portrait.svelte";
 
     interface Props {

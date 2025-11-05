@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Character } from "$lib/database.svelte";
+  import type { Character } from "$lib/database";
   import { fade } from "svelte/transition";
   import Build from "./Build.svelte";
 

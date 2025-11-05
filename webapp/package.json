@@ -4,14 +4,15 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
-    "build:github": "npx cross-env BASE_PATH=/stella-sora-build vite build",
-    "preview": "vite preview",
+    "dev": "npm run generate:database && vite dev",
+    "build": "npm run generate:database && vite build",
+    "build:github": "npx cross-env BASE_PATH=/stella-sora-build npm run build",
+    "preview": "npm run generate:database && vite preview",
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "generate:types": "json2ts -i src/lib/database.schema.json -o src/lib/database.types.d.ts"
+    "generate:types": "json2ts -i src/lib/database.schema.json -o src/lib/database.types.d.ts",
+    "generate:database": "vite-node src/lib/generate-database.ts"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^7.0.0",
@@ -23,7 +24,8 @@
     "svelte": "^5.41.0",
     "svelte-check": "^4.3.3",
     "typescript": "^5.9.3",
-    "vite": "^7.1.10"
+    "vite": "^7.1.10",
+    "vite-node": "^3.2.4"
   },
   "dependencies": {
     "ajv": "^8.17.1"

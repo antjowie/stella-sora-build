@@ -1,6 +1,6 @@
 <script lang="ts">
     import CharacterSelect from "$lib/components/CharacterSelect.svelte";
-    import type { Character } from "$lib/database.svelte";
+    import type { Character } from "$lib/database";
     import { fade } from "svelte/transition";
 
     interface Props {

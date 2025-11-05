@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { potentialRarityColor } from "$lib/database.svelte";
+    import { potentialRarityColor } from "$lib/database";
     import type { Character } from "$lib/database.types";
 
   let {buildIndex, isMain, showDesc, showBrief, character}: {buildIndex: number, isMain: boolean, showDesc: boolean, showBrief: boolean, character: Character } = $props();

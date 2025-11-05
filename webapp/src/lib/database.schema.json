@@ -2,11 +2,11 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Database",
   "type": "object",
-  "required": ["lastFetch", "data"],
+  "required": ["timestamp", "data"],
   "additionalProperties": false,
   "properties": {
-    "lastFetch": {
-      "type": "integer"
+    "timestamp": {
+      "type": "string"
     },
     "data": {
       "type": "array",

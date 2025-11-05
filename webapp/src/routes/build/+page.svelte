@@ -2,7 +2,7 @@
     import { browser } from "$app/environment";
     import BuildCollection from "$lib/components/BuildCollection.svelte";
     import CharacterSelectModal from "$lib/components/CharacterSelectModal.svelte";
-    import type { Character, Potential } from "$lib/database.svelte";
+    import type { Character, Potential } from "$lib/database";
     import { loadPreference } from "$lib/util";
 
     type BuildData = {

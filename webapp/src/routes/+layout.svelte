@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { databaseLoading, databaseError } from "$lib/database.svelte";
 	import { page } from "$app/state";
 	import { resolve, base } from "$app/paths";
 
@@ -33,18 +32,12 @@
 <div class="main-container">
 	<nav>
 		<a class="underline" href={resolve("/")} aria-current={page.url.pathname === resolve(`/`)}>Home</a>
-		<a class="underline" href={resolve("/build")} aria-current={page.url.pathname.search('/build') >= 0}>Build Editor</a>
-		<a class="underline" href={resolve("/database")} aria-current={page.url.pathname.search('/database') >= 0}>Database</a>
+		<a class="underline" href={resolve("/build")} aria-current={page.url.pathname.search('/build') >= 0}>Build</a>
+		<a class="underline" href={resolve("/trekker")} aria-current={page.url.pathname.search('/trekker') >= 0}>Trekkers</a>
 	</nav>
 
 	<main style:padding={page.data.disableMainPadding ? "0" : "1rem"}>
-	{#if databaseLoading.value}
-		<p>Loading database...</p>
-	{:else if databaseError.value}
-		<p>Failed to load database: {databaseError.value}</p>
-	{:else}
-		{@render children()}
-	{/if}
+	    {@render children()}
 	</main>
 
 	<footer>

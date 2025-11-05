@@ -1,6 +1,7 @@
 <script lang="ts">
+  import { database } from "$lib/database";
   import { page } from "$app/state";
-  import { database, CharacterElement, CharacterClass, characterClassColor, characterElementColor } from "$lib/database.svelte";
+  import { CharacterElement, CharacterClass, characterClassColor, characterElementColor, type Database } from "$lib/database";
   import BuildCollection from "$lib/components/BuildCollection.svelte";
   import { browser } from "$app/environment";
   import { loadPreference } from "$lib/util";

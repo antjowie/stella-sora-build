@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type {  Character } from '$lib/database.types';
-  import { CharacterElement, characterGradeColor, characterElementColor, characterClassColor, CharacterClass  } from '$lib/database.svelte';
+  import type { Character } from '$lib/database.types';
+  import { CharacterElement, characterGradeColor, characterElementColor, characterClassColor, CharacterClass  } from '$lib/database';
   import { scale } from 'svelte/transition';
   import { resolve } from '$app/paths';
 
@@ -14,7 +14,7 @@
 
 <a
 	class="button"
-	href={clickOverride === undefined ? resolve(`/database/${character.name}`) : ""}
+	href={clickOverride === undefined ? resolve(`/trekker/${character.name}`) : ""}
 	onclick={() => clickOverride && clickOverride(character)}
 	data-sveltekit-preload-data="hover"
 	transition:scale
