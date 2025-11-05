@@ -161,21 +161,24 @@
         		type="checkbox"
         		name="showOnlySelected"
         		bind:checked={showOnlySelected}
-        		/>Show Only Selected
+        		/>
+            Show Only Selected
         </label>
         <label>
             <input
         		type="checkbox"
         		name="showDesc"
         		bind:checked={showDesc}
-        		/>Show Description
+        		/>
+            Show Description
         </label>
         <label>
             <input
         		type="checkbox"
         		name="showBrief"
         		bind:checked={showBrief}
-        		/>Show Brief
+        		/>
+            Show Brief
         </label>
     </div>
 

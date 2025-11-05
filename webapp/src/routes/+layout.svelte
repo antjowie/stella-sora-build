@@ -108,15 +108,35 @@
     :global(input) {
         padding: 0.5rem;
         border: 1px solid var(--primary-bg-dark);
-        border-radius: 32px;
+        border-radius: 64px;
         outline: none;
+        background-color: var(--primary-bg-dark);
         transition: 0.2s;
     }
 
+    :global(input:focus-within) {
+        border-color: var(--secondary-bg);
+    }
+
     :global(label:has(input)) {
+        background-color: var(--primary-bg-dark);
         padding: 0.5rem;
         border-radius: 64px;
-        background-color: var(--primary-bg-dark);
+        transition: 0.2s;
+    }
+
+    :global(.toggle) {
+        user-select: none;
+        border: 1px solid rgba(0, 0, 0, 0);
+        /*cursor: pointer;*/
+    }
+
+    /*:global(.toggle > input) {
+        cursor: pointer;
+    }*/
+
+    :global(.toggle:focus-within, .toggle:focus) {
+        border-color: var(--secondary-bg);
     }
 
     :global(a) {
@@ -147,6 +167,8 @@
     :global(.underline[aria-current=true]::before) {
         transform: scaleX(1);
     }
+
+    /* End global styles*/
 
     .main-container {
         display: grid;

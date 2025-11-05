@@ -10,7 +10,9 @@
     let { excludedCharacter = [], clickOverride }: Props = $props();
 
     let searchQuery = $state("");
-    const allElements = Object.values(CharacterElement).filter(key => isNaN(Number(key)));
+    const allElements: string[] = Object.values(CharacterElement)
+      .filter(key => isNaN(Number(key)))
+      .map(x => x.toString());
     let elements = $state([]);
 
     let filteredCharacters = $derived(database.data
@@ -26,15 +28,15 @@
     <div class="filter-container">
         <input type="text" placeholder="Search..." bind:value={searchQuery} />
         {#each allElements as element}
-       	<label>
-      		<input
-     			type="checkbox"
-     			name="element"
-     			value={element}
-     			bind:group={elements}
-      		/>
-      		{element}
-       	</label>
+            <label class="toggle">
+                <input
+                    type="checkbox"
+                    name="element"
+                    value={element}
+                    bind:group={elements}
+                />
+                {element}
+            </label>
         {/each}
     </div>
 
@@ -57,21 +59,6 @@
         align-items: center;
         margin-bottom: 1rem;
         gap: 0.5rem;
-    }
-
-    .filter-container > input:focus {
-        border-color: var(--secondary-bg);
-    }
-
-    .filter-container label {
-        padding: 0.5rem;
-        user-select: none;
-        border: 1px solid rgba(0, 0, 0, 0);
-        transition: 0.2s;
-    }
-
-    .filter-container label:has(*:focus) {
-        border-color: var(--secondary-bg);
     }
 
     .character-container {

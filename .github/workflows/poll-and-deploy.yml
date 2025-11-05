@@ -2,7 +2,7 @@ name: Poll External Repo and Deploy
 
 on:
   schedule:
-    - cron: "0 * * * *" # Every 60 minutes
+    - cron: "0 0 * * *" # Check for updates once every day
   workflow_dispatch:
 
 permissions:
@@ -42,7 +42,7 @@ jobs:
           key: last-commit-cache-${{ steps.get_commit.outputs.latest_commit }}
           restore-keys: last-commit-cache
         continue-on-error: true
-        
+
       - name: Check if commit has changed
         id: check_commit
         run: |
@@ -61,7 +61,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: last-commit
-          key: last-commit-cache-${{ steps.get_commit.outputs.latest_commit }}          
+          key: last-commit-cache-${{ steps.get_commit.outputs.latest_commit }}
 
   trigger-deploy:
     needs: poll-external-repo

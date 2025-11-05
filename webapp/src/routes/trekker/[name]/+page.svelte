@@ -46,26 +46,29 @@
     </div>
 </div>
 <div class="toggles-container">
-    <label>
+    <label class = "toggle">
         <input
     		type="checkbox"
     		name="showMain"
     		bind:checked={showMain}
-    		/>Show Main
+    		>
+        Show Main
     </label>
-    <label>
+    <label class = "toggle">
         <input
     		type="checkbox"
     		name="showDesc"
     		bind:checked={showDesc}
-    		/>Show Description
+    		/>
+        Show Description
     </label>
-    <label>
+    <label class = "toggle">
         <input
     		type="checkbox"
     		name="showBrief"
     		bind:checked={showBrief}
-    		/>Show Brief
+    		/>
+        Show Brief
     </label>
 </div>
 <BuildCollection title={""} {character} {showDesc} {showBrief} {showMain} />
