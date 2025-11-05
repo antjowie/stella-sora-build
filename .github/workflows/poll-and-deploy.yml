@@ -5,15 +5,21 @@ on:
     - cron: "0 * * * *" # Every 60 minutes
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
-  poll-and-deploy:
+  poll-external-repo:
     runs-on: ubuntu-latest
     env:
       EXTERNAL_REPO: Hiro420/StellaSoraData
-      LAST_COMMIT_FILE: .last_commit
+    outputs:
+      changed: ${{ steps.check_commit.outputs.changed }}
 
     steps:
-      - name: Checkout this repo
+      - name: Checkout this repo so we can call other workflow
         uses: actions/checkout@v3
 
       - name: Get latest commit from external repo
@@ -29,26 +35,35 @@ jobs:
           latest_commit=$(jq -r '.[0].sha' latest_commit.json)
           echo "latest_commit=$latest_commit" >> $GITHUB_OUTPUT
 
+      - name: Restore last commit cache
+        uses: actions/cache@v3
+        with:
+          path: last-commit
+          key: last-commit-cache-${{ steps.get_commit.outputs.latest_commit }}
+          restore-keys: last-commit-cache
+        continue-on-error: true
+        
       - name: Check if commit has changed
         id: check_commit
         run: |
-          changed=true
-          if [ -f $LAST_COMMIT_FILE ]; then
-            old_commit=$(cat $LAST_COMMIT_FILE)
+          if [ -f last-commit ]; then
+            old_commit=$(cat last-commit)
             if [ "$old_commit" = "${{ steps.get_commit.outputs.latest_commit }}" ]; then
               echo "No new commit. Exiting."
-              changed=false
+              echo "changed=false" >> $GITHUB_OUTPUT
+              exit 0
             fi
           fi
-          echo "${{ steps.get_commit.outputs.latest_commit }}" > $LAST_COMMIT_FILE
-          echo "changed=$changed" >> $GITHUB_OUTPUT
+          echo "${{ steps.get_commit.outputs.latest_commit }}" > last-commit
+          echo "changed=true" >> $GITHUB_OUTPUT
 
-      - name: Trigger deploy.yml
-        if: steps.check_commit.outputs.changed == 'true'
-        run: |
-          echo "Triggering deploy.yml..."
-          curl -X POST \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/${{ github.repository }}/actions/workflows/deploy.yml/dispatches \
-            -d '{"ref":"master"}'
+      - name: Save last commit cache
+        uses: actions/cache@v3
+        with:
+          path: last-commit
+          key: last-commit-cache-${{ steps.get_commit.outputs.latest_commit }}          
+
+  trigger-deploy:
+    needs: poll-external-repo
+    if: needs.poll-external-repo.outputs.changed == 'true'
+    uses: ./.github/workflows/deploy.yml
