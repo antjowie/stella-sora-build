@@ -1,75 +1,35 @@
 <script lang="ts">
     import { browser } from "$app/environment";
+    import { page } from "$app/state";
+    import { decodeBuild, encodeBuild } from "$lib/build";
+    import type { BuildData } from "$lib/buildData.types";
+    import Build from "$lib/components/Build.svelte";
     import BuildCollection from "$lib/components/BuildCollection.svelte";
     import CharacterSelectModal from "$lib/components/CharacterSelectModal.svelte";
-    import type { Character, Potential } from "$lib/database";
+    import  {database, type Character } from "$lib/database";
     import { loadPreference } from "$lib/util";
-
-    type BuildData = {
-        characterId: number | null;
-        characterName: string | null;
-        selectedPotentialIds: number[];
-        buildName: string;
-        lastModified: string;
-    };
+    import { fly } from "svelte/transition";
+    import { replaceState } from "$app/navigation";
+    import { onMount } from "svelte";
+    import { addToast } from "$lib/toastStore";
 
     let showCharacterModal = $state(false);
     // 1 is main, 2 is support 1, 3 is support 2
     let selectedRole = 0;
-    let mainCharacter = $state<Character | null>(null);
-    let supportCharacter1 = $state<Character | null>(null);
-    let supportCharacter2 = $state<Character | null>(null);
-     let selectedPotentialIds = $state<number[]>([]);
-    let buildName = $state("My Build");
+    let mainCharacter = $state<Character | undefined>(undefined);
+    let supportCharacter1 = $state<Character | undefined>(undefined);
+    let supportCharacter2 = $state<Character | undefined>(undefined);
+    const defaultBuildData: BuildData = {
+      name: "My Build",
+      potentialIds: [],
+    };
+    // TODO: Don't use object for reactivity, it doesn't work
+    // it only works for top level properties, not nested properties
+    let buildData = $state<BuildData>(defaultBuildData);
 
     let showOnlySelected = $state(false);
-    let showDesc = $state(loadPreference('showDesc', true));
-    let showBrief = $state(loadPreference('showBrief', true));
-
-    // Save to localStorage when values change
-    $effect(() => {
-      if (browser) {
-        localStorage.setItem('showDesc', String(showDesc));
-      }
-    });
-
-    $effect(() => {
-      if (browser) {
-        localStorage.setItem('showBrief', String(showBrief));
-      }
-    });
-
-    // Load build from localStorage on mount
-    $effect(() => {
-        if (browser) {
-            const saved = localStorage.getItem("currentBuild");
-            if (saved) {
-                try {
-                    const data: BuildData = JSON.parse(saved);
-                    buildName = data.buildName;
-                    selectedPotentialIds = data.selectedPotentialIds;
-                    // We'll need to find the character from the database
-                    // This will be handled after database loads
-                } catch (e) {
-                    console.error("Failed to load build:", e);
-                }
-            }
-        }
-    });
-
-    // Save build to localStorage whenever it changes
-    $effect(() => {
-        if (browser && mainCharacter) {
-            const buildData: BuildData = {
-                characterId: mainCharacter.characterId,
-                characterName: mainCharacter.name,
-                selectedPotentialIds,
-                buildName,
-                lastModified: new Date().toISOString(),
-            };
-            localStorage.setItem("currentBuild", JSON.stringify(buildData));
-        }
-    });
+    let showDesc = $state(loadPreference("showDesc", true));
+    let showBrief = $state(loadPreference("showBrief", true));
 
     function handleCharacterSelect(character: Character) {
       switch(selectedRole) {
@@ -86,44 +46,100 @@
       showCharacterModal = false;
     }
 
-    function togglePotential(potentialId: number) {
-        if (selectedPotentialIds.includes(potentialId)) {
-            selectedPotentialIds = selectedPotentialIds.filter(id => id !== potentialId);
-        } else {
-            selectedPotentialIds = [...selectedPotentialIds, potentialId];
-        }
+    function onClicked(potentialId: number) {
+      if (buildData.potentialIds.includes(potentialId)) {
+        buildData.potentialIds = buildData.potentialIds.filter(id => id !== potentialId);
+      } else {
+        buildData.potentialIds = [...buildData.potentialIds, potentialId];
+      }
     }
 
     function resetBuild() {
-        if (confirm("Are you sure you want to clear this build?")) {
-            mainCharacter = null;
-            supportCharacter1 = null;
-            supportCharacter2 = null;
-            selectedPotentialIds = [];
-            buildName = "My Build";
-            if (browser) {
-                localStorage.removeItem("currentBuild");
-            }
-        }
+      if (confirm("Are you sure you want to clear this build?")) {
+        Object.assign(buildData, defaultBuildData);
+        mainCharacter = undefined;
+        supportCharacter1 = undefined;
+        supportCharacter2 = undefined;
+        addToast({ message: "Build cleared!", type: "success" });
+      }
     }
+
+    function copyBuildURLToClipboard() {
+      navigator.clipboard.writeText(window.location.href);
+      addToast({ message: "Link copied to clipboard!", type: "success" });
+    }
+
+    function saveBuild() {
+      const res = localStorage.getItem("builds");
+      let builds: BuildData[] = [];
+      if (res) {
+        builds = JSON.parse(res);
+      }
+      builds.push(buildData);
+      localStorage.setItem("builds", JSON.stringify(builds));
+      addToast({ message: "Saving not yet implemented!", type: "error" });
+    }
+
+    // Save to localStorage when values change
+    $effect(() => {
+      if (browser) {
+        localStorage.setItem('showDesc', String(showDesc));
+        localStorage.setItem('showBrief', String(showBrief));
+      }
+    });
+
+    // Otherwise we get error in console
+    let mounted: boolean = false;
+    // Save changes to URL when build data changes
+    $effect(() => {
+      buildData.mainId = mainCharacter?.characterId || undefined;
+      buildData.support1Id = supportCharacter1?.characterId || undefined;
+      buildData.support2Id = supportCharacter2?.characterId || undefined;
+      const name = buildData.name;
+
+      if (mounted) {
+        replaceState(page.url.pathname + "?&build=" + encodeBuild(buildData), "");
+      }
+    });
+
+    onMount(() => {
+      let build = page.url.searchParams.get("build");
+      if (build) {
+        try {
+          Object.assign(buildData, decodeBuild(build));
+          const getChar = (id?: number): Character | undefined => database.data.find(c => c.characterId === id);
+          mainCharacter = getChar(buildData.mainId);
+          supportCharacter1 = getChar(buildData.support1Id);
+          supportCharacter2 = getChar(buildData.support2Id);
+        } catch (error) {
+          addToast({ message: "Error loading build!", type: "error" });
+          console.error("Error decoding build:", error);
+        }
+      }
+      showOnlySelected = buildData.potentialIds.length > 0 && loadPreference("showDesc", false);
+
+      // To prevent error in console
+      // very ugly but online they say onMount works, but it doesn't
+      setTimeout(() => {
+        mounted = true;
+      }, 100);
+    });
 </script>
 
-<svelte:head>
-    <title>Stella Sora Build</title>
-</svelte:head>
-
 <div class="build-editor">
-    <h1>Build Editor is still work in progress!!!</h1>
-    <div class="header">
+    <div class="button-container">
         <button class="reset-button" onclick={resetBuild}>Reset Build</button>
+        <button onclick={copyBuildURLToClipboard}>Copy Build URL</button>
+        <button onclick={saveBuild}>Save Build</button>
     </div>
 
     <div class="build-name-container">
         <label for="buildName">Build Name:</label>
         <input
             id="buildName"
+            maxlength="30"
             type="text"
-            bind:value={buildName}
+            bind:value={buildData.name}
             placeholder="Enter build name..."
         />
     </div>
@@ -182,52 +198,74 @@
         </label>
     </div>
 
-    <div class="potentials-container">
-        <h2>Select Potentials ({selectedPotentialIds.length} selected)</h2>
-        {#each [
-          {character: mainCharacter, showMain: true},
-          {character: supportCharacter1, showMain: false},
-          {character: supportCharacter2, showMain: false},
-         ] as data}
-         {#if data.character}
-         <BuildCollection
-             title={data.character.name}
-             character={data.character}
-             showDesc={showDesc}
-             showBrief={showBrief}
-             showMain={data.showMain}
-             />
-         {/if}
-        {/each}
+    <h2>Select Potentials ({buildData.potentialIds.length} selected)</h2>
+    {#key showOnlySelected}
+    <!-- <div class="potentials-container" in:fade={{ duration: 300, delay: 150 }} out:fade={{ duration: 150 }}> -->
+    <div class="potentials-container" in:fly={{ duration: 300, delay: 150, x: -100 }} out:fly={{ duration: 150, x: 100 }}>
+        {#if showOnlySelected}
+            {#each [
+            mainCharacter,
+            supportCharacter1,
+            supportCharacter2,
+            ] as character}
+                {#if character}
+                    <h1 class="title">{character.name}</h1>
+                    <Build
+                        character={character}
+                        overrideTitle=""
+                        overridePotentialIds={buildData.potentialIds}
+                        {showBrief}
+                        {showDesc}
+                    />
+                {/if}
+            {/each}
+        {:else}
+            {#each [
+            {character: mainCharacter, showMain: true},
+            {character: supportCharacter1, showMain: false},
+            {character: supportCharacter2, showMain: false},
+            ] as data}
+            {#if data.character}
+                <BuildCollection
+                    {showDesc}
+                    {showBrief}
+                    title={data.character.name}
+                    character={data.character}
+                    showMain={data.showMain}
+                    activePotentialIds={buildData.potentialIds}
+                    {onClicked}
+                    />
+            {/if}
+            {/each}
+        {/if}
     </div>
+    {/key}
 </div>
 
 {#if showCharacterModal}
     <CharacterSelectModal
         onSelect={handleCharacterSelect}
         onClose={() => showCharacterModal = false}
-        excludedCharacter={[mainCharacter, supportCharacter1, supportCharacter1].filter(x => x !== null)}
+        excludedCharacter={[mainCharacter, supportCharacter1, supportCharacter1].filter(x => x !== undefined)}
     />
 {/if}
 
 <style>
+    .title {
+        padding-top: 1rem;
+    }
 
-    .header {
+    .button-container {
         display: flex;
-        justify-content: space-between;
+        justify-content: left;
         align-items: center;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
+        gap: 1rem;
     }
 
     .reset-button {
-        padding: 0.5rem 1rem;
         background-color: #e55833;
-        color: white;
-        border: none;
-        border-radius: 0.5rem;
-        cursor: pointer;
-        font-weight: 600;
-        transition: background-color 0.2s;
+        color: var(--secondary);
     }
 
     .reset-button:hover {
@@ -334,11 +372,6 @@
         padding: 1rem;
         color: #3e4566;
         font-weight: 600;
-    }
-
-    .potentials-container h2 {
-        margin-top: 0;
-        margin-bottom: 1rem;
     }
 
     .toggles-container {

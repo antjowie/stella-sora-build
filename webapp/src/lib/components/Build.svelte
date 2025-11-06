@@ -1,62 +1,82 @@
 <script lang="ts">
-    import { potentialRarityColor } from "$lib/database";
-    import type { Character } from "$lib/database.types";
+  import type { Character } from "$lib/database.types";
+    import { sortPotentials } from "$lib/util";
+  import PotentialButton from "./PotentialButton.svelte";
 
-  let {buildIndex, isMain, showDesc, showBrief, character}: {buildIndex: number, isMain: boolean, showDesc: boolean, showBrief: boolean, character: Character } = $props();
+  interface Props {
+    buildIndex?: number;
+    isMain?: boolean;
+    overrideTitle?: string;
+    showDesc: boolean;
+    showBrief: boolean;
+    character: Character;
+    overridePotentialIds?: number[];
+    activePotentialIds?: number[];
+    onClicked?: (id: number) => void;
+  }
+
+  let {
+    buildIndex,
+    isMain,
+    overrideTitle,
+    showDesc,
+    showBrief,
+    character,
+    overridePotentialIds = [],
+    activePotentialIds = [],
+    onClicked }: Props = $props();
+
+  function getTitle(title: string): string {
+    if (overrideTitle !== undefined) return overrideTitle;
+    return title;
+  }
 
   const getNameAndDesc = () => {
     if (isMain)
     {
       switch (buildIndex) {
-        case 1: return { name: character.mainBuild1Name, desc: character.mainBuild1Desc };
-        case 2: return { name: character.mainBuild2Name, desc: character.mainBuild2Desc };
-        default: return { name: "Generic build", desc: "" };
+        case 1: return { name: getTitle(character.mainBuild1Name), desc: character.mainBuild1Desc };
+        case 2: return { name: getTitle(character.mainBuild2Name), desc: character.mainBuild2Desc };
+        default: return { name: getTitle("Generic build"), desc: "" };
       }
     }
     else
     {
       switch (buildIndex) {
-        case 1: return { name: character.supportBuild1Name, desc: character.supportBuild1Desc };
-        case 2: return { name: character.supportBuild2Name, desc: character.supportBuild2Desc };
-        default: return { name: "Generic build", desc: "" };
+        case 1: return { name: getTitle(character.supportBuild1Name), desc: character.supportBuild1Desc };
+        case 2: return { name: getTitle(character.supportBuild2Name), desc: character.supportBuild2Desc };
+        default: return { name: getTitle("Generic build"), desc: "" };
       }
     }
   };
 
-  const replaceText = (text: string) => {
-    return text
-      .replace(/<color[^>]*>.*?<\/color>/g, 'X') // Replace color tags with 'x'
-      .replace(/&[^&]*&/g, 'Y') // Replace special characters with 'x'
-      .replace(/##([^#]+)#[^#]*#/g, '$1') // Replace ##content#xxxx# patterns with just the content
-    ;
-  };
-
   const buildName = getNameAndDesc().name;
   const buildDesc = getNameAndDesc().desc;
-  const potentials = character.potentials
+  const potentials =
+    (overridePotentialIds.length > 0 ? overridePotentialIds.map(id => character.potentials.find(p => p.id === id)).filter(p => p !== undefined)
+    : character.potentials
     // Filter out potentials that are not relevant to the current build
     .filter((potential) => potential.build === buildIndex &&
-      ((isMain ? potential.type === 1 : potential.type === 2)|| potential.type === 3))
-    // Sort potentials by ID and rarity, multiply so we can "categorize" them
-    // This seems to match the game quite well
-    .sort((a, b) => (a.id + (3 - a.rarity) * 1000) - (b.id + (3 - b.rarity) * 1000));
+      ((isMain ? potential.type === 1 : potential.type === 2)|| potential.type === 3)))
+    .sort(sortPotentials);
+
 </script>
 
 <h3 class="build-name">{buildName}</h3>
 {#if buildDesc!.length > 0}
-<p class="build-desc">{buildDesc}</p>
+    <p class="build-desc">{buildDesc}</p>
 {/if}
+
 <div class="potentials-container">
-{#each potentials as potential}
-    <div class="potential"
-        style:background-color={potentialRarityColor[potential.rarity]}
-    >
-        <p>{potential.name}</p>
-{#if showDesc}
-        <p class="description">{replaceText(showBrief ? potential.descShort : potential.descLong)}</p>
-{/if}
-    </div>
-{/each}
+    {#each potentials as potential}
+        <PotentialButton
+            {potential}
+            {showBrief}
+            {showDesc}
+            {activePotentialIds}
+            {onClicked}
+        />
+    {/each}
 </div>
 
 <style>
@@ -83,25 +103,5 @@
     font-size: 1rem;
     font-weight: normal;
     margin-bottom: 1rem;
-}
-
-.potential {
-    border: 1px solid #ccc;
-    padding: 1rem;
-    border-radius: 8px;
-    background-color: white;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    height: 100%;
-}
-
-.potential > p:first-child {
-    font-weight: 700;
-    text-align: center;
-}
-
-.potential .description {
-    text-align: left;
-    margin: 0.5rem 0 0 0;
 }
 </style>

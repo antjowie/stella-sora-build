@@ -1,7 +1,7 @@
 // This is run during build time or when you start development
 // It will generate the latest database.json by pulling data
 // This will be stored in the lib dir and baked into the HTML
-import databaseSchema from "$lib/database.schema.json";
+import databaseSchema from "$lib/schemas/database.schema.json";
 import { base } from "$app/paths";
 import fs from "fs/promises";
 import Ajv from "ajv";
@@ -147,12 +147,9 @@ export async function generateDatabase(): Promise<Database> {
       if (!potentialTypes) {
         throw new Error(`No potential types found for character: ${charId}`);
       }
-      if (potentialTypes.type1.find((id: number) => id == potentialId))
-        type = 1;
-      else if (potentialTypes.type2.find((id: number) => id == potentialId))
-        type = 2;
-      else if (potentialTypes.type3.find((id: number) => id == potentialId))
-        type = 3;
+      if (potentialTypes.type1.includes(potentialId)) type = 1;
+      else if (potentialTypes.type2.includes(potentialId)) type = 2;
+      else if (potentialTypes.type3.includes(potentialId)) type = 3;
       else throw new Error(`Unknown potential type: ${potentialId}`);
 
       charToPotentials.get(charId)!.push({

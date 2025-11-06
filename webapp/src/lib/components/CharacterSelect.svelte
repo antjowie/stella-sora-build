@@ -13,14 +13,15 @@
     const allElements: string[] = Object.values(CharacterElement)
       .filter(key => isNaN(Number(key)))
       .map(x => x.toString());
-    let elements = $state([]);
+    let elements = $state<CharacterElement[]>([]);
 
     let filteredCharacters = $derived(database.data
       .toSorted((a, b) => a.name.localeCompare(b.name))
       .filter((character) =>
         (searchQuery.length === 0 || character.name.toLowerCase().includes(searchQuery.toLowerCase()))
-        && (elements.length === 0 || elements.find(element => element === CharacterElement[character.element]) !== undefined)
-        && (excludedCharacter.length === 0 || excludedCharacter.find(excluded => excluded.characterId === character.characterId) === undefined))
+        && (elements.length === 0 || elements.includes(character.element))
+        && (excludedCharacter.length === 0 || !excludedCharacter.includes(character))
+      )
     );
 </script>
 

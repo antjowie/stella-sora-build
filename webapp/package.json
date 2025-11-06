@@ -11,8 +11,8 @@
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "generate:types": "json2ts -i src/lib/database.schema.json -o src/lib/database.types.d.ts",
-    "generate:database": "vite-node src/lib/generate-database.ts"
+    "generate:types": "json2ts -i src/lib/schemas/database.schema.json -o src/lib/database.types.d.ts && json2ts -i src/lib/schemas/buildData.schema.json -o src/lib/buildData.types.d.ts",
+    "generate:database": "vite-node src/lib/generateDatabase.ts"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^7.0.0",

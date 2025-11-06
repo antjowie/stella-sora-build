@@ -1,29 +1,38 @@
 <script lang="ts">
   import type { Character } from "$lib/database";
-  import { fade } from "svelte/transition";
+  import { fly } from "svelte/transition";
   import Build from "./Build.svelte";
 
-  type BuildCollectionProps = {
+  interface Props {
     character: Character;
     showDesc: boolean;
     showBrief: boolean;
     showMain: boolean;
-    title: string;
+    title?: string;
+    activePotentialIds?: number[];
+    onClicked?: (id: number) => void;
   };
 
-  let { character, showDesc, showBrief, showMain, title = "" }: BuildCollectionProps = $props();
+  let { character, showDesc, showBrief, showMain, title = "", activePotentialIds = [], onClicked }: Props = $props();
 
-  const build1 = $derived({buildIndex: 1, isMain: true, showDesc, showBrief, character});
-  const build2 = $derived({buildIndex: 2, isMain: true, showDesc, showBrief, character});
-  const build3 = $derived({buildIndex: 3, isMain: true, showDesc, showBrief, character});
-  const build4 = $derived({buildIndex: 1, isMain: false, showDesc, showBrief, character});
-  const build5 = $derived({buildIndex: 2, isMain: false, showDesc, showBrief, character});
-  const build6 = $derived({buildIndex: 3, isMain: false, showDesc, showBrief, character});
+  const data = $derived({
+     showDesc,
+     showBrief,
+     character,
+     activePotentialIds,
+     onClicked,
+  });
 
+  const build1 = $derived({buildIndex: 1, isMain: true, ...data});
+  const build2 = $derived({buildIndex: 2, isMain: true, ...data});
+  const build3 = $derived({buildIndex: 3, isMain: true, ...data});
+  const build4 = $derived({buildIndex: 1, isMain: false, ...data});
+  const build5 = $derived({buildIndex: 2, isMain: false, ...data});
+  const build6 = $derived({buildIndex: 3, isMain: false, ...data});
 </script>
 
 {#key showMain}
-<div in:fade={{ duration: 300, delay: 150 }} out:fade={{ duration: 150 }}>
+<div in:fly={{ duration: 300, delay: 150, x: -100 }} out:fly={{ duration: 150, x: 100 }}>
 {#if showMain}
     <h1 class="title">{title.length == 0 ? "Main builds" : title}</h1>
     <Build {...build1} />

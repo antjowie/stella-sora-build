@@ -8,20 +8,14 @@
 
   let character = database.data.find(c => c.name === page.params.name);
 
-  let showDesc = $state(loadPreference('showDesc', true));
-  let showBrief = $state(loadPreference('showBrief', true));
+  let showDesc = $state(loadPreference("showDesc", true));
+  let showBrief = $state(loadPreference("showBrief", true));
   let showMain = $state(true);
 
-  // Save to localStorage when values change
   $effect(() => {
     if (browser) {
-      localStorage.setItem('showDesc', String(showDesc));
-    }
-  });
-
-  $effect(() => {
-    if (browser) {
-      localStorage.setItem('showBrief', String(showBrief));
+      localStorage.setItem("showDesc", String(showDesc));
+      localStorage.setItem("showBrief", String(showBrief));
     }
   });
 </script>
@@ -71,7 +65,7 @@
         Show Brief
     </label>
 </div>
-<BuildCollection title={""} {character} {showDesc} {showBrief} {showMain} />
+<BuildCollection {character} {showDesc} {showBrief} {showMain} />
 {/if}
 
 <style>

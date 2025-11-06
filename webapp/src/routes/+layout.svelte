@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/state";
 	import { resolve, base } from "$app/paths";
+    import Toasts from "$lib/components/Toasts.svelte";
 
 	let { children } = $props();
 </script>
@@ -30,6 +31,8 @@
 		<a class="underline" href={resolve("/build")} aria-current={page.url.pathname.search('/build') >= 0}>Build</a>
 		<a class="underline" href={resolve("/trekker")} aria-current={page.url.pathname.search('/trekker') >= 0}>Trekkers</a>
 	</nav>
+
+	<Toasts />
 
 	<main style:padding={page.data.disableMainPadding ? "0" : "1rem"}>
 	    {@render children()}
@@ -77,6 +80,7 @@
         --primary-bg-darker: #e7e3db;
         --secondary-bg: #49568b;
         --bg-stripe: #f9ebb3;
+        --green: #89b486;
         font-family: "Noto Sans", sans-serif;
         font-optical-sizing: auto;
         color: var(--primary);
@@ -103,6 +107,26 @@
       :global(html) {
         font-size: 10px;
       }
+    }
+
+    :global(button) {
+        padding: 0.5rem 1rem;
+        color: var(--primary);
+        background-color: var(--primary-bg-dark);
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    :global(button:hover:active) {
+        transform: scale(1.0);
+    }
+
+    :global(button:hover) {
+        background-color: var(--primary-bg-darker);
+        transform: scale(1.05);
     }
 
     :global(input) {
