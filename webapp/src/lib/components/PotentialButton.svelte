@@ -53,6 +53,7 @@
         display: flex;
         flex-direction: column;
         align-content: start;
+        user-select: text;
     }
 
     .potential > p:first-child {
