@@ -1,5 +1,6 @@
 <script lang="ts">
   import { toasts } from '$lib/toastStore';
+    import { flip } from 'svelte/animate';
     import { fade, fly } from 'svelte/transition';
 
   function dismiss(id: string) {
@@ -11,7 +12,9 @@
   {#each $toasts as toast (toast.id)}
     <div class="toast {toast.type}"
         in:fly={{ duration: 300, y: -100 }}
-        out:fade={{ duration: 150 }}>
+        out:fade={{ duration: 150 }}
+        animate:flip={{ duration: 150}}
+    >
       {toast.message}
       <button class="close" on:click={() => dismiss(toast.id)}>X</button>
       <div
@@ -26,9 +29,9 @@
 <style>
   .toast-container {
     position: fixed;
-    top: 5%;
+    top: 2.5%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%);
     z-index: 9999;
     display: flex;
     flex-direction: column;

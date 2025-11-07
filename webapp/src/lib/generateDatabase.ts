@@ -176,7 +176,7 @@ export async function generateDatabase(): Promise<Database> {
 
       // Populate character
       const character: Character = {
-        characterId: charId,
+        id: charId,
         name: name,
         class: parseIntStrict((charData as any).Class),
         element: parseIntStrict((charData as any).EET),

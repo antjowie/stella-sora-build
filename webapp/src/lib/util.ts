@@ -1,5 +1,7 @@
 import { browser } from "$app/environment";
+import type { BuildData } from "./buildData.types";
 import type { Potential } from "./database.types";
+import { localStorageBuildsKey } from "./global";
 
 export function loadPreference(key: string, defaultValue: boolean): boolean {
   if (browser) {
@@ -13,3 +15,10 @@ export function loadPreference(key: string, defaultValue: boolean): boolean {
 // This seems to match the game quite well
 export const sortPotentials = (a: Potential, b: Potential) =>
   a.id + (3 - a.rarity) * 1000 - (b.id + (3 - b.rarity) * 1000);
+
+export function getLocalStoredBuilds(): BuildData[] {
+  if (browser) {
+    return JSON.parse(localStorage.getItem(localStorageBuildsKey) || "[]");
+  }
+  return [];
+}

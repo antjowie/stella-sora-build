@@ -3,11 +3,11 @@
     import Portrait from "$lib/components/Portrait.svelte";
 
     interface Props {
-        excludedCharacter?: Character[];
+        excludedCharacters?: number[];
         clickOverride?: (character: Character) => void;
     }
 
-    let { excludedCharacter = [], clickOverride }: Props = $props();
+    let { excludedCharacters = [], clickOverride }: Props = $props();
 
     let searchQuery = $state("");
     const allElements: string[] = Object.values(CharacterElement)
@@ -19,7 +19,7 @@
       .filter((character) =>
         (searchQuery.length === 0 || character.name.toLowerCase().includes(searchQuery.toLowerCase()))
         && (elements.length === 0 || elements.includes(CharacterElement[character.element] as unknown as number))
-        && (excludedCharacter.length === 0 || excludedCharacter.includes(character) === false)
+        && (excludedCharacters.length === 0 || excludedCharacters.includes(character.id) === false)
       )
       .toSorted((a, b) => a.name.localeCompare(b.name))
     );
@@ -42,7 +42,7 @@
     </div>
 
     <div class="character-container">
-        {#each filteredCharacters as character: (character.characterId)}
+        {#each filteredCharacters as character: (character.id)}
             <Portrait {character} {clickOverride}/>
         {/each}
     </div>

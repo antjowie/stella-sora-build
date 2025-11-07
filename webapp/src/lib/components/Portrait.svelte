@@ -1,23 +1,24 @@
 <script lang="ts">
   import type { Character } from '$lib/database.types';
   import { CharacterElement, characterGradeColor, characterElementColor, characterClassColor, CharacterClass  } from '$lib/database';
-  import { scale } from 'svelte/transition';
   import { resolve } from '$app/paths';
 
   interface Props {
       character: Character;
+      disabled?: boolean;
       clickOverride?: (character: Character) => void;
   }
 
-  let { character, clickOverride }: Props = $props();
+  let { character, disabled = false, clickOverride }: Props = $props();
 </script>
 
 <a
-	class="button"
+	class="button
+	{disabled ? "disabled" : ""}
+	"
 	href={clickOverride === undefined ? resolve(`/trekker/${character.name}`) : ""}
 	onclick={() => clickOverride && clickOverride(character)}
 	data-sveltekit-preload-data="hover"
-	transition:scale
 	style:--grade-color={characterGradeColor[character.grade]}
 	style:background-image="url({character.portraitUrl})"
 	>
@@ -68,11 +69,11 @@
         pointer-events: none;
     }
 
-    .button:hover {
+    .button:hover:not(.disabled) {
         transform: scale(1.05);
     }
 
-    .button:active:hover {
+    .button:active:hover:not(.disabled) {
         transform: scale(0.9);
     }
 

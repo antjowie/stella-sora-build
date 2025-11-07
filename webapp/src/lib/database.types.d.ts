@@ -10,7 +10,7 @@ export interface Database {
   data: Character[];
 }
 export interface Character {
-  characterId: number;
+  id: number;
   name: string;
   class: number;
   element: number;

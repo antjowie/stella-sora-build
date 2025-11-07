@@ -191,6 +191,15 @@
         transform: scaleX(1);
     }
 
+    :global(textarea) {
+        background-color: var(--primary-bg-dark);
+        border: solid 1px var(--secondary);
+        border-radius: 4px;
+        padding: 0.5rem;
+        resize: vertical;
+        width: 100%;
+    }
+
     /* End global styles*/
 
     .main-container {

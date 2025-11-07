@@ -6,10 +6,10 @@
     interface Props {
         onSelect: (character: Character) => void;
         onClose: () => void;
-        excludedCharacter: Character[];
+        excludedCharacters: number[];
     }
 
-    let { onSelect, onClose, excludedCharacter }: Props = $props();
+    let { onSelect, onClose, excludedCharacters }: Props = $props();
 
     function handleBackdropClick(event: MouseEvent) {
         if (event.target === event.currentTarget) {
@@ -38,7 +38,7 @@
         </div>
 
         <div class="modal-body">
-            <CharacterSelect {excludedCharacter} clickOverride={handleSelect} />
+            <CharacterSelect {excludedCharacters} clickOverride={handleSelect} />
         </div>
     </div>
 </div>

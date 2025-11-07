@@ -7,8 +7,11 @@
 
 export interface BuildData {
   name: string;
+  description: string;
+  id: string;
   mainId?: number;
   support1Id?: number;
   support2Id?: number;
   potentialIds: number[];
+  editMode: boolean;
 }

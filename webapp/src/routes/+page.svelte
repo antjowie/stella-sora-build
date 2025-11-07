@@ -1,16 +1,33 @@
 <script lang="ts">
     import { resolve } from "$app/paths";
     import landing from "$lib/assets/landing.webp";
+    import type { BuildData } from "$lib/buildData.types";
+    import { getLocalStoredBuilds } from "$lib/util";
+    import { flip } from "svelte/animate";
+
+    let localBuilds = $state<BuildData[]>(getLocalStoredBuilds());
 </script>
 
 <div class="main-container">
     <img src={landing} alt="Landing" fetchpriority="high" class="background-image" />
     <div class="text-container">
         <h1>Stella Sora Build</h1>
-        <p>Browse Trekker potentials and create custom builds to share!</p>
+        <h2>Browse Trekker potentials and create custom builds to share!</h2>
         <div>
             <a class="button primary" href={resolve("/build")}>Make a build</a>
             <a class="button" href={resolve("/trekker")}>Check out Trekkers</a>
+        </div>
+        {#if localBuilds.length === 0}
+            <p>No builds yet!</p>
+        {/if}
+        <div class="build-container">
+            {#each localBuilds as build (build.id)}
+                <div class="build-card"
+                    animate:flip
+                >
+                    build
+                </div>
+            {/each}
         </div>
     </div>
 </div>
@@ -52,10 +69,14 @@
         font-size: 4rem;
     }
 
+    .text-container h2 {
+        color: var(--secondary);
+        font-size: 2rem;
+    }
+
     .text-container p {
         color: var(--secondary);
-        padding-bottom: 2rem;
-        font-size: 2rem;
+        font-size: 1.5rem;
     }
 
     .text-container div {
@@ -63,6 +84,7 @@
         flex-direction: row;
         justify-content: center;
         gap: 1rem;
+        padding: 2rem;
         font-size: 1.5rem;
         text-align: center;
     }
@@ -95,4 +117,19 @@
         color: var(--secondary);
         background-color: var(--secondary-bg);
     }
+
+    .build-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        /*font-size: 1.5rem;*/
+    }
+
+    .build-card {
+        background-color: var(--primary-bg-dark);
+        border-radius: 4px;
+    }
+
 </style>
