@@ -10,15 +10,15 @@
     let { excludedCharacters = [], clickOverride }: Props = $props();
 
     let searchQuery = $state("");
-    const allElements: string[] = Object.values(CharacterElement)
+    const allElementsStrings: string[] = Object.values(CharacterElement)
       .filter(key => isNaN(Number(key)))
       .map(x => x.toString());
-    let elements = $state<CharacterElement[]>([]);
+    let elementStrings = $state<string[]>([]);
 
     let filteredCharacters = $derived(database.data
       .filter((character) =>
         (searchQuery.length === 0 || character.name.toLowerCase().includes(searchQuery.toLowerCase()))
-        && (elements.length === 0 || elements.includes(CharacterElement[character.element] as unknown as number))
+        && (elementStrings.length === 0 || elementStrings.includes(CharacterElement[character.element]))
         && (excludedCharacters.length === 0 || excludedCharacters.includes(character.id) === false)
       )
       .toSorted((a, b) => a.name.localeCompare(b.name))
@@ -28,15 +28,15 @@
 <div class="main-container">
     <div class="filter-container">
         <input type="text" placeholder="Search..." bind:value={searchQuery} />
-        {#each allElements as element}
+        {#each allElementsStrings as elemString}
             <label class="toggle">
                 <input
                     type="checkbox"
                     name="element"
-                    value={element}
-                    bind:group={elements}
+                    value={elemString}
+                    bind:group={elementStrings}
                 />
-                {element}
+                {elemString}
             </label>
         {/each}
     </div>
@@ -64,15 +64,15 @@
 
     .character-container {
         display: grid;
-        grid-template-columns: repeat(auto-fill, 140px);
+        grid-template-columns: repeat(auto-fill, 9rem);
         grid-gap: 1rem;
         justify-content: space-between;
         width: 100%;
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 13rem) {
         .character-container {
-            grid-template-columns: repeat(auto-fill, 30%);
+            grid-template-columns: repeat(auto-fill, 45%);
         }
     }
 </style>

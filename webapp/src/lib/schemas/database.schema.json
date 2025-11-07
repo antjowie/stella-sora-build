@@ -52,7 +52,7 @@
           "type": "integer"
         },
         "grade": {
-          "$comment": "SR or R",
+          "$comment": "SR or R (1,2)",
           "type": "integer"
         },
         "portraitUrl": {

@@ -217,7 +217,7 @@
         <label for="name">Build Name:</label>
         <input
             id="name"
-            maxlength="30"
+            maxlength="22"
             type="text"
             bind:value={name}
             placeholder="Enter build name..."
@@ -425,9 +425,8 @@
     }
 
     .character-selector-size {
-        width: 125px;
+        width: 150px;
         height: 210px;
-
     }
 
     .character-selector {

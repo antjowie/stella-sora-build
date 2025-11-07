@@ -1,3 +1,4 @@
+import { base } from "$app/paths";
 import databaseJson from "$lib/database.json";
 import type {
   Database as GeneratedDatabase,
@@ -40,6 +41,11 @@ export const characterElementColor = [
   "#efa750",
   "#bb67af",
 ];
+
+export function getElementIconUrl(element: CharacterElement): string {
+  const name = CharacterElement[element];
+  return `${base}/elements/${name}.webp`;
+}
 
 export enum PotentialRarity {
   Common = 1,

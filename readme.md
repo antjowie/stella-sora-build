@@ -5,7 +5,7 @@ An app to create and share custom builds for Stella Sora
 ## Roadmap
 - [x] extract data and generate database
 - [x] build editor with import and export
-- [] save builds locally
+- [x] save builds locally
 - [] figure out how to parse potential values
 - [] integration with game to track build during ascension and tell u which option to take
 - [] builds browser where users can publish their builds

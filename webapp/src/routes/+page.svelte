@@ -43,16 +43,25 @@
                     >
                         <p style:grid-area="title" class="build-title">{build.name}</p>
                         <div style:grid-area="main" class="build-image"
-                            style:background-image="url({database.data.find(c => build.mainId)?.portraitUrl || ""})"
+                            style:background-image="url({database.data.find(c => c.id === build.mainId)?.portraitUrl || ""})"
                             ></div>
                         <div style:grid-area="sup1" class="build-image"
-                            style:background-image="url({database.data.find(c => build.support1Id)?.portraitUrl || ""})"
+                            style:background-image="url({database.data.find(c => c.id === build.support1Id)?.portraitUrl || ""})"
                             ></div>
                         <div style:grid-area="sup2" class="build-image"
-                            style:background-image="url({database.data.find(c => build.support2Id)?.portraitUrl || ""})"
+                            style:background-image="url({database.data.find(c => c.id === build.support2Id)?.portraitUrl || ""})"
                             ></div>
                         <div style:grid-area="buttons" class="build-buttons-container">
-                            <button class="build-edit" onclick={() => window.location.href = (`${base}/build?&build=${encodeBuild(build)}`)}>Edit</button>
+                            <button class="build-edit" onclick={() => {
+                              build.editMode = false;
+                              window.location.href = (`${base}/build?&build=${encodeBuild(build)}`)}
+                            }
+                            >View</button>
+                            <button class="build-edit" onclick={() => {
+                              build.editMode = true;
+                              window.location.href = (`${base}/build?&build=${encodeBuild(build)}`)}
+                            }
+                            >Edit</button>
                             <button class="build-delete" onclick={() => deleteBuild(build.id)}>Delete</button>
                         </div>
                     </div>
@@ -85,7 +94,7 @@
     .text-container {
         display: flex;
         position: relative;
-        z-index: 100;
+        z-index: 1;
         flex-direction: column;
         align-items: center;
         justify-content: center;
@@ -151,8 +160,9 @@
 
     .build-container {
         display: grid;
-        /* Don't know how to avoid hardcoding... Can't seem to infer from child*/
-        grid-template-columns: repeat(auto-fill, 22rem);
+        /* Don't know how to avoid hardcoding... Can't seem to infer from child.
+            Maybe that's just the css way */
+        grid-template-columns: repeat(auto-fill, minmax(240px, 22rem));
         grid-template-rows: repeat(auto-fill, 11rem);
         grid-gap: 1rem;
         justify-content: center;
@@ -164,8 +174,12 @@
         background-color: rgba(from var(--primary-bg) r g b / 0.25);
         border-radius: 4px;
     }
+
     .build-card {
         display: grid;
+        aspect-ratio: 22/11;
+        grid-template-columns: 1fr 1fr 1fr auto;
+        grid-template-rows: auto 1fr;
         grid-template-areas:
             "title  title   title   buttons"
             "main   sup1    sup2    buttons"
@@ -175,23 +189,24 @@
         gap: 0.5rem;
         padding: 0.5rem;
         align-self: start;
-        justify-self: start;
     }
 
     p.build-title {
-        justify-self: start;
+        text-align: left;
+        overflow: auto;
+        white-space: nowrap;
+        text-overflow: ellipsis;
         color: var(--primary);
-        font-size: 1.5rem;
+        font-size: 1.25rem;
     }
 
     .build-image {
-        position: relative;
-        width: 5rem;
-        aspect-ratio: auto 140/200;
+        width: 100%;
+        height: 100%;
         background-color: var(--primary-bg-dark);
         border-radius: 4px;
         background-repeat: no-repeat;
-        background-size: 120% 120%;
+        background-size: 130%;
         background-position: 50% 50%;
     }
 
@@ -221,5 +236,4 @@
         color: var(--secondary);
         background-color: var(--red);
     }
-
 </style>

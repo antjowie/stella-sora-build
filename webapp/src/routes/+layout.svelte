@@ -232,7 +232,6 @@
         This is just in case you do want to use position absolute
         */
         position: relative;
-        z-index: 50;
     }
 
     footer {
