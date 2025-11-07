@@ -19,7 +19,6 @@
     "@sveltejs/adapter-static": "^3.0.10",
     "@sveltejs/kit": "^2.47.1",
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
-    "@types/marked": "^5.0.2",
     "cross-env": "^10.1.0",
     "json-schema-to-typescript": "^15.0.4",
     "svelte": "^5.41.0",

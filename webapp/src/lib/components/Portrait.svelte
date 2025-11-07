@@ -53,7 +53,7 @@
         font-weight: 600;
         background-repeat: no-repeat;
         background-size: 120% 120%;
-        background-position: 50% 0%;
+        background-position: 50% -25%;
     }
 
     .button::before {

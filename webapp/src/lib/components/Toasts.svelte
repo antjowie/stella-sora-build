@@ -47,8 +47,8 @@
     overflow: hidden;
   }
   .info { background-color: #2196f3; }
-  .success { background-color: #4caf50; }
-  .error { background-color: #d14825; }
+  .success { background-color: var(--green); }
+  .error { background-color: var(--red); }
 
   .close {
     background: none;

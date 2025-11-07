@@ -380,12 +380,12 @@
     }
 
     .reset-button {
-        background-color: #e55833;
+        background-color: var(--light-red);
         color: var(--secondary);
     }
 
     .reset-button:hover {
-        background-color: #d14825;
+        background-color: var(--red);
     }
 
     .text-container {

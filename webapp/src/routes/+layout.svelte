@@ -81,6 +81,8 @@
         --secondary-bg: #49568b;
         --bg-stripe: #f9ebb3;
         --green: #89b486;
+        --light-red: #e55833;
+        --red: #d14825;
         font-family: "Noto Sans", sans-serif;
         font-optical-sizing: auto;
         color: var(--primary);
@@ -230,6 +232,7 @@
         This is just in case you do want to use position absolute
         */
         position: relative;
+        z-index: 50;
     }
 
     footer {
