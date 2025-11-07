@@ -16,12 +16,12 @@
     let elements = $state<CharacterElement[]>([]);
 
     let filteredCharacters = $derived(database.data
-      .toSorted((a, b) => a.name.localeCompare(b.name))
       .filter((character) =>
         (searchQuery.length === 0 || character.name.toLowerCase().includes(searchQuery.toLowerCase()))
-        && (elements.length === 0 || elements.includes(character.element))
-        && (excludedCharacter.length === 0 || !excludedCharacter.includes(character))
+        && (elements.length === 0 || elements.includes(CharacterElement[character.element] as unknown as number))
+        && (excludedCharacter.length === 0 || excludedCharacter.includes(character) === false)
       )
+      .toSorted((a, b) => a.name.localeCompare(b.name))
     );
 </script>
 
