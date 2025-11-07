@@ -116,7 +116,6 @@
         border: none;
         border-radius: 0.5rem;
         cursor: pointer;
-        font-weight: 600;
         transition: 0.2s;
     }
 
