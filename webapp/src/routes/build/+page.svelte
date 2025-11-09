@@ -123,7 +123,7 @@
       }
       else
       {
-        localBuilds.push(buildData);
+        localBuilds = [buildData, ...localBuilds];
       }
       localStorage.setItem(localStorageBuildsKey, JSON.stringify(localBuilds));
       addToast({ message: "Build saved!", type: "success" });
@@ -324,29 +324,23 @@
     <!-- <div class="potentials-container" in:fade={{ duration: 300, delay: 150 }} out:fade={{ duration: 150 }}> -->
     <div class="potentials-container">
         {#if editMode}
-            {#each [
-            {character: mainCharacter, showMain: true},
-            {character: supportCharacter1, showMain: false},
-            {character: supportCharacter2, showMain: false},
-            ] as data}
-            {#if data.character}
+            {#key `${mainCharacter?.id ?? ''}-${supportCharacter1?.id ?? ''}-${supportCharacter2?.id ?? ''}`}
+            {#each [mainCharacter, supportCharacter1, supportCharacter2] as character}
+            {#if character}
                 <BuildCollection
                     {showDesc}
                     {showBrief}
-                    title={data.character.name}
-                    character={data.character}
-                    showMain={data.showMain}
+                    title={character.name}
+                    character={character}
+                    showMain={mainCharacter !== undefined && character.id === mainCharacter.id}
                     activePotentialIds={selectedPotentials}
                     onClicked={createClickListener(selectedPotentials)}
                     />
             {/if}
             {/each}
+            {/key}
         {:else}
-            {#each [
-            mainCharacter,
-            supportCharacter1,
-            supportCharacter2,
-            ] as character}
+            {#each [mainCharacter, supportCharacter1, supportCharacter2] as character}
                 {#if character}
                     <h1 class="title">{character.name}</h1>
                     <Build

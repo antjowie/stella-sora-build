@@ -208,4 +208,4 @@ export async function generateDatabase(): Promise<Database> {
 }
 
 let db = await generateDatabase();
-await fs.writeFile("src/lib/database.json", JSON.stringify(db));
+await fs.writeFile("src/lib/database.json", JSON.stringify(db, null, 2));

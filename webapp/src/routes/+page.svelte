@@ -12,6 +12,8 @@
     import { fade } from "svelte/transition";
 
     let localBuilds = $state<BuildData[]>(getLocalStoredBuilds());
+    let reorderMode = $state(false);
+    let draggedIndex: number | null = null;
 
     $effect(() => {
       localStorage.setItem(localStorageBuildsKey, JSON.stringify(localBuilds));
@@ -121,11 +123,30 @@
             <p>No builds yet!</p>
         {:else}
         <div class="build-container">
-            <button onclick={exportBuilds}>Export all</button>
-            <button onclick={importBuilds}>Import all</button>
+            <button class="build-container-button" onclick={exportBuilds}>Export all</button>
+            <button class="build-container-button" onclick={importBuilds}>Import all</button>
+            <button class="build-container-button" onclick={() => reorderMode = !reorderMode}>
+                <input type="checkbox" bind:checked={reorderMode}/> Reorder mode
+            </button>
             <div class="build-grid">
-                {#each localBuilds as build (build.id)}
-                    <div class="build-card"
+                {#each localBuilds as build, index (build.id)}
+                    <div
+                        class="build-card {reorderMode ? 'draggable' : ''}"
+                        draggable={reorderMode}
+                        role="listitem"
+                        ondragstart={() => draggedIndex = index}
+                        ondragover={(event) => {
+                            event.preventDefault();
+                        }}
+                         ondrop={() => {
+                        if (draggedIndex !== null && draggedIndex !== index) {
+                            const updated = [...localBuilds];
+                            const [moved] = updated.splice(draggedIndex, 1);
+                            updated.splice(index, 0, moved);
+                            localBuilds = updated;
+                        }
+                        draggedIndex = null;
+                        }}
                         animate:flip={{duration: 300}}
                         out:fade={{duration: 300}}
                     >
@@ -257,7 +278,7 @@
         border-radius: 4px;
     }
 
-    .build-container > button {
+    .build-container > .build-container-button {
         padding: 1rem;
         margin: 1rem;
     }
@@ -288,6 +309,17 @@
         align-self: start;
     }
 
+    .build-card.draggable {
+      cursor: grab;
+      opacity: 0.95;
+      border: 2px dashed var(--primary);
+    }
+
+    .build-card.draggable:active {
+      cursor: grabbing;
+      opacity: 0.8;
+    }
+
     p.build-title {
         text-align: left;
         overflow: auto;
@@ -315,21 +347,21 @@
         gap: 0.5rem;
     }
 
-    .build-buttons-container > button {
+    .build-buttons-container > button  {
         background-color: var(--primary-bg-dark);
         width: 100%;
         height: 100%;
     }
 
-    button.build-edit:hover {
+    .build-container-button:hover {
         background-color: var(--primary-bg-darker);
     }
 
-    button.build-delete {
+    .build-delete {
         color: var(--red);
     }
 
-    button.build-delete:hover {
+    .build-delete:hover {
         color: var(--secondary);
         background-color: var(--red);
     }

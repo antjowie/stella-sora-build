@@ -166,7 +166,7 @@
         inset: 0;
 
         background: white;
-        filter:contrast(8) invert(100%) opacity(0.77);
+        filter:contrast(8) invert(100%) opacity(0.77) blur(0.5px);
         transform: scale(1.1);
         mix-blend-mode: screen;
 
