@@ -44,7 +44,11 @@ export const characterElementColor = [
 
 export function getElementIconUrl(element: CharacterElement): string {
   const name = CharacterElement[element];
-  return `${base}/elements/${name}.webp`;
+  return getElementIconUrlFromString(name);
+}
+
+export function getElementIconUrlFromString(elementString: string): string {
+  return `${base}/elements/${elementString}.webp`;
 }
 
 export enum PotentialRarity {

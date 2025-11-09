@@ -2,7 +2,7 @@
     import { browser } from "$app/environment";
     import { base, resolve } from "$app/paths";
     import landing from "$lib/assets/landing.webp";
-    import { encodeBuild } from "$lib/build";
+    import { encodeBuild, validate } from "$lib/build";
     import type { BuildData } from "$lib/buildData.types";
     import { database } from "$lib/database";
     import { localStorageBuildsKey } from "$lib/global";
@@ -12,15 +12,100 @@
     import { fade } from "svelte/transition";
 
     let localBuilds = $state<BuildData[]>(getLocalStoredBuilds());
+
+    $effect(() => {
+      localStorage.setItem(localStorageBuildsKey, JSON.stringify(localBuilds));
+    });
+
     function deleteBuild(buildId: string) {
       if (browser) {
         if (confirm("Are you sure you want to remove this build?")) {
           localBuilds = localBuilds.filter(b => b.id !== buildId);
-          localStorage.setItem(localStorageBuildsKey, JSON.stringify(localBuilds));
           addToast({ message: "Build removed!", type: "success" });
         }
       }
     }
+
+    function exportBuilds() {
+      if (browser) {
+        const builds = getLocalStoredBuilds();
+        const blob = new Blob([JSON.stringify(builds, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "builds.json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        addToast({ message: "Builds exported!", type: "success" });
+      }
+    }
+
+    function importBuilds() {
+      if (browser) {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "application/json";
+
+        input.onchange = async (event: Event) => {
+          const file = (event.target as HTMLInputElement).files?.[0];
+          if (!file) return;
+
+          try {
+            const text = await file.text();
+            let importedBuilds = JSON.parse(text);
+
+            if (!Array.isArray(importedBuilds)) {
+              throw new Error("Invalid format: expected a JSON array.");
+            }
+
+            let hasInvalidBuild = false;
+            for (let i = 0; i < importedBuilds.length; i++) {
+              try {
+                validate(importedBuilds[i]);
+              } catch (error) {
+                console.error(`Validation failed for build ${i + 1}:`, error);
+                importedBuilds.splice(i, 1);
+                i--;
+                if (!hasInvalidBuild) {
+                  addToast({
+                    message: `Some builds failed validation!`,
+                    type: "error",
+                  });
+                  hasInvalidBuild = true;
+                }
+              }
+            }
+
+            let existingBuilds = getLocalStoredBuilds();
+            for (let i = 0; i < existingBuilds.length; i++) {
+              const match = importedBuilds.findIndex((build) => build.id === existingBuilds[i].id);
+              if (match >= 0) {
+                // Replace existing build with imported one and remove it from the imported array
+                existingBuilds[i] = importedBuilds[match];
+                importedBuilds.splice(match, 1);
+              }
+            }
+
+            if (importedBuilds.length === 0) {
+              addToast({ message: "No new builds to import", type: "info" });
+              return;
+            }
+
+            localBuilds = [...importedBuilds, ...existingBuilds];
+            addToast({ message: "Builds imported!", type: "success" });
+          } catch (error) {
+            console.error("Import failed:", error);
+            addToast({ message: "Invalid format!", type: "error" });
+          }
+        };
+
+        input.click();
+      }
+    }
+
 </script>
 
 <div class="main-container">
@@ -35,7 +120,10 @@
         {#if localBuilds.length === 0}
             <p>No builds yet!</p>
         {:else}
-            <div class="build-container">
+        <div class="build-container">
+            <button onclick={exportBuilds}>Export all</button>
+            <button onclick={importBuilds}>Import all</button>
+            <div class="build-grid">
                 {#each localBuilds as build (build.id)}
                     <div class="build-card"
                         animate:flip={{duration: 300}}
@@ -67,6 +155,7 @@
                     </div>
                 {/each}
             </div>
+        </div>
         {/if}
 
     </div>
@@ -159,20 +248,28 @@
     }
 
     .build-container {
-        display: grid;
-        /* Don't know how to avoid hardcoding... Can't seem to infer from child.
-            Maybe that's just the css way */
-        grid-template-columns: repeat(auto-fill, minmax(240px, 22rem));
-        grid-template-rows: repeat(auto-fill, 11rem);
-        grid-gap: 1rem;
-        justify-content: center;
         width: 90%;
-        padding: 1rem;
+        /*padding: 1rem;*/
         overflow-y: scroll;
         height: 50vh;
         position: relative;
         background-color: rgba(from var(--primary-bg) r g b / 0.25);
         border-radius: 4px;
+    }
+
+    .build-container > button {
+        padding: 1rem;
+        margin: 1rem;
+    }
+
+    .build-grid {
+        display: grid;
+        /* Don't know how to avoid hardcoding... Can't seem to infer from child.
+            Maybe that's just the css way */
+        grid-template-columns: repeat(auto-fill, minmax(240px, 22rem));
+        /*grid-template-rows: repeat(auto-fill, 11rem);*/
+        grid-gap: 1rem;
+        justify-content: center;
     }
 
     .build-card {

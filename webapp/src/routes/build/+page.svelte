@@ -9,7 +9,7 @@
     import  {database, type Character } from "$lib/database";
     import { getLocalStoredBuilds, loadPreference } from "$lib/util";
     import { fade, fly } from "svelte/transition";
-    import { replaceState } from "$app/navigation";
+    import { afterNavigate, pushState, replaceState } from "$app/navigation";
     import { onMount, tick } from "svelte";
     import { addToast } from "$lib/toastStore";
     import { localStorageBuildsKey } from "$lib/global";
@@ -142,10 +142,12 @@
     // svelte-ignore non_reactive_update
     let descriptionElem: HTMLTextAreaElement;
 
-    function updateURL(data: BuildData)
+    function updateUrlAndCache(build: BuildData)
     {
       if (mounted === false) return
-      replaceState(page.url.pathname + "?&build=" + encodeBuild(data), "");
+      const data = encodeBuild(build);
+      replaceState(page.url.pathname + "?&build=" + data, "");
+      localStorage.setItem("cachedBuild", data);
     }
 
     // Save changes to URL when build data changes
@@ -157,27 +159,34 @@
       }
 
       selectedPotentialsViewMode = [];
-      updateURL(buildData);
+      updateUrlAndCache(buildData);
     });
 
-    onMount(async () => {
-      const buildJson = page.url.searchParams.get("build");
-      if (buildJson) {
-        try {
-          const build: BuildData = decodeBuild(buildJson);
-          const getChar = (id?: number): Character | undefined => database.data.find(c => c.id === id);
-          name = build.name;
-          description = build.description;
-          id = build.id;
-          mainCharacter = getChar(build.mainId);
-          supportCharacter1 = getChar(build.support1Id);
-          supportCharacter2 = getChar(build.support2Id);
-          selectedPotentials = build.potentialIds;
-          editMode = build.editMode;
-        } catch (error) {
-          addToast({ message: "Error loading build!", type: "error" });
-          console.error("Error decoding build:", error);
+    afterNavigate(async (navigation) => {
+      try {
+        let buildBase64;
+        // If we navigate back, the searchParams even though updated with updateState, they always return 0
+        // so we just use cached localStorage whenever we do a navigation
+        // popstate is on both forward and backward navigation
+        if (navigation.type === "popstate") buildBase64 = localStorage.getItem("cachedBuild");
+        else buildBase64 = page.url.searchParams.get("build");
+
+        if (buildBase64 !== null) {
+            const build: BuildData = decodeBuild(buildBase64);
+            const getChar = (id?: number): Character | undefined => database.data.find(c => c.id === id);
+            name = build.name;
+            description = build.description;
+            id = build.id;
+            mainCharacter = getChar(build.mainId);
+            supportCharacter1 = getChar(build.support1Id);
+            supportCharacter2 = getChar(build.support2Id);
+            selectedPotentials = build.potentialIds;
+            editMode = build.editMode;
         }
+
+      } catch (error) {
+        addToast({ message: "Error loading build!", type: "error" });
+        console.error("Error decoding build:", error);
       }
 
       // Prevent error in console
@@ -189,7 +198,7 @@
           supportCharacter2 === undefined) {
         editMode = true;
       }
-      updateURL(buildData);
+      updateUrlAndCache(buildData);
     });
 </script>
 

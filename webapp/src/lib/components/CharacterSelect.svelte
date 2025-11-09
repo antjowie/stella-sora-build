@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { database, CharacterElement, type Character } from "$lib/database";
+    import { database, CharacterElement, type Character, getElementIconUrlFromString } from "$lib/database";
     import Portrait from "$lib/components/Portrait.svelte";
+    import { getElementIconUrl } from "$lib/database";
 
     interface Props {
         excludedCharacters?: number[];
@@ -27,16 +28,16 @@
 
 <div class="main-container">
     <div class="filter-container">
-        <input type="text" placeholder="Search..." bind:value={searchQuery} />
+        <input class="filter-item" type="text" placeholder="Search..." bind:value={searchQuery} />
         {#each allElementsStrings as elemString}
-            <label class="toggle">
+            <label class="filter-item toggle">
                 <input
                     type="checkbox"
                     name="element"
                     value={elemString}
                     bind:group={elementStrings}
                 />
-                {elemString}
+                <img src={getElementIconUrlFromString(elemString)} alt={elemString} />
             </label>
         {/each}
     </div>
@@ -60,6 +61,25 @@
         align-items: center;
         margin-bottom: 1rem;
         gap: 0.5rem;
+    }
+
+    .filter-item {
+        display: flex;
+        align-items: center;
+        height: 2.5rem;
+    }
+
+    .toggle {
+        position: relative;
+        padding-right: 3.75rem;
+    }
+
+    .toggle img {
+        position: absolute;
+        top: 50%;
+        right: 6px;
+        width: 3rem;
+        transform: translateY(-50%);
     }
 
     .character-container {

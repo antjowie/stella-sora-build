@@ -43,14 +43,42 @@
     alt={CharacterElement[character.element]} />
 </div>
 
-
-
 <style>
     .button-wrapper {
-      position: relative;
-      display: block;
-      cursor: pointer;
-      aspect-ratio: 265/362;
+        position: relative;
+        display: block;
+        cursor: pointer;
+        aspect-ratio: 265/362;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+        transition: 0.2s;
+
+        &:hover {
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+            transform: scale(1.05);
+        }
+
+        &:active:hover {
+            transform: scale(0.9);
+        }
+    }
+
+    button:hover {
+        transform: scale(1.0);
+    }
+
+    button:active:hover {
+        transform: scale(1.0);
+    }
+
+    .element-icon {
+        position: absolute;
+        top: -0.5rem;
+        left: -0.5rem;
+        right: 0;
+        bottom: 0;
+        width: 3rem;
+        filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.2));
+        z-index: 5;
     }
 
     .button {
@@ -66,35 +94,35 @@
       overflow: hidden;
       font-weight: 600;
       padding: 0;
-    }
 
-    /* bottom and top*/
-    .button::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        height: 100%;
-        width: 100%;
-        background-position: top, bottom;
-        background-repeat: no-repeat;
-        background-size: 100% var(--border-radius), 100% var(--bottom-height);
-        pointer-events: none;
-        z-index: 2;
-    }
+      /* bottom and top*/
+      &::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          height: 100%;
+          width: 100%;
+          background-position: top, bottom;
+          background-repeat: no-repeat;
+          background-size: 100% var(--border-radius), 100% var(--bottom-height);
+          pointer-events: none;
+          z-index: 2;
+      }
 
-    /* extra dark border */
-    .button::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        height: 100%;
-        width: 100%;
-        background-position: bottom;
-        background-repeat: no-repeat;
-        background-size: 100% var(--border-radius);
-        filter: brightness(0.7);
-        pointer-events: none;
-        z-index: 4;
+      /* extra dark border */
+      &::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          height: 100%;
+          width: 100%;
+          background-position: bottom;
+          background-repeat: no-repeat;
+          background-size: 100% var(--border-radius);
+          filter: brightness(0.7);
+          pointer-events: none;
+          z-index: 4;
+      }
     }
 
     .button.grade-1::before {
@@ -141,6 +169,36 @@
         filter:contrast(8) invert(100%) opacity(0.77);
         transform: scale(1.1);
         mix-blend-mode: screen;
+
+        &::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, black, transparent 32.5%);
+        }
+
+        &::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+
+            --stop1: 10%;
+            --stop2: 75%;
+            --size: 7px;
+
+            background-image: radial-gradient(
+              circle at center,
+              black var(--stop1),
+              transparent var(--stop2)),
+            radial-gradient(
+              circle at center,
+              black var(--stop1),
+              transparent var(--stop2))
+            ;
+            background-size: var(--size) var(--size);
+            background-position: 0 0, calc(var(--size) * 0.5) calc(var(--size) * 0.5);
+            mask-image: linear-gradient(to top, rgb(0 0 0), rgb(0 0 0 / 0) 60%);
+        }
     }
 
     @media (max-width: 768px) {
@@ -156,66 +214,6 @@
       .character-info {
           font-size: 0.85rem !important;
       }
-    }
-
-    .halftone::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to top, black, transparent 32.5%);
-    }
-
-    .halftone::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-
-        --stop1: 10%;
-        --stop2: 75%;
-        --size: 7px;
-
-        background-image: radial-gradient(
-          circle at center,
-          black var(--stop1),
-          transparent var(--stop2)),
-        radial-gradient(
-          circle at center,
-          black var(--stop1),
-          transparent var(--stop2))
-        ;
-        background-size: var(--size) var(--size);
-        background-position: 0 0, calc(var(--size) * 0.5) calc(var(--size) * 0.5);
-        mask-image: linear-gradient(to top, rgb(0 0 0), rgb(0 0 0 / 0) 60%);
-    }
-    .button-wrapper {
-        transition: 0.2s;
-    }
-
-    .button-wrapper:hover {
-        transform: scale(1.05);
-    }
-
-    .button-wrapper:active:hover {
-        transform: scale(0.9);
-    }
-
-    button:hover {
-        transform: scale(1.0);
-    }
-
-    button:active:hover {
-        transform: scale(1.0);
-    }
-
-    .element-icon {
-        position: absolute;
-        top: -0.5rem;
-        left: -0.5rem;
-        right: 0;
-        bottom: 0;
-        width: 3rem;
-        filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.2));
-        z-index: 5;
     }
 
     .character-info {
