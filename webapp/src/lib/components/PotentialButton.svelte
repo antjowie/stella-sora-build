@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { base } from "$app/paths";
   import { potentialRarityColor } from "$lib/database";
   import type { Potential } from "$lib/database.types";
 
@@ -20,14 +21,18 @@
       .replace(/##([^#]+)#[^#]*#/g, '$1') // Replace ##content#xxxx# patterns with just the content
     ;
   };
+
+  let active = $derived(activePotentialIds.includes(potential.id));
+
 </script>
 
 <button
     class="potential
     { onClicked ?
-      (activePotentialIds.includes(potential.id) ? "active" : "inactive")
+      (active ? "active" : "inactive")
       : "default"}"
     style:background-color={potentialRarityColor[potential.rarity]}
+    style:border-image="url({`${base}/potentialBorder${active ? "Active" : ""}.svg`}) 15% / 32px / 0px stretch"
     onclick={() => { if(onClicked) onClicked(potential.id); }}
 >
     <p>{potential.name}</p>
@@ -43,17 +48,13 @@
     }
 
     .potential {
-        border: 1px solid #ccc;
-        padding: 1rem;
-        border-radius: 8px;
-        background-color: white;
-        overflow: hidden;
-        transition: 0.2s;
-        height: 100%;
         display: flex;
         flex-direction: column;
         align-content: start;
         user-select: text;
+        transition: 0.2s;
+        padding: 20px;
+        filter: drop-shadow(0px 4px 0px rgba(0, 0, 0, 0.2));
     }
 
     .potential > p:first-child {
