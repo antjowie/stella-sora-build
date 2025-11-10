@@ -258,7 +258,7 @@
           { title: "Support", character: supportCharacter2, role: 2, },
         ] as data}
         <div>
-            <h3>{data.title}</h3>
+            <h2>{data.title}</h2>
             {#if editMode === false && data.character}
                 <div class="character-selector-size">
                     <Portrait character={data.character}/>
@@ -393,7 +393,7 @@
     }
 
     .text-container {
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
     }
 
     .text-container label {
@@ -420,12 +420,11 @@
         display: flex;
         flex-wrap: wrap;
         gap: 1rem;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
     }
 
-    .character-container h3 {
-        margin-top: 0;
-        margin-bottom: 0;
+    .character-container h2 {
+        margin-bottom: 0.5rem;
     }
 
     .character-selector-size {
