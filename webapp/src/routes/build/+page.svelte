@@ -160,6 +160,7 @@
 
       selectedPotentialsViewMode = [];
       updateUrlAndCache(buildData);
+      document.title = page.data.title .replace("- Build", "- " + (name.length == 0 ? "Build" : name));
     });
 
     afterNavigate(async (navigation) => {

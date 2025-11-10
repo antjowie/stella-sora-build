@@ -39,7 +39,7 @@
 	</main>
 
 	<footer>
-		<a href="https://github.com/antjowie/stella-sora-build">GitHub</a>
+		<a href="https://github.com/antjowie/stella-sora-build" target="_blank">GitHub</a>
 	</footer>
 </div>
 
