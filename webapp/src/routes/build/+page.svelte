@@ -9,8 +9,8 @@
     import  {database, type Character } from "$lib/database";
     import { getLocalStoredBuilds, loadPreference } from "$lib/util";
     import { fade, fly } from "svelte/transition";
-    import { afterNavigate, pushState, replaceState } from "$app/navigation";
-    import { onMount, tick } from "svelte";
+    import { afterNavigate, replaceState } from "$app/navigation";
+    import { tick } from "svelte";
     import { addToast } from "$lib/toastStore";
     import { localStorageBuildsKey } from "$lib/global";
     import { marked } from "marked";
@@ -145,9 +145,17 @@
     function updateUrlAndCache(build: BuildData)
     {
       if (mounted === false) return
-      const data = encodeBuild(build);
-      replaceState(page.url.pathname + "?&build=" + data, "");
-      localStorage.setItem("cachedBuild", data);
+      try
+      {
+        const data = encodeBuild(build);
+        replaceState(page.url.pathname + "?&build=" + data, "");
+        localStorage.setItem("cachedBuild", data);
+      }
+      catch (error)
+      {
+        addToast({message: "Error saving build!", type: "error"});
+        console.error("Error saving build:",error);
+      }
     }
 
     // Save changes to URL when build data changes
