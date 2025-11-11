@@ -24,8 +24,12 @@ export function validate(buildData: BuildData) {
 
 export function decodeBuild(data: string): BuildData {
   try {
-    const binary = Uint8Array.from(atob(data), (c) => c.charCodeAt(0));
-    // Support UTF-8, like emojis
+    const padded = data.padEnd(
+      data.length + ((4 - (data.length % 4)) % 4),
+      "=",
+    );
+    const base64 = padded.replace(/-/g, "+").replace(/_/g, "/");
+    const binary = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
     const decoded = new TextDecoder().decode(binary);
     const build: BuildData = JSON.parse(decoded);
     validate(build);
@@ -40,5 +44,5 @@ export function encodeBuild(buildData: BuildData): string {
   const json = JSON.stringify(buildData);
   const utf8Bytes = new TextEncoder().encode(json);
   const base64 = btoa(String.fromCharCode(...utf8Bytes));
-  return base64;
+  return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }

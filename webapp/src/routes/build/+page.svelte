@@ -14,6 +14,11 @@
     import { addToast } from "$lib/toastStore";
     import { localStorageBuildsKey } from "$lib/global";
     import { marked } from "marked";
+    import DOMPurify from "dompurify";
+    // Only allow markdown so user can't run arbitrary code
+    marked.use({
+      renderer: {html: () => ""}
+    });
     import Portrait from "$lib/components/Portrait.svelte";
 
     let showCharacterModal = $state(false);
@@ -245,7 +250,7 @@
         <label for="description">Description (markdown):</label>
         <textarea
             id="description"
-            maxlength="500"
+            maxlength="2500"
             bind:value={description}
             bind:this={descriptionElem}
             placeholder="Enter description..."
@@ -255,7 +260,7 @@
     {:else}
     <div class="text-container">
         <h2>{name}</h2>
-        <p>{@html marked(description)}</p>
+        <p>{@html DOMPurify.sanitize(marked(description, {async: false}))}</p>
     </div>
     {/if}
 
