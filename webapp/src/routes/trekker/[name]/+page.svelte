@@ -71,7 +71,7 @@
         Show Brief
     </label>
 </div>
-<BuildCollection {character} {showDesc} {showBrief} {showMain} />
+<BuildCollection {character} {showDesc} {showBrief} {showMain} editMode={false} />
 {/if}
 
 <style>

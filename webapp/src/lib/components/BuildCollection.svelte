@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Character } from "$lib/database";
+  import { PotentialRarity, type Character } from "$lib/database";
   import { fly } from "svelte/transition";
   import Build from "./Build.svelte";
 
@@ -11,16 +11,26 @@
     title?: string;
     activePotentialIds?: number[];
     onClicked?: (id: number) => void;
+    editMode: boolean;
+    onLevelChanged?: (id: number, level: number) => void;
+    levelMap?: [number, number][];
   };
 
-  let { character, showDesc, showBrief, showMain, title = "", activePotentialIds = [], onClicked }: Props = $props();
+  let { character, showDesc, showBrief, showMain, title = "", activePotentialIds = [], onClicked, editMode, onLevelChanged, levelMap = [] }: Props = $props();
 
-  const data = $derived({
-     showDesc,
-     showBrief,
-     character,
-     activePotentialIds,
-     onClicked,
+  let blockedPotentialIds: number[] = $state([]);
+
+  let data = $derived({
+    showDesc,
+    showBrief,
+    character,
+    activePotentialIds,
+    onClicked,
+    editMode,
+    onLevelChanged,
+    levelMap,
+    blockedPotentialIds,
+    blockClickReason:"Can only select 2 main potentials"
   });
 
   const build1 = $derived({buildIndex: 1, isMain: true, ...data});
@@ -29,6 +39,19 @@
   const build4 = $derived({buildIndex: 1, isMain: false, ...data});
   const build5 = $derived({buildIndex: 2, isMain: false, ...data});
   const build6 = $derived({buildIndex: 3, isMain: false, ...data});
+
+  $effect(() => {
+      const activeEpicPotentials =
+        activePotentialIds.
+          filter(id => character.potentials.find(p => p.id === id)?.rarity === PotentialRarity.Main);
+      blockedPotentialIds = [];
+      if (activeEpicPotentials.length >= 2) {
+        const epicPotentials = character.potentials.filter(id => id.rarity === PotentialRarity.Main);
+        blockedPotentialIds = epicPotentials
+          .filter(p => activeEpicPotentials.includes(p.id) === false)
+          .map(p => p.id);
+      }
+  });
 </script>
 
 {#key showMain}

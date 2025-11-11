@@ -54,7 +54,7 @@ export function getElementIconUrlFromString(elementString: string): string {
 export enum PotentialRarity {
   Common = 1,
   Rare = 2,
-  Epic = 3,
+  Main = 3,
 }
 
 export const potentialRarityColor = ["", "#fbdb66", "#8fe5f7", "#ff9fe3"];

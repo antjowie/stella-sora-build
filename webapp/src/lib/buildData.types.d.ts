@@ -13,6 +13,7 @@ export interface BuildData {
   support1Id?: number;
   support2Id?: number;
   potentialIds: number[];
+  levelMap?: [number, number][];
   editMode: boolean;
   [k: string]: unknown;
 }

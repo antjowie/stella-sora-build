@@ -1,0 +1,170 @@
+[
+  {
+    "name": "Chitose 😬 lvl test",
+    "description": "The strongest Chitose build that exists",
+    "id": "d7523f90-fb66-4339-9b01-bd200f54ca5d",
+    "mainId": 144,
+    "support1Id": 127,
+    "support2Id": 125,
+    "potentialIds": [
+      514401,
+      514402,
+      514407,
+      514405,
+      514406,
+      512721,
+      512722,
+      512725,
+      512741,
+      512742,
+      512543,
+      512533,
+      512521,
+      512522,
+      512526,
+      512525
+    ],
+    "levelMap": [
+      [
+        514406,
+        4
+      ],
+      [
+        514402,
+        4
+      ],
+      [
+        514405,
+        3
+      ],
+      [
+        514407,
+        3
+      ],
+      [
+        514409,
+        4
+      ],
+      [
+        512721,
+        2
+      ],
+      [
+        512727,
+        4
+      ]
+    ],
+    "editMode": false
+  },
+  {
+    "name": "OP AA Chitose 😬",
+    "description": "The strongest Chitose build that exists",
+    "id": "6f889fd6-bfc4-4c02-947e-38d4f48c8dbb",
+    "mainId": 144,
+    "support1Id": 127,
+    "support2Id": 125,
+    "potentialIds": [
+      514401,
+      514402,
+      514407,
+      514405,
+      514406,
+      512721,
+      512722,
+      512725,
+      512741,
+      512742,
+      512543,
+      512533,
+      512521,
+      512522,
+      512526,
+      512525
+    ],
+    "editMode": false
+  },
+  {
+    "name": "OP Chitose AA",
+    "description": "AA based build that works for bossfights as well as aoe content due to large attacks from Freesia",
+    "id": "2158806d-3ab0-49d3-b4fd-306eefcd25fc",
+    "mainId": 144,
+    "support1Id": 127,
+    "support2Id": 125,
+    "potentialIds": [
+      514401,
+      514402,
+      514407,
+      514405,
+      514406,
+      512721,
+      512722,
+      512725,
+      512741,
+      512742,
+      512543,
+      512533,
+      512521,
+      512522,
+      512526,
+      512525
+    ],
+    "editMode": false
+  },
+  {
+    "name": "My Build",
+    "description": "My description",
+    "id": "6bddc352-3a8a-482c-9873-0bf2e18c07f2",
+    "potentialIds": [],
+    "editMode": true
+  },
+  {
+    "name": "Here is a name",
+    "description": "My description",
+    "test": "test",
+    "id": "70862eb1-a4c1-48f1-8ae6-ba5cb9b7d427",
+    "mainId": 103,
+    "potentialIds": [
+      510301,
+      510302,
+      510306
+    ],
+    "editMode": true
+  },
+  {
+    "name": "mmmmmmmmmmmmmmmmmmmmmm",
+    "description": "My description",
+    "id": "6b89ddfb-8da7-4694-af7e-067de2162e20",
+    "mainId": 103,
+    "support1Id": 120,
+    "support2Id": 144,
+    "potentialIds": [
+      510301,
+      510302,
+      510309,
+      510312,
+      510341,
+      510342,
+      512027,
+      512024,
+      512029,
+      514422,
+      514424,
+      514433
+    ],
+    "editMode": true
+  },
+  {
+    "name": "My Build",
+    "description": "My description",
+    "id": "36ec9b73-949a-4bbd-8b2f-09905139b9e4",
+    "potentialIds": [],
+    "editMode": true
+  },
+  {
+    "name": "My Build",
+    "description": "My description",
+    "id": "b150ae05-a89a-4285-8d44-1ae464ed6f03",
+    "potentialIds": [],
+    "editMode": true
+  }
+]

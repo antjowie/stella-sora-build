@@ -6,7 +6,7 @@
     import Build from "$lib/components/Build.svelte";
     import BuildCollection from "$lib/components/BuildCollection.svelte";
     import CharacterSelectModal from "$lib/components/CharacterSelectModal.svelte";
-    import  {database, type Character } from "$lib/database";
+    import { database, type Character, type Potential } from "$lib/database";
     import { loadPreference } from "$lib/util";
     import { fade, fly } from "svelte/transition";
     import { afterNavigate, replaceState } from "$app/navigation";
@@ -47,6 +47,8 @@
     let showDesc = $state(loadPreference("showDesc", true));
     let showBrief = $state(loadPreference("showBrief", true));
     let id: string = $state(crypto.randomUUID());
+    // Each entry is a pair of [id, level]
+    let levelMap: [number, number][] = $state([]);
     let buildData: BuildData = $derived({
       name,
       description,
@@ -55,6 +57,7 @@
       support1Id: supportCharacter1?.id,
       support2Id: supportCharacter2?.id,
       potentialIds: selectedPotentials,
+      levelMap,
       editMode
     });
 
@@ -72,12 +75,14 @@
       }
 
       // We swapped characters, purge all ids that are not in the new character's potentials
-      const contains = (id: number, character: Character | undefined) => character !== undefined && character.potentials.findIndex(p => p.id === id) >= 0;
-      selectedPotentials = selectedPotentials
-        .filter(id =>
-          contains(id, mainCharacter) ||
-          contains(id, supportCharacter1) ||
-          contains(id, supportCharacter2));
+      let availablePotentials: Potential[] = [];
+      if (mainCharacter) availablePotentials = [...availablePotentials, ...mainCharacter.potentials];
+      if (supportCharacter1) availablePotentials = [...availablePotentials, ...supportCharacter1.potentials];
+      if (supportCharacter2) availablePotentials = [...availablePotentials, ...supportCharacter2.potentials];
+      let availableIds = availablePotentials.map(potential => potential.id);
+
+      selectedPotentials = selectedPotentials.filter(id => availableIds.includes(id));
+      levelMap = levelMap.filter(([id, level]) => availableIds.includes(id));
       showCharacterModal = false;
     }
 
@@ -101,6 +106,7 @@
         supportCharacter1 = undefined;
         supportCharacter2 = undefined;
         selectedPotentials = [];
+        levelMap = [];
         addToast({ message: "Build cleared!", type: "success" });
       }
     }
@@ -134,6 +140,18 @@
       addToast({ message: "Build saved!", type: "success" });
     }
 
+    function onLevelChanged(id: number, level: number) {
+      let idx = levelMap.findIndex(([id2, level]) => id === id2);
+      if (idx >= 0)
+      {
+        levelMap[idx] = [id, level];
+      }
+      else if (levelMap)
+      {
+        levelMap.push([id, level]);
+      }
+    }
+
     // Save to localStorage when values change
     $effect(() => {
       if (browser) {
@@ -144,9 +162,6 @@
 
     // Otherwise we get error in console
     let mounted: boolean = false;
-    // svelte-ignore non_reactive_update
-    let descriptionElem: HTMLTextAreaElement;
-
     function updateUrlAndCache(build: BuildData)
     {
       if (mounted === false) return
@@ -164,6 +179,7 @@
     }
 
     // Save changes to URL when build data changes
+    let descriptionElem: HTMLTextAreaElement | undefined = $state();
     $effect(() => {
       if (descriptionElem)
       {
@@ -195,6 +211,7 @@
             supportCharacter1 = getChar(build.support1Id);
             supportCharacter2 = getChar(build.support2Id);
             selectedPotentials = build.potentialIds;
+            levelMap = build.levelMap ?? [];
             editMode = build.editMode;
         }
 
@@ -227,6 +244,7 @@
             Edit Mode
         </label>
         <button onclick={saveBuild}>Save Build</button>
+        <button onclick={() => {id = crypto.randomUUID(); saveBuild()}}>Save as new Build</button>
         <button onclick={copyBuildURLToClipboard}>Copy Build URL</button>
     {#if editMode}
         <button transition:fade={{duration: 300}} class="reset-button" onclick={resetBuild}>Reset Build</button>
@@ -344,6 +362,9 @@
                 <BuildCollection
                     {showDesc}
                     {showBrief}
+                    {editMode}
+                    {onLevelChanged}
+                    {levelMap}
                     title={character.name}
                     character={character}
                     showMain={mainCharacter !== undefined && character.id === mainCharacter.id}
@@ -358,13 +379,15 @@
                 {#if character}
                     <h1 class="title">{character.name}</h1>
                     <Build
+                        {showBrief}
+                        {showDesc}
+                        {editMode}
+                        {levelMap}
                         character={character}
                         overrideTitle=""
                         overridePotentialIds={selectedPotentials}
                         activePotentialIds={selectedPotentialsViewMode}
                         onClicked={createClickListener(selectedPotentialsViewMode)}
-                        {showBrief}
-                        {showDesc}
                     />
                 {/if}
             {/each}

@@ -28,6 +28,15 @@
         "type": "integer"
       }
     },
+    "levelMap": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": [{ "type": "integer" }, { "type": "integer" }],
+        "minItems": 2,
+        "maxItems": 2
+      }
+    },
     "editMode": {
       "type": "boolean"
     }
