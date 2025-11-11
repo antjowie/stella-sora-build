@@ -14,4 +14,5 @@ export interface BuildData {
   support2Id?: number;
   potentialIds: number[];
   editMode: boolean;
+  [k: string]: unknown;
 }

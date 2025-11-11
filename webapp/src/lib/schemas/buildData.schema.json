@@ -3,7 +3,6 @@
   "title": "BuildData",
   "type": "object",
   "required": ["name", "description", "id", "potentialIds", "editMode"],
-  "additionalProperties": false,
   "properties": {
     "name": {
       "type": "string"

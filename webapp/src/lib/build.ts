@@ -1,6 +1,8 @@
 import Ajv from "ajv";
 import type { BuildData } from "./buildData.types";
 import buildDataSchema from "$lib/schemas/buildData.schema.json";
+import { browser } from "$app/environment";
+import { localStorageBuildsKey } from "./global";
 const ajv = new Ajv();
 const ajvValidate = ajv.compile(buildDataSchema);
 
@@ -14,8 +16,8 @@ export function validate(buildData: BuildData) {
   }
   if (!ajvValidate(buildData)) {
     throw new Error(
-      "Invalid build data: \n" +
-        buildData +
+      "Invalid build data:\n" +
+        JSON.stringify(buildData, null, 2) +
         "\nErrors:\n" +
         ajv.errorsText(ajvValidate.errors, { separator: "\n" }),
     );
@@ -45,4 +47,11 @@ export function encodeBuild(buildData: BuildData): string {
   const utf8Bytes = new TextEncoder().encode(json);
   const base64 = btoa(String.fromCharCode(...utf8Bytes));
   return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+export function getLocalStoredBuilds(): BuildData[] {
+  if (browser) {
+    return JSON.parse(localStorage.getItem(localStorageBuildsKey) || "[]");
+  }
+  return [];
 }

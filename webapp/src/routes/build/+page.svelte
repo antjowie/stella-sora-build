@@ -1,13 +1,13 @@
 <script lang="ts">
     import { browser } from "$app/environment";
     import { page } from "$app/state";
-    import { decodeBuild, encodeBuild } from "$lib/build";
+    import { decodeBuild, encodeBuild, getLocalStoredBuilds } from "$lib/build";
     import type { BuildData } from "$lib/buildData.types";
     import Build from "$lib/components/Build.svelte";
     import BuildCollection from "$lib/components/BuildCollection.svelte";
     import CharacterSelectModal from "$lib/components/CharacterSelectModal.svelte";
     import  {database, type Character } from "$lib/database";
-    import { getLocalStoredBuilds, loadPreference } from "$lib/util";
+    import { loadPreference } from "$lib/util";
     import { fade, fly } from "svelte/transition";
     import { afterNavigate, replaceState } from "$app/navigation";
     import { tick } from "svelte";

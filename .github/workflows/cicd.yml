@@ -2,6 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
+  pull_request:
     branches: ["master"]
   workflow_dispatch:
   workflow_call:
@@ -33,11 +34,19 @@ jobs:
         working-directory: ./webapp
         run: npm ci
 
+      - name: Install Playwright Browsers
+        working-directory: ./webapp
+        run: npx playwright install --with-deps
+
       - name: Build site
         working-directory: ./webapp
         env:
           BASE_PATH: /${{ github.event.repository.name }}
         run: npm run build
+
+      - name: Run tests
+        working-directory: ./webapp
+        run: npm test
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -50,6 +59,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
       - name: Deploy to GitHub Pages
         id: deployment

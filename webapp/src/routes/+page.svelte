@@ -7,7 +7,7 @@
     import { database } from "$lib/database";
     import { localStorageBuildsKey } from "$lib/global";
     import { addToast } from "$lib/toastStore";
-    import { getLocalStoredBuilds } from "$lib/util";
+    import { getLocalStoredBuilds } from "$lib/build";
     import { flip } from "svelte/animate";
     import { fade } from "svelte/transition";
 
