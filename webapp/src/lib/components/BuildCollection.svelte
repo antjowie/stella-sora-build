@@ -30,7 +30,7 @@
     onLevelChanged,
     levelMap,
     blockedPotentialIds,
-    blockClickReason:"Can only select 2 main potentials"
+    blockClickReason:"Can only select 2 main potentials!"
   });
 
   const build1 = $derived({buildIndex: 1, isMain: true, ...data});

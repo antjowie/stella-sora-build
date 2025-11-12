@@ -3,6 +3,10 @@
   import { PotentialRarity, potentialRarityColor } from "$lib/database";
   import type { Potential } from "$lib/database.types";
   import { addToast } from "$lib/toastStore";
+  import potentialBorder from "$lib/assets/borders/potential-border.webp";
+  import potentialBorderActive from "$lib/assets/borders/potential-border-active.webp";
+  import potentialBorderEdged from "$lib/assets/borders/potential-border-edged.webp";
+  import potentialBorderEdgedActive from "$lib/assets/borders/potential-border-edged-active.webp";
 
   interface Props {
     potential: Potential;
@@ -96,6 +100,12 @@
        }
      }
   }
+
+  const scale = 0.4;
+  const borderImage = $derived(showDesc || editMode ?
+    `url("${active ? potentialBorderActive : potentialBorder}") 80 fill / ${scale * 80}px`:
+    `url("${active ? potentialBorderEdgedActive : potentialBorderEdged}") 80 80 80 205 fill / ${scale * 80}px ${scale * 80}px ${scale * 80}px ${scale * 205}px`);
+  const showDescLayout = $derived(showDesc || editMode);
 </script>
 
 <button
@@ -105,17 +115,18 @@
       (active ? "active" : "inactive")
       : "default"}"
     style:--color={potentialRarityColor[potential.rarity]}
-    style:border-image="url({`${base}/potential-border${active ? "-active" : ""}.svg`}) 15% / var(--border-size) / 0px stretch"
+    style:border-image={borderImage}
+    style:padding="28px"
     onclick={() => { handleOnClick(); }}
 >
+    <!-- Put name first or after level based on layout for proper selection logic -->
+    {#if showDescLayout}
     <p class="name">
-        {#if showDesc === false}
-        <span>Lv. {level} </span>
-        {/if}
         <span>{potential.name}</span>
     </p>
-    <div class="level {editMode || showDesc ? "showDesc" : "notShowDesc"}">
-        <span>Lv. {level}</span>
+    {/if}
+    <div class="level {showDescLayout ? "showDesc" : "notShowDesc"}">
+        Lv. {level}
         {#if editMode}
         <div class="edit level">
             <div class={level == 1 ? "disabled" : ""} onclick={(event) => { handleLevelChange(event); }}>−−</div>
@@ -126,6 +137,11 @@
         </div>
         {/if}
     </div>
+    {#if showDescLayout === false}
+    <p class="name">
+        <span>{potential.name}</span>
+    </p>
+    {/if}
 {#if showDesc}
     <p class="description">{replaceText(showBrief ? potential.descShort : potential.descLong)}</p>
 {/if}
@@ -153,10 +169,17 @@
         flex-direction: column;
         align-content: start;
         user-select: text;
-        transition: 0.2s;
+        transition: transform 0.2s;
         padding: var(--padding);
         background-color: var(--color);
-        filter: drop-shadow(0px 4px 0px rgba(0, 0, 0, 0.2));
+
+        /* To add radius the border-image */
+        mask-image: radial-gradient(circle at center, black 99%, transparent 100%);
+        mask-composite: intersect;
+        border-radius: 5px;
+        -webkit-mask-image: radial-gradient(circle at center, black 99%, transparent 100%);
+        -webkit-mask-composite: destination-in;
+        /*filter: drop-shadow(0px 4px 0px rgba(0, 0, 0, 0.2));*/
     }
 
     .potential .name {
@@ -168,23 +191,26 @@
         position: relative;
         font-weight: 700;
         align-self: center;
-        background-color: white;
-        user-select: none;
     }
 
     .potential .level.showDesc {
         margin: 0.5rem 0 0 0;
         width: 80%;
+        background-color: white;
     }
 
     .potential .level.notShowDesc {
-        /* For now we hide this, need to fix the visuals */
-        visibility: hidden;
         position: absolute;
-        top: 0;
-        left: 0;
+        top: 5px;
+        left: 2px;
         width: 64px;
         height: calc(var(--padding));
+    }
+
+    .potential.active .level.notShowDesc {
+        color: white !important;
+        /* Not sure if it fits but if it's to unreadable we can add shadow */
+        /*text-shadow: 0 0 2px var(--primary);*/
     }
 
     .potential .edit {
