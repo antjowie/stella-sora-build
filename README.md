@@ -1,6 +1,6 @@
 [![CICD](https://github.com/antjowie/stella-sora-build/actions/workflows/cicd.yml/badge.svg)](https://github.com/antjowie/stella-sora-build/actions/workflows/cicd.yml)
 # Stella Sora build
-A [website](https://stellabuilds.pages.com) to create, store and share custom builds for Stella Sora, as well as view potentials of all Trekkers.
+A [website](https://stellabuilds.pages.dev) to create, store and share custom builds for Stella Sora, as well as view potentials of all Trekkers.
 
 ## Feedback/Feature requests
 If you have any feedback or feature requests, please create an issue on the [GitHub repository](https://github.com/antjowie/stella-sora-build/issues).

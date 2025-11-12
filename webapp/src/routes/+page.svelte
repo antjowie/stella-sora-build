@@ -5,7 +5,7 @@
     import { encodeBuild, validate } from "$lib/build";
     import type { BuildData } from "$lib/buildData.types";
     import { database } from "$lib/database";
-    import { localStorageBuildsKey } from "$lib/global";
+    import { localStorageBuildsKey, title } from "$lib/global";
     import { addToast } from "$lib/toastStore";
     import { getLocalStoredBuilds } from "$lib/build";
     import { flip } from "svelte/animate";
@@ -113,7 +113,7 @@
 <div class="main-container">
     <img class="background-image"  src={landing} alt="Landing" fetchpriority="high"/>
     <div class="text-container">
-        <h1>Stella Sora Build</h1>
+        <h1>{title}</h1>
         <h2>Browse Trekker potentials and create custom builds to share!</h2>
         <div class="button-container">
             <a class="button primary" href={resolve("/build")}>Create a build</a>

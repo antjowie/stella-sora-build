@@ -1,5 +1,5 @@
 import { database } from "$lib/database";
-import { url } from "$lib/global";
+import { title, url } from "$lib/global";
 import type { EntryGenerator } from "./$types";
 
 export const prerender = true;
@@ -18,7 +18,7 @@ export async function load({ params }) {
   }
 
   return {
-    title: `Stella Sora Build - ${character.name}`,
+    title: `${title} - ${character.name}`,
     description: `View builds and potentials for ${character.name} in Stella Sora`,
     ogImage: `${url}/${character.portraitUrl.replace(/^([^\/]*\/){2}/, "")}`,
   };
