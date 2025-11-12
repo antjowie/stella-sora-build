@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "npm run generate:database && vite dev",
     "build": "npm run generate:database && vite build",
-    "build:github": "npx cross-env BASE_PATH=/stella-sora-build npm run build",
     "preview": "npm run generate:database && vite preview",
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -18,7 +17,7 @@
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^7.0.0",
-    "@sveltejs/adapter-static": "^3.0.10",
+    "@sveltejs/adapter-cloudflare": "^7.2.4",
     "@sveltejs/kit": "^2.47.1",
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
     "@types/node": "^24.10.0",

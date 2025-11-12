@@ -64,6 +64,11 @@ jobs:
           key: last-commit-cache-${{ steps.get_commit.outputs.latest_commit }}
 
   trigger-deploy:
+    runs-on: ubuntu-latest
     needs: poll-external-repo
     if: needs.poll-external-repo.outputs.changed == 'true'
-    uses: ./.github/workflows/cicd.yml
+    steps:
+      - name: Send webhook
+        run: curl -X POST "$CLOUDFLARE_DEPLOY_HOOK"
+        env:
+          CLOUDFLARE_DEPLOY_HOOK: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}

@@ -108,6 +108,11 @@
   const showDescLayout = $derived(showDesc || editMode);
 </script>
 
+<link rel="preload" as="image" href="{potentialBorder}"/>
+<link rel="preload" as="image" href="{potentialBorderActive}"/>
+<link rel="preload" as="image" href="{potentialBorderEdged}"/>
+<link rel="preload" as="image" href="{potentialBorderEdgedActive}"/>
+
 <button
     class="potential
     { onClicked && blockClick ? "disabled" : ""}
