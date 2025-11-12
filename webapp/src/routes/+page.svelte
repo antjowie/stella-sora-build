@@ -2,14 +2,16 @@
     import { browser } from "$app/environment";
     import { base, resolve } from "$app/paths";
     import landing from "$lib/assets/landing.webp";
-    import { encodeBuild, validate } from "$lib/build";
+    import { decodeJson, encodeJson, validate } from "$lib/build";
     import type { BuildData } from "$lib/buildData.types";
     import { database } from "$lib/database";
-    import { localStorageBuildsKey } from "$lib/global";
+    import { localStorageBuildsKey, title } from "$lib/global";
     import { addToast } from "$lib/toastStore";
     import { getLocalStoredBuilds } from "$lib/build";
     import { flip } from "svelte/animate";
     import { fade } from "svelte/transition";
+    import { onMount } from "svelte";
+    import { page } from "$app/state";
 
     let localBuilds = $state<BuildData[]>(getLocalStoredBuilds());
     let reorderMode = $state(false);
@@ -55,65 +57,81 @@
           const file = (event.target as HTMLInputElement).files?.[0];
           if (!file) return;
 
-          try {
-            const text = await file.text();
-            let importedBuilds = JSON.parse(text);
-
-            if (!Array.isArray(importedBuilds)) {
-              throw new Error("Invalid format: expected a JSON array.");
-            }
-
-            let hasInvalidBuild = false;
-            for (let i = 0; i < importedBuilds.length; i++) {
-              try {
-                validate(importedBuilds[i]);
-              } catch (error) {
-                console.error(`Validation failed for build ${i + 1}:`, error);
-                importedBuilds.splice(i, 1);
-                i--;
-                if (!hasInvalidBuild) {
-                  addToast({
-                    message: `Some builds failed validation!`,
-                    type: "error",
-                  });
-                  hasInvalidBuild = true;
-                }
-              }
-            }
-
-            let existingBuilds = getLocalStoredBuilds();
-            for (let i = 0; i < existingBuilds.length; i++) {
-              const match = importedBuilds.findIndex((build) => build.id === existingBuilds[i].id);
-              if (match >= 0) {
-                // Replace existing build with imported one and remove it from the imported array
-                existingBuilds[i] = importedBuilds[match];
-                importedBuilds.splice(match, 1);
-              }
-            }
-
-            if (importedBuilds.length === 0) {
-              addToast({ message: "No new builds to import", type: "info" });
-              return;
-            }
-
-            localBuilds = [...importedBuilds, ...existingBuilds];
-            addToast({ message: "Builds imported!", type: "success" });
-          } catch (error) {
-            console.error("Import failed:", error);
-            addToast({ message: "Invalid format!", type: "error" });
-          }
+          const text = await file.text();
+          let importedBuilds: BuildData[] = JSON.parse(text);
+          addBuilds(importedBuilds);
         };
 
         input.click();
       }
     }
 
+    function addBuilds(importedBuilds: BuildData[]) {
+      try {
+        if (!Array.isArray(importedBuilds)) {
+          throw new Error("Invalid format: expected a JSON array.");
+        }
+
+        let hasInvalidBuild = false;
+        for (let i = 0; i < importedBuilds.length; i++) {
+          try {
+            validate(importedBuilds[i]);
+          } catch (error) {
+            console.error(`Validation failed for build ${i + 1}:`, error);
+            importedBuilds.splice(i, 1);
+            i--;
+            if (!hasInvalidBuild) {
+              addToast({
+                message: `Some builds failed validation!`,
+                type: "error",
+              });
+              hasInvalidBuild = true;
+            }
+          }
+        }
+
+        let existingBuilds = getLocalStoredBuilds();
+        for (let i = 0; i < existingBuilds.length; i++) {
+          const match = importedBuilds.findIndex((build) => build.id === existingBuilds[i].id);
+          if (match >= 0) {
+            // Replace existing build with imported one and remove it from the imported array
+            existingBuilds[i] = importedBuilds[match];
+            importedBuilds.splice(match, 1);
+          }
+        }
+
+        if (importedBuilds.length === 0) {
+          addToast({ message: "No new builds to import", type: "info" });
+          return;
+        }
+
+        localBuilds = [...importedBuilds, ...existingBuilds];
+        addToast({ message: "Builds imported!", type: "success" });
+      } catch (error) {
+        console.error("Import failed:", error);
+        addToast({ message: "Invalid format!", type: "error" });
+      }
+    }
+
+    onMount(() => {
+      let importBase64 = page.url.searchParams.get("import");
+      if (importBase64 !== null) {
+        try {
+          const decodedBuilds: BuildData[] = decodeJson(importBase64);
+          addBuilds(decodedBuilds);
+          addToast({ message: "Successfully imported builds!", type: "success" });
+        } catch (error) {
+          console.error("Import failed:", error);
+          addToast({ message: "Failed to import builds!", type: "error" });
+        }
+      }
+    });
 </script>
 
 <div class="main-container">
     <img class="background-image"  src={landing} alt="Landing" fetchpriority="high"/>
     <div class="text-container">
-        <h1>Stella Sora Build</h1>
+        <h1>{title}</h1>
         <h2>Browse Trekker potentials and create custom builds to share!</h2>
         <div class="button-container">
             <a class="button primary" href={resolve("/build")}>Create a build</a>
@@ -121,10 +139,11 @@
         </div>
         {#if localBuilds.length === 0}
             <p>No builds yet!</p>
+            <button class="build-container-button" onclick={importBuilds}>Import builds</button>
         {:else}
         <div class="build-container">
-            <button class="build-container-button" onclick={exportBuilds}>Export all</button>
-            <button class="build-container-button" onclick={importBuilds}>Import all</button>
+            <button class="build-container-button" onclick={exportBuilds}>Export builds</button>
+            <button class="build-container-button" onclick={importBuilds}>Import builds</button>
             <button class="build-container-button" onclick={() => reorderMode = !reorderMode}>
                 <input type="checkbox" bind:checked={reorderMode}/> Reorder mode
             </button>
@@ -163,12 +182,12 @@
                         <div style:grid-area="buttons" class="build-buttons-container">
                             <button class="build-edit" onclick={() => {
                               build.editMode = false;
-                              window.location.href = (`${base}/build?&build=${encodeBuild(build)}`)}
+                              window.location.href = (`${base}/build?&build=${encodeJson(build)}`)}
                             }
                             >View</button>
                             <button class="build-edit" onclick={() => {
                               build.editMode = true;
-                              window.location.href = (`${base}/build?&build=${encodeBuild(build)}`)}
+                              window.location.href = (`${base}/build?&build=${encodeJson(build)}`)}
                             }
                             >Edit</button>
                             <button class="build-delete" onclick={() => deleteBuild(build.id)}>Delete</button>
@@ -261,11 +280,6 @@
     a.button:hover:active {
         filter: brightness(1.05);
         transform: scale(0.9);
-    }
-
-    a.primary {
-        color: var(--secondary);
-        background-color: var(--secondary-bg);
     }
 
     .build-container {

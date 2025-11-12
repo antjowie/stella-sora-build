@@ -1,7 +1,7 @@
 <script lang="ts">
     import { browser } from "$app/environment";
     import { page } from "$app/state";
-    import { decodeBuild, encodeBuild, getLocalStoredBuilds } from "$lib/build";
+    import { decodeJson, encodeJson, getLocalStoredBuilds, validate } from "$lib/build";
     import type { BuildData } from "$lib/buildData.types";
     import Build from "$lib/components/Build.svelte";
     import BuildCollection from "$lib/components/BuildCollection.svelte";
@@ -167,7 +167,7 @@
       if (mounted === false) return
       try
       {
-        const data = encodeBuild(build);
+        const data = encodeJson(build);
         replaceState(page.url.pathname + "?&build=" + data, "");
         localStorage.setItem("cachedBuild", data);
       }
@@ -202,7 +202,8 @@
         else buildBase64 = page.url.searchParams.get("build");
 
         if (buildBase64 !== null) {
-            const build: BuildData = decodeBuild(buildBase64);
+            const build: BuildData = decodeJson(buildBase64);
+            validate(build);
             const getChar = (id?: number): Character | undefined => database.data.find(c => c.id === id);
             name = build.name;
             description = build.description;

@@ -1,5 +1,7 @@
+import { title } from "$lib/global";
+
 export async function load() {
   return {
-    title: `Stella Sora Build - Build`,
+    title: `${title} - Build`,
   };
 }

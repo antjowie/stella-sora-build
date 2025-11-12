@@ -2,8 +2,28 @@
 	import { page } from "$app/state";
 	import { resolve, base } from "$app/paths";
     import Toasts from "$lib/components/Toasts.svelte";
+    import Modal from "$lib/components/Modal.svelte";
+    import { afterNavigate } from "$app/navigation";
+    import { encodeJson, getLocalStoredBuilds } from "$lib/build";
 
-	let { children } = $props();
+    let { children } = $props();
+	let shouldMigrate = $state(false);
+	let showMigrationWarning = $state(false);
+	let showMoreMigrationWarningDetails = $state(false);
+	let migrationLink = $state("");
+	afterNavigate(() => {
+		if (page.url.host.includes("github")) {
+		// if (base === "") {
+		    shouldMigrate = true;
+			showMigrationWarning = true;
+			showMoreMigrationWarningDetails = false;
+			migrationLink = "https://stellabuilds.pages.dev/";
+			migrationLink = `http://${page.url.host}/`;
+			const localBuilds = getLocalStoredBuilds();
+			const encodedBuilds = encodeJson(localBuilds);
+			migrationLink = migrationLink + "?import=" + encodedBuilds;
+		}
+	});
 </script>
 
 <svelte:head>
@@ -30,9 +50,42 @@
 		<a class="underline" href={resolve("/")} aria-current={page.url.pathname === resolve(`/`)}>Home</a>
 		<a class="underline" href={resolve("/build")} aria-current={page.url.pathname.search('/build') >= 0}>Build</a>
 		<a class="underline" href={resolve("/trekker")} aria-current={page.url.pathname.search('/trekker') >= 0}>Trekkers</a>
+		{#if shouldMigrate}
+		<p class="migration-warning">
+			Outdated site, please use <a href="https://stellabuilds.pages.dev{page.route.id}">new site</a>
+		</p>
+		{/if}
 	</nav>
 
 	<Toasts />
+
+	{#if showMigrationWarning}
+	<Modal title="Site/URL outdated! Please go to new site" onClose={() => showMigrationWarning = false}>
+	    {#snippet content()}
+			<p style="font-size: 30px;">Please select one option below to reach the new site.</p>
+			<button class="button primary" onclick={() => window.location.href = migrationLink}>Import old builds to new site</button>
+			<button onclick={() => window.location.href = `https://stellabuilds.pages.dev${page.route.id}`}>Open this page on new site</button>
+			<br/>
+			<br/>
+			<button onclick={() => showMoreMigrationWarningDetails = !showMoreMigrationWarningDetails}>More Details</button>
+			{#if showMoreMigrationWarningDetails}
+				<p>If the "import old builds to new site" somehow fails you might have too many custom builds. To work around this, you can go to <a href="/">home</a> and click "Export builds". Then on the new site click "Import builds".</p>
+
+			<h3>Why</h3>
+			<p>I moved the site from GitHub Pages to Cloudflare Pages for several reasons.</p>
+			<ol style:padding-left="20px">
+				<li>It has a nicer free domain.</li>
+				<li>It prepares us for potentially adding databases and accounts.</li>
+				<li>It supports building branch previews from the get go.</li>
+				<li>Overall, it has more features and is more flexible.</li>
+			</ol>
+			<br/>
+			<p>Your local builds are stored in your browser's local storage. Since this domain is different, your builds can't be accessed. So you have to manually import them.</p>
+			<p>I don't expect this to migration to be required again. It would only happen if I purchase a domain but if it gets that far builds will likely be stored in a database, and accessed by user accounts.</p>
+			{/if}			<br/>
+		{/snippet}
+	</Modal>
+	{/if}
 
 	<main style:padding={page.data.disableMainPadding ? "0" : "1rem"}>
 	    {@render children()}
@@ -121,7 +174,16 @@
         transition: 0.2s;
     }
 
-    :global(button:hover:active) {
+    :global(a.button.primary, button.primary) {
+        color: var(--secondary) !important;
+        background-color: var(--secondary-bg) !important;
+    }
+
+    :global(a.button.primary:hover, button.primary:hover) {
+        background-color: var(--primary) !important;
+    }
+
+    :global(a:hover:active, button:hover:active) {
         transform: scale(1.0);
     }
 
@@ -162,10 +224,6 @@
 
     :global(.toggle:focus-within, .toggle:focus) {
         border-color: var(--secondary-bg);
-    }
-
-    :global(a) {
-        text-decoration: none;
     }
 
     :global(.underline)  {
@@ -222,8 +280,14 @@
         z-index: 100;
     }
 
-    nav a {
+    nav > a{
         color: var(--secondary);
+        text-decoration: none;
+    }
+
+    .migration-warning, .migration-warning a{
+        color: var(--red);
+        font-weight: bold;
     }
 
     main {
