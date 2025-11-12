@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: CICD
 
 on:
   push:
@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -48,19 +48,12 @@ jobs:
         working-directory: ./webapp
         run: npm test
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: webapp/build
-
-  deploy:
-    needs: build
+  cd:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    needs: ci
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Trigger Cloudflare Pages Deployment
+        run: curl -X POST "$CLOUDFLARE_DEPLOY_HOOK"
+        env:
+          CLOUDFLARE_DEPLOY_HOOK: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}
