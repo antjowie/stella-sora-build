@@ -18,7 +18,6 @@
 			showMigrationWarning = true;
 			showMoreMigrationWarningDetails = false;
 			migrationLink = "https://stellabuilds.pages.dev/";
-			migrationLink = `http://${page.url.host}/`;
 			const localBuilds = getLocalStoredBuilds();
 			const encodedBuilds = encodeJson(localBuilds);
 			migrationLink = migrationLink + "?import=" + encodedBuilds;
