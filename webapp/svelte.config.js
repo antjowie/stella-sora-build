@@ -14,6 +14,9 @@ const config = {
     adapter: adapter({
       strict: true,
     }),
+    paths: {
+      base: process.env.BASE_PATH !== undefined ? process.env.BASE_PATH : "",
+    },
     // TODO: Look into CSP to prevent XSS attacks
     // csp: {
     //   mode: "hash",

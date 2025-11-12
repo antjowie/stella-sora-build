@@ -24,26 +24,24 @@ export function validate(buildData: BuildData) {
   }
 }
 
-export function decodeBuild(data: string): BuildData {
+export function decodeJson(encodedBase64: string): any {
   try {
-    const padded = data.padEnd(
-      data.length + ((4 - (data.length % 4)) % 4),
+    const padded = encodedBase64.padEnd(
+      encodedBase64.length + ((4 - (encodedBase64.length % 4)) % 4),
       "=",
     );
     const base64 = padded.replace(/-/g, "+").replace(/_/g, "/");
     const binary = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
     const decoded = new TextDecoder().decode(binary);
-    const build: BuildData = JSON.parse(decoded);
-    validate(build);
+    const build = JSON.parse(decoded);
     return build;
   } catch (e) {
     throw new Error("Invalid build data");
   }
 }
 
-export function encodeBuild(buildData: BuildData): string {
-  validate(buildData);
-  const json = JSON.stringify(buildData);
+export function encodeJson(data: any): string {
+  const json = JSON.stringify(data);
   const utf8Bytes = new TextEncoder().encode(json);
   const base64 = btoa(String.fromCharCode(...utf8Bytes));
   return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
