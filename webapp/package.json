@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "npm run generate:database && vite dev",
     "build": "npm run generate:database && vite build",
+    "build:github": "npx cross-env BASE_PATH=/stella-sora-build npm run build",
     "preview": "npm run generate:database && vite preview",
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -24,6 +25,7 @@
     "@vitest/browser-playwright": "^4.0.5",
     "cross-env": "^10.1.0",
     "json-schema-to-typescript": "^15.0.4",
+    "ky": "^1.14.0",
     "patch-package": "^8.0.1",
     "playwright": "^1.56.1",
     "svelte": "^5.41.0",

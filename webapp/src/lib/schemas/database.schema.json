@@ -1,19 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Database",
-  "type": "object",
-  "required": ["timestamp", "data"],
-  "additionalProperties": false,
-  "properties": {
-    "timestamp": {
-      "type": "string"
-    },
-    "data": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/Character"
-      }
-    }
+  "type": "array",
+  "items": {
+    "$ref": "#/$defs/Character"
   },
   "$defs": {
     "Character": {
@@ -24,7 +14,6 @@
         "class",
         "element",
         "grade",
-        "portraitUrl",
         "mainBuild1Name",
         "mainBuild1Desc",
         "mainBuild2Name",
@@ -54,9 +43,6 @@
         "grade": {
           "$comment": "SR or R (1,2)",
           "type": "integer"
-        },
-        "portraitUrl": {
-          "type": "string"
         },
         "mainBuild1Name": {
           "type": "string"

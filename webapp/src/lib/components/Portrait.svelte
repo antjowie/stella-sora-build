@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Character } from '$lib/database.types';
-  import { CharacterElement, characterGradeColor, characterElementColor, characterClassColor, CharacterClass, getElementIconUrl } from '$lib/database';
+  import { CharacterElement, characterGradeColor, characterElementColor, characterClassColor, CharacterClass, getElementIconUrl, getCharacterPortraitUrl } from '$lib/database';
   import { resolve } from '$app/paths';
 
   interface Props {
@@ -23,7 +23,7 @@
         else window.location.href = resolve(`/trekker/${character.name}`);
       }
       }
-      style:background-image="url({character.portraitUrl})"
+      style:background-image="url({getCharacterPortraitUrl(character.name)})"
       >
     <div class="button-content">
         <div class="halftone-color">

@@ -16,7 +16,7 @@
       .map(x => x.toString());
     let elementStrings = $state<string[]>([]);
 
-    let filteredCharacters = $derived(database.data
+    let filteredCharacters = $derived(database
       .filter((character) =>
         (searchQuery.length === 0 || character.name.toLowerCase().includes(searchQuery.toLowerCase()))
         && (elementStrings.length === 0 || elementStrings.includes(CharacterElement[character.element]))

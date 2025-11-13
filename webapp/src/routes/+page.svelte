@@ -4,7 +4,7 @@
     import landing from "$lib/assets/landing.webp";
     import { decodeJson, encodeJson, validate } from "$lib/build";
     import type { BuildData } from "$lib/buildData.types";
-    import { database } from "$lib/database";
+    import { database, getCharacterPortraitUrl } from "$lib/database";
     import { localStorageBuildsKey, title } from "$lib/global";
     import { addToast } from "$lib/toastStore";
     import { getLocalStoredBuilds } from "$lib/build";
@@ -171,13 +171,13 @@
                     >
                         <p style:grid-area="title" class="build-title">{build.name}</p>
                         <div style:grid-area="main" class="build-image"
-                            style:background-image="url({database.data.find(c => c.id === build.mainId)?.portraitUrl || ""})"
+                            style:background-image="url({getCharacterPortraitUrl(database.find(c => c.id === build.mainId)?.name || "")})"
                             ></div>
                         <div style:grid-area="sup1" class="build-image"
-                            style:background-image="url({database.data.find(c => c.id === build.support1Id)?.portraitUrl || ""})"
+                            style:background-image="url({getCharacterPortraitUrl(database.find(c => c.id === build.support1Id)?.name || "")})"
                             ></div>
                         <div style:grid-area="sup2" class="build-image"
-                            style:background-image="url({database.data.find(c => c.id === build.support2Id)?.portraitUrl || ""})"
+                            style:background-image="url({getCharacterPortraitUrl(database.find(c => c.id === build.support2Id)?.name || "")})"
                             ></div>
                         <div style:grid-area="buttons" class="build-buttons-container">
                             <button class="build-edit" onclick={() => {

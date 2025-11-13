@@ -32,6 +32,10 @@ export enum CharacterElement {
   Umbra = 6,
 }
 
+export function getCharacterPortraitUrl(characterName: string): string {
+  return `${base}/portraits/${characterName}.png`;
+}
+
 export const characterElementColor = [
   "",
   "#52c3eb",
