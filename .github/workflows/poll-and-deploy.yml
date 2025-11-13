@@ -14,7 +14,7 @@ jobs:
   poll-external-repo:
     runs-on: ubuntu-latest
     env:
-      EXTERNAL_REPO: Hiro420/StellaSoraData
+      EXTERNAL_REPO: antjowie/StellaSoraData
     outputs:
       changed: ${{ steps.check_commit.outputs.changed }}
 

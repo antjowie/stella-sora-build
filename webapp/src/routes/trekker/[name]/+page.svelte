@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { database } from "$lib/database";
+  import { database, getCharacterPortraitUrl } from "$lib/database";
   import { page } from "$app/state";
   import { CharacterElement, CharacterClass, characterClassColor, characterElementColor } from "$lib/database";
   import BuildCollection from "$lib/components/BuildCollection.svelte";
@@ -7,7 +7,7 @@
   import { loadPreference } from "$lib/util";
   import { getElementIconUrl} from "$lib/database";
 
-  let character = database.data.find(c => c.name === page.params.name);
+  let character = database.find(c => c.name === page.params.name);
 
   let showDesc = $state(loadPreference("showDesc", true));
   let showBrief = $state(loadPreference("showBrief", true));
@@ -25,7 +25,7 @@
 <p>Can't find character</p>
 {:else}
 <div class="character-container">
-    <img src={character.portraitUrl} alt={character.name} />
+    <img src={getCharacterPortraitUrl(character.name)} alt={character.name} />
     <div>
         <h2>{character.name}</h2>
         <div class="character-info">
@@ -87,7 +87,7 @@
     }
 
     .character-container img {
-        width: auto;
+        width: 12rem;
     }
 
     .character-info {

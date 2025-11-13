@@ -6,7 +6,7 @@
     import Build from "$lib/components/Build.svelte";
     import BuildCollection from "$lib/components/BuildCollection.svelte";
     import CharacterSelectModal from "$lib/components/CharacterSelectModal.svelte";
-    import { database, type Character, type Potential } from "$lib/database";
+    import { database, getCharacterPortraitUrl, type Character, type Potential } from "$lib/database";
     import { loadPreference } from "$lib/util";
     import { fade, fly } from "svelte/transition";
     import { afterNavigate, replaceState } from "$app/navigation";
@@ -204,7 +204,7 @@
         if (buildBase64 !== null) {
             const build: BuildData = decodeJson(buildBase64);
             validate(build);
-            const getChar = (id?: number): Character | undefined => database.data.find(c => c.id === id);
+            const getChar = (id?: number): Character | undefined => database.find(c => c.id === id);
             name = build.name;
             description = build.description;
             id = build.id;
@@ -308,7 +308,7 @@
                 }}>
                     {#if data.character}
                         {#if editMode}
-                            <img src={data.character.portraitUrl} alt={data.character.name} />
+                            <img src={getCharacterPortraitUrl(data.character.name)} alt={data.character.name} />
                             <div class="character-overlay">
                                 <p class="character-name">{data.character.name}</p>
                                 <p class="change-text">Click to change</p>

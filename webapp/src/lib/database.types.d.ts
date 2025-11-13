@@ -5,17 +5,14 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface Database {
-  timestamp: string;
-  data: Character[];
-}
+export type Database = Character[];
+
 export interface Character {
   id: number;
   name: string;
   class: number;
   element: number;
   grade: number;
-  portraitUrl: string;
   mainBuild1Name: string;
   mainBuild1Desc: string;
   mainBuild2Name: string;
