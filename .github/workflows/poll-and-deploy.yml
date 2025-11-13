@@ -1,4 +1,4 @@
-name: Poll External Repo and Deploy
+name: Poll Data Repo and CICD
 
 on:
   schedule:
@@ -63,12 +63,7 @@ jobs:
           path: last-commit
           key: last-commit-cache-${{ steps.get_commit.outputs.latest_commit }}
 
-  trigger-deploy:
-    runs-on: ubuntu-latest
+  trigger-cicd:
     needs: poll-external-repo
     if: needs.poll-external-repo.outputs.changed == 'true'
-    steps:
-      - name: Send webhook
-        run: curl -X POST "$CLOUDFLARE_DEPLOY_HOOK"
-        env:
-          CLOUDFLARE_DEPLOY_HOOK: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}
+    uses: ./.github/workflows/cicd.yml
