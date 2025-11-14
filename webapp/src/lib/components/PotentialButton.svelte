@@ -293,6 +293,13 @@
     text-align: left;
     margin: 0.5rem 0 0 0;
     font-weight: 500;
+    font-size: 0.75rem;
+  }
+
+  @media (max-width: 472px) {
+    .potential .description {
+      font-size: 1rem;
+    }
   }
 
   :global(.outline) {
