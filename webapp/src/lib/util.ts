@@ -1,11 +1,24 @@
 import { browser } from "$app/environment";
 import type { Potential } from "./database.types";
 
-export function loadPreference(key: string, defaultValue: boolean): boolean {
+export function loadPreferenceBool(
+  key: string,
+  defaultValue: boolean,
+): boolean {
   if (browser) {
     const stored = localStorage.getItem(key);
     return stored !== null ? stored === "true" : defaultValue;
   }
+  console.log("loadPreferenceBool called in non-browser environment");
+  return defaultValue;
+}
+
+export function loadPreferenceNum(key: string, defaultValue: number): number {
+  if (browser) {
+    const stored = localStorage.getItem(key);
+    return stored !== null ? parseInt(stored) : defaultValue;
+  }
+  console.log("loadPreferenceNum called in non-browser environment");
   return defaultValue;
 }
 

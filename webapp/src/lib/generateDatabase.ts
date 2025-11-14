@@ -18,21 +18,21 @@ async function generateDatabase(): Promise<Database> {
   const database: Database = await res.json();
   const validate = ajv.compile(databaseSchema);
   const valid = validate(database);
-  if (valid == false) {
-    console.error(validate.errors);
+  if (valid === false) {
     console.error(database);
-    throw new Error("Invalid database");
+    console.error(validate.errors);
+    throw new Error("Failed to validate database");
   }
 
-  fs.writeFileSync("src/lib/database.json", JSON.stringify(database, null, 2));
+  fs.writeFileSync("src/lib/database.json", JSON.stringify(database));
   return database;
 }
 
 async function fetchPortraits(characters: string[]): Promise<void> {
   fs.mkdirSync("static/portraits", { recursive: true });
   const promises = characters.map(async (character) => {
-    const url = `https://raw.githubusercontent.com/antjowie/StellaSoraData/refs/heads/main/portraits/${character}.png`;
-    const path = `static/portraits/${character}.png`;
+    const url = `https://raw.githubusercontent.com/antjowie/StellaSoraData/refs/heads/main/portraits/${character}.webp`;
+    const path = `static/portraits/${character}.webp`;
     const buffer = await ky(url).arrayBuffer();
     fs.writeFileSync(path, Buffer.from(buffer));
   });
