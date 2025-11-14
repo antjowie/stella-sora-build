@@ -10,11 +10,11 @@
     import { loadPreferenceBool } from "$lib/util";
     import { fade, fly } from "svelte/transition";
     import { afterNavigate, replaceState } from "$app/navigation";
-    import { tick } from "svelte";
+    import { onMount, tick } from "svelte";
     import { addToast } from "$lib/toastStore";
     import { localStorageBuildsKey } from "$lib/global";
     import { marked } from "marked";
-    import DOMPurify from "dompurify";
+    import DOMPurify from "isomorphic-dompurify";
     // Only allow markdown so user can't run arbitrary code
     marked.use({
       renderer: {html: () => ""}
@@ -43,9 +43,9 @@
     let selectedPotentials = $state<number[]>(defaultBuildData.potentialIds);
     let selectedPotentialsViewMode = $state<number[]>(defaultBuildData.potentialIds);
     // If not true, we get hydration warning. Not too sure why actually...
-    let editMode = $state(browser ? defaultBuildData.editMode : true);
-    let showDesc = $state(loadPreferenceBool("showDesc", true));
-    let showBrief = $state(loadPreferenceBool("showBrief", true));
+    let editMode = $state(false);
+    let showDesc = $state(true);
+    let showBrief = $state(true);
     let id: string = $state(crypto.randomUUID());
     // Each entry is a pair of [id, level]
     let levelMap: [number, number][] = $state([]);
@@ -152,14 +152,6 @@
       }
     }
 
-    // Save to localStorage when values change
-    $effect(() => {
-      if (browser) {
-        localStorage.setItem('showDesc', String(showDesc));
-        localStorage.setItem('showBrief', String(showBrief));
-      }
-    });
-
     // Otherwise we get error in console
     let mounted: boolean = false;
     function updateUrlAndCache(build: BuildData)
@@ -177,20 +169,6 @@
         console.error("Error saving build:",error);
       }
     }
-
-    // Save changes to URL when build data changes
-    let descriptionElem: HTMLTextAreaElement | undefined = $state();
-    $effect(() => {
-      if (descriptionElem)
-      {
-        descriptionElem.style.height = "auto";
-        descriptionElem.style.height = `${descriptionElem.scrollHeight + 4}px`;
-      }
-
-      selectedPotentialsViewMode = [];
-      updateUrlAndCache(buildData);
-      document.title = page.data.title .replace("- Build", "- " + (name.length == 0 ? "Build" : name));
-    });
 
     afterNavigate(async (navigation) => {
       try {
@@ -231,6 +209,34 @@
         editMode = true;
       }
       updateUrlAndCache(buildData);
+    });
+
+    onMount(() => {
+      editMode = defaultBuildData.editMode;
+      showDesc = loadPreferenceBool("showDesc", showDesc);
+      showBrief = loadPreferenceBool("showBrief", showBrief);
+    })
+
+    // Save changes to URL when build data changes
+    let descriptionElem: HTMLTextAreaElement | undefined = $state();
+    $effect(() => {
+      if (descriptionElem)
+      {
+        descriptionElem.style.height = "auto";
+        descriptionElem.style.height = `${descriptionElem.scrollHeight + 4}px`;
+      }
+
+      selectedPotentialsViewMode = [];
+      updateUrlAndCache(buildData);
+      document.title = page.data.title .replace("- Build", "- " + (name.length == 0 ? "Build" : name));
+    });
+
+    // Save to localStorage when values change
+    $effect(() => {
+      if (browser) {
+        localStorage.setItem('showDesc', String(showDesc));
+        localStorage.setItem('showBrief', String(showBrief));
+      }
     });
 </script>
 
@@ -326,7 +332,7 @@
     </div>
 
     <div class="toggles-container">
-        <label>
+        <label class="toggle">
             <input
         		type="checkbox"
         		name="showDesc"
@@ -334,7 +340,7 @@
         		/>
             Show Description
         </label>
-        <label>
+        <label class="toggle">
             <input
         		type="checkbox"
         		name="showBrief"
@@ -415,9 +421,14 @@
     .button-container {
         display: flex;
         justify-content: left;
-        align-items: center;
+        align-items: stretch;
+        flex-wrap: wrap;
         margin-bottom: 1rem;
-        gap: 1rem;
+        gap: 0.5rem;
+    }
+
+    button {
+        border-radius: 64px;
     }
 
     .reset-button {
@@ -446,7 +457,7 @@
 
     .text-container input:focus {
         outline: none;
-        border-color: #7d81e3;
+        border-color: var(--secondary-bg);
     }
 
     textarea {
@@ -466,7 +477,13 @@
 
     .character-selector-size {
         width: 150px;
-        height: 210px;
+        aspect-ratio: 150/210;
+    }
+
+    @media (max-width: 472px) {
+        .character-selector-size {
+            width: 100px;
+        }
     }
 
     .character-selector {
@@ -513,11 +530,11 @@
         right: 0;
         background: linear-gradient(to top, rgba(255, 255, 255, 0.8) 75%, transparent);
         padding: 1rem;
-        color: white;
+        text-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
     }
 
     .character-name {
-        margin: 0;
+        margin-top: 0.5rem;
         font-weight: 700;
         font-size: 1.1rem;
     }

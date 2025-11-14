@@ -33,7 +33,7 @@ export enum CharacterElement {
 }
 
 export function getCharacterPortraitUrl(characterName: string): string {
-  return `${base}/portraits/${characterName}.png`;
+  return `${base}/portraits/${characterName}.webp`;
 }
 
 export const characterElementColor = [
@@ -62,6 +62,12 @@ export enum PotentialRarity {
 }
 
 export const potentialRarityColor = ["", "#fbdb66", "#8fe5f7", "#ff9fe3"];
+export const potentialRarityColorDesaturated = [
+  "",
+  "hsl(38, 93%, 83%)",
+  "hsl(240, 73%, 86%)",
+  "hsl(324, 85%, 86%)",
+];
 
 // Type-safe versions of generated types
 export type Character = Omit<GeneratedCharacter, "class" | "element"> & {

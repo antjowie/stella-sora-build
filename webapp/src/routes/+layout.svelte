@@ -28,10 +28,9 @@
 <svelte:head>
     <!-- Favicon -->
 	<link rel="icon" type="image/png" href={`${base}/favicon/favicon-96x96.png`} sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href={`${base}/favicon/favicon.svg`} />
     <link rel="shortcut icon" href={`${base}/favicon/favicon.ico`} />
     <link rel="apple-touch-icon" sizes="180x180" href={`${base}/favicon/apple-touch-icon.png`} />
-    <meta name="apple-mobile-web-app-title" content="MyWebSite" />
+    <meta name="apple-mobile-web-app-title" content="Stella Sora Builds" />
     <link rel="manifest" href={`${base}/favicon/site.webmanifest`} />
 
     <!-- Meta data -->
@@ -133,6 +132,24 @@
       src: url('$lib/assets/fonts/noto-sans-v42-latin-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
     }
 
+    /* noto-sans-800 - latin */
+    @font-face {
+      font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+      font-family: 'Noto Sans';
+      font-style: normal;
+      font-weight: 800;
+      src: url('$lib/assets/fonts/noto-sans-v42-latin-800.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    }
+
+    /* noto-sans-900 - latin */
+    @font-face {
+      font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+      font-family: 'Noto Sans';
+      font-style: normal;
+      font-weight: 900;
+      src: url('$lib/assets/fonts/noto-sans-v42-latin-900.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    }
+
     :root {
         --primary: #264278;
         --secondary: #f9f9f7;
@@ -156,7 +173,6 @@
     :global(html, body) {
       font-size: 16px;
       background-color: var(--primary-bg);
-      overflow: scroll;
       scrollbar-color: var(--secondary-bg) rgba(0, 0, 0, 0);
       scrollbar-width: thin;
       font-family: "Noto Sans", sans-serif;
@@ -166,13 +182,13 @@
     }
 
     @media (max-width: 768px) {
-      :global(html) {
+      :global(html, body) {
         font-size: 14px;
       }
     }
 
     @media (max-width: 480px) {
-      :global(html) {
+      :global(html, body) {
         font-size: 10px;
       }
     }
@@ -185,6 +201,10 @@
         border-radius: 0.5rem;
         cursor: pointer;
         transition: 0.2s;
+    }
+
+    :global(button, rem) {
+        font-size: 1rem;
     }
 
     :global(a.button.primary, button.primary) {

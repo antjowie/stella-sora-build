@@ -1,12 +1,19 @@
 <script lang="ts">
   import { base } from "$app/paths";
-  import { PotentialRarity, potentialRarityColor } from "$lib/database";
+  import { PotentialRarity, potentialRarityColor, potentialRarityColorDesaturated } from "$lib/database";
   import type { Potential } from "$lib/database.types";
   import { addToast } from "$lib/toastStore";
   import potentialBorder from "$lib/assets/borders/potential-border.webp";
   import potentialBorderActive from "$lib/assets/borders/potential-border-active.webp";
   import potentialBorderEdged from "$lib/assets/borders/potential-border-edged.webp";
   import potentialBorderEdgedActive from "$lib/assets/borders/potential-border-edged-active.webp";
+
+  function clampLevel(inLevel: number): number
+  {
+    if(inLevel < 1) inLevel = 1;
+    else if(inLevel > maxLevel) inLevel = maxLevel;
+    return inLevel;
+  }
 
   interface Props {
     potential: Potential;
@@ -35,7 +42,8 @@
   // We store params as [param1, param2, param3, ...]
   // But some params don't scale with level and only have 1 value
   // So max level is decided by biggest array, and others just repeat
-  const maxLevel = $derived(Object.values(potential.params).reduce((max, cur) => Math.max(cur.values.length, max), 0));
+  const maxLevel = $derived(Object.values(potential.params).reduce((max, cur) => Math.max(cur.values.length, max), 1));
+  const clampedLevel = $derived(clampLevel(level))
 
   if (level === -1 || level === undefined) {
     // svelte-ignore state_referenced_locally
@@ -43,9 +51,12 @@
   }
 
   const replaceText = (text: string) => {
+    // Replace all span color with bold
+    text = text.replace(/<span style="/g, '<b class="outline" style="');
+    text = text.replace(/<\/span>/g, "</b>");
+
     // Params are stored as &Param1&
     const paramRegex = /&[^&]*&/g;
-
     const paramTexts = text.match(paramRegex);
     if (paramTexts === null) return text;
 
@@ -54,7 +65,7 @@
       const params = potential.params.find(param => param.idx === idx);
       if (params !== undefined)
       {
-        const levelIdx = Math.min((level - 1), params.values.length - 1);
+        const levelIdx = Math.min((clampedLevel - 1), params.values.length - 1);
         const param = params.values[levelIdx];
         text = text.replace(paramText, param);
       }
@@ -64,36 +75,28 @@
       }
     }
 
-    // Replace all span color with bold
-    text = text.replace(/<span style="/g, '<b style="');
-    text = text.replace(/<\/span>/g, "</b>");
-
     return text;
   };
 
   function handleLevelChange(event: Event) {
     const target = event.target as HTMLDivElement;
     const value = target.textContent;
-    let newLevel = level;
+    let newLevel = clampedLevel;
     if (value === "++") {
-      newLevel = level + 10;
+      newLevel = clampedLevel + 5;
     } else if (value === "+") {
-      newLevel = level + 1;
+      newLevel = clampedLevel + 1;
     } else if (value === "−−") {
-      newLevel = level - 10;
+      newLevel = clampedLevel - 5;
     } else if (value === "−") {
-      newLevel = level - 1;
+      newLevel = clampedLevel - 1;
     }
 
-    if (newLevel < 1) {
-      newLevel = 1;
-    } else if (newLevel > maxLevel) {
-      newLevel = maxLevel;
-    }
+    newLevel = clampLevel(newLevel);
 
-    if (newLevel !== level) {
+    if (newLevel !== clampedLevel) {
       level = newLevel;
-      onLevelChanged?.(potential.id, level);
+      onLevelChanged?.(potential.id, clampedLevel);
     }
     event.stopPropagation();
   }
@@ -125,7 +128,7 @@
     { onClicked ?
       (active ? "active" : "inactive")
       : "default"}"
-    style:--color={potentialRarityColor[potential.rarity]}
+    style:--color={potentialRarityColorDesaturated[potential.rarity]}
     style:border-image={borderImage}
     style:padding="28px"
     onclick={() => { handleOnClick(); }}
@@ -137,14 +140,14 @@
     </p>
     {/if}
     <div class="level {showDescLayout ? "showDesc" : "notShowDesc"}">
-        Lv. {level}
+        Lv. {clampedLevel}
         {#if editMode}
-        <div class="edit level">
-            <div class={level == 1 ? "disabled" : ""} onclick={(event) => { handleLevelChange(event); }}>−−</div>
-            <div class={level == 1 ? "disabled" : ""} onclick={(event) => { handleLevelChange(event); }}>−</div>
-            <span>Lv. {level}</span>
-            <div class={level == maxLevel ? "disabled" : ""} onclick={(event) => { handleLevelChange(event); }}>+</div>
-            <div class={level == maxLevel ? "disabled" : ""} onclick={(event) => { handleLevelChange(event); }}>++</div>
+        <div class="edit clampedLevel">
+          <div class={clampedLevel == 1 ? "disabled" : ""} onclick={(event) => { handleLevelChange(event); }}>−−</div>
+          <div class={clampedLevel == 1 ? "disabled" : ""} onclick={(event) => { handleLevelChange(event); }}>−</div>
+          <span>Lv. {clampedLevel}</span>
+          <div class={clampedLevel == maxLevel ? "disabled" : ""} onclick={(event) => { handleLevelChange(event); }}>+</div>
+          <div class={clampedLevel == maxLevel ? "disabled" : ""} onclick={(event) => { handleLevelChange(event); }}>++</div>
         </div>
         {/if}
     </div>
@@ -184,8 +187,11 @@
         transition: transform 0.2s;
         padding: var(--padding);
         background-image:
-          /*linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),*/
-          /*linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1)),*/
+            /*radial-gradient(rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.35)),*/
+            /*radial-gradient(ellipse at top, rgba(255, 255, 255, 0), transparent),
+              radial-gradient(ellipse at bottom, rgb(var(--color-rgb) / 0.9), transparent),*/
+          /*linear-gradient(rgba(200, 200, 200, 0.25), rgba(200, 200, 200, 0.25)),*/
+          /*linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),*/
           linear-gradient(var(--color), var(--color));
         /*background-color: var(--color);*/
 
@@ -196,6 +202,7 @@
         border-radius: 5px;
         -webkit-mask-image: radial-gradient(circle at center, black 99%, transparent 100%);
         -webkit-mask-composite: destination-in;
+        /*filter: brightness(0.9);*/
         /*filter: drop-shadow(0px 4px 0px rgba(0, 0, 0, 0.2));*/
     }
 
@@ -255,6 +262,14 @@
         font-weight: 500;
     }
 
+    :global(.outline) {
+        /*-webkit-text-stroke: 3px var(--secondary);*/
+        -webkit-text-stroke: 3px rgba(255,255,255,0.75);
+        paint-order: stroke fill;
+        /*font-weight: 900;*/
+        /*font-weight: ;*/
+    }
+
     .active {
         --border-color: var(--green);
         filter: grayscale(0);
@@ -268,7 +283,7 @@
 
     .inactive {
         --border-color: white;
-        filter: grayscale(0.5);
+        filter: grayscale(0.25);
     }
 
     .active:hover:active, .inactive:hover:active {

@@ -14,6 +14,7 @@
     editMode: boolean;
     onLevelChanged?: (id: number, level: number) => void;
     levelMap?: [number, number][];
+    levelOverride?: number;
   };
 
   let {
@@ -26,7 +27,8 @@
     onClicked,
     editMode,
     onLevelChanged,
-    levelMap = [] }: Props = $props();
+    levelMap = [],
+    levelOverride}: Props = $props();
 
   let blockedPotentialIds: number[] = $state([]);
 
@@ -39,6 +41,7 @@
     editMode,
     onLevelChanged,
     levelMap,
+    levelOverride,
     blockedPotentialIds,
     blockClickReason:"Can only select 2 main potentials!"
   });

@@ -6,18 +6,54 @@
   import { browser } from "$app/environment";
   import { loadPreferenceBool, loadPreferenceNum } from "$lib/util";
   import { getElementIconUrl} from "$lib/database";
+    import { onMount } from "svelte";
 
   const character: Character | undefined = database.find(c => c.name === page.params.name);
 
-  let showDesc = $state(loadPreferenceBool("showDesc", true));
-  let showBrief = $state(loadPreferenceBool("showBrief", true));
+  let showDesc = $state(true);
+  let showBrief = $state(true);
   let showMain = $state(true);
-  let levelSlider = $state(loadPreferenceNum("levelSlider", 6));
+  let maxLevel = $derived(
+    Math.max(
+      ...character?.potentials.filter(pot => (showMain ? pot.type === 1 : pot.type === 2) || pot.type === 3)
+        .map(pot => {
+          let max = 0;
+          for (const param of Object.values(pot.params)) {
+            max = Math.max(max, param.values.length);
+          }
+          return max;
+        }) ?? [1]
+    )
+  );
+  // svelte-ignore state_referenced_locally
+  let levelSlider = $state(maxLevel);
+
+  let isSticky = $state(false);
+  function observeSticky(node: HTMLElement) {
+    const observer = new IntersectionObserver(([entry]) => {
+      isSticky = !entry.isIntersecting;
+    });
+
+    observer.observe(node);
+
+    return {
+      destroy() {
+        observer.disconnect();
+      }
+    };
+  }
+
+  onMount(() => {
+    showDesc = loadPreferenceBool("showDesc", true);
+    showBrief = loadPreferenceBool("showBrief", true);
+    levelSlider = Math.min(loadPreferenceNum("levelSlider", 6), maxLevel);
+  });
 
   $effect(() => {
     if (browser) {
       localStorage.setItem("showDesc", String(showDesc));
       localStorage.setItem("showBrief", String(showBrief));
+      localStorage.setItem("levelSlider", String(levelSlider));
     }
   });
 </script>
@@ -72,13 +108,14 @@
         Show Brief
     </label>
 </div>
-<div class="slider interact-background">
+<div use:observeSticky style="height: 1px;"></div>
+<div class="slider interact-background" class:stuck={isSticky}>
     <label for="slider">Lvl. {levelSlider}</label>
     <input
     id="slider"
     type="range"
     min="1"
-    max="12"
+    max="{maxLevel ?? 1}"
     bind:value={levelSlider}
     step="1"
     />
@@ -88,6 +125,7 @@
     {showDesc}
     {showBrief}
     {showMain}
+    levelOverride={levelSlider}
     editMode={false} />
 {/if}
 
@@ -145,17 +183,22 @@
 
     .slider {
         position: sticky;
-        top: 0;
+        top: 5rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 0.5rem;
         margin: 0.5rem 0;
         max-width: 250px;
+        z-index: 10;
 
         & > input {
             padding:0;
         }
+    }
+
+    .stuck {
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
     }
 
 </style>

@@ -1,7 +1,6 @@
 <script lang="ts">
     import { database, CharacterElement, type Character, getElementIconUrlFromString } from "$lib/database";
     import Portrait from "$lib/components/Portrait.svelte";
-    import { getElementIconUrl } from "$lib/database";
 
     interface Props {
         excludedCharacters?: number[];

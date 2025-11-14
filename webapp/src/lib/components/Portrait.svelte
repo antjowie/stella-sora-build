@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Character } from '$lib/database.types';
-  import { CharacterElement, characterGradeColor, characterElementColor, characterClassColor, CharacterClass, getElementIconUrl, getCharacterPortraitUrl } from '$lib/database';
-  import { resolve } from '$app/paths';
+  import { CharacterElement, characterClassColor, CharacterClass, getElementIconUrl, getCharacterPortraitUrl } from '$lib/database';
+    import { base } from '$app/paths';
 
   interface Props {
       character: Character;
@@ -11,18 +11,13 @@
   let { character, clickOverride }: Props = $props();
 </script>
 
+{#snippet portrait()}
 <div class="button-wrapper">
   <button
       class="button
       {character.grade == 1 ? 'grade-1' : 'grade-2'}
       "
-
-      onclick={() =>
-      {
-        if (clickOverride) clickOverride(character)
-        else window.location.href = resolve(`/trekker/${character.name}`);
-      }
-      }
+      onclick={() =>{if (clickOverride) clickOverride(character)}}
       style:background-image="url({getCharacterPortraitUrl(character.name)})"
       >
     <div class="button-content">
@@ -42,6 +37,15 @@
     src={getElementIconUrl(character.element)}
     alt={CharacterElement[character.element]} />
 </div>
+{/snippet}
+
+{#if clickOverride === undefined}
+<a href={`${base}/trekker/${character.name}`}>
+{@render portrait()}
+</a>
+{:else}
+{@render portrait()}
+{/if}
 
 <style>
     .button-wrapper {

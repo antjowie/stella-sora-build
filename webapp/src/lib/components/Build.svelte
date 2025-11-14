@@ -17,6 +17,7 @@
     editMode: boolean;
     onLevelChanged?: (id: number, level: number) => void;
     levelMap?: [number, number][];
+    levelOverride?: number;
     blockClickReason?: string;
     blockedPotentialIds?: number[];
   }
@@ -34,6 +35,7 @@
     editMode,
     onLevelChanged,
     levelMap = [],
+    levelOverride,
     blockClickReason,
     blockedPotentialIds = []
   }: Props = $props();
@@ -72,19 +74,6 @@
       ((isMain ? potential.type === 1 : potential.type === 2)|| potential.type === 3)))
     .sort(sortPotentials);
 
-  function getBlockExceedMaxLevel(inLevelMap: [number, number][]): string | undefined {
-    for (const [id, level] of inLevelMap) {
-      const p = character.potentials.find(p => p.id === id);
-      if ((p && p.rarity === PotentialRarity.Main && level > 1) ||
-          (p && p.rarity === PotentialRarity.Rare && level > 6) ||
-          (p && p.rarity === PotentialRarity.Common && level > 6)) {
-        return "Only 1 potential can exceed max level!";
-      }
-    }
-    return undefined;
-  }
-  const blockExceedMaxLevel = $derived(getBlockExceedMaxLevel(levelMap));
-
   function getLevel(id: number): number | undefined {
     return levelMap.find(([potentialId, level]) => potentialId === id)?.[1];
   }
@@ -105,8 +94,7 @@
             {onClicked}
             {editMode}
             {onLevelChanged}
-            {blockExceedMaxLevel}
-            level={getLevel(potential.id)}
+            level={levelOverride ?? getLevel(potential.id)}
             blockClick={blockedPotentialIds.includes(potential.id) ? blockClickReason : undefined}
         />
     {/each}

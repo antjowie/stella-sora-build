@@ -270,6 +270,7 @@
         background-color: var(--primary-bg-dark);
         text-decoration: none;
         transition: 0.2s;
+        color: var(--primary);
     }
 
     a.button:hover {
