@@ -7,7 +7,7 @@
     import BuildCollection from "$lib/components/BuildCollection.svelte";
     import CharacterSelectModal from "$lib/components/CharacterSelectModal.svelte";
     import { database, getCharacterPortraitUrl, type Character, type Potential } from "$lib/database";
-    import { loadPreference } from "$lib/util";
+    import { loadPreferenceBool } from "$lib/util";
     import { fade, fly } from "svelte/transition";
     import { afterNavigate, replaceState } from "$app/navigation";
     import { tick } from "svelte";
@@ -44,8 +44,8 @@
     let selectedPotentialsViewMode = $state<number[]>(defaultBuildData.potentialIds);
     // If not true, we get hydration warning. Not too sure why actually...
     let editMode = $state(browser ? defaultBuildData.editMode : true);
-    let showDesc = $state(loadPreference("showDesc", true));
-    let showBrief = $state(loadPreference("showBrief", true));
+    let showDesc = $state(loadPreferenceBool("showDesc", true));
+    let showBrief = $state(loadPreferenceBool("showBrief", true));
     let id: string = $state(crypto.randomUUID());
     // Each entry is a pair of [id, level]
     let levelMap: [number, number][] = $state([]);

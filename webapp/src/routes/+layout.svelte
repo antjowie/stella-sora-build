@@ -103,7 +103,16 @@
       font-family: 'Noto Sans';
       font-style: normal;
       font-weight: 400;
-      src: url('/fonts/noto-sans-v42-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+      src: url('$lib/assets/fonts/noto-sans-v42-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    }
+
+    /* noto-sans-500 - latin */
+    @font-face {
+      font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+      font-family: 'Noto Sans';
+      font-style: normal;
+      font-weight: 500;
+      src: url('$lib/assets/fonts/noto-sans-v42-latin-500.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
     }
 
     /* noto-sans-600 - latin */
@@ -112,7 +121,7 @@
       font-family: 'Noto Sans';
       font-style: normal;
       font-weight: 600;
-      src: url('/fonts/noto-sans-v42-latin-600.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+      src: url('$lib/assets/fonts/noto-sans-v42-latin-600.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
     }
 
     /* noto-sans-700 - latin */
@@ -121,10 +130,10 @@
       font-family: 'Noto Sans';
       font-style: normal;
       font-weight: 700;
-      src: url('/fonts/noto-sans-v42-latin-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+      src: url('$lib/assets/fonts/noto-sans-v42-latin-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
     }
 
-    :global(*, *::before, *::after) {
+    :root {
         --primary: #264278;
         --secondary: #f9f9f7;
         --primary-bg: #fbf9f3;
@@ -135,20 +144,25 @@
         --green: #89b486;
         --light-red: #e55833;
         --red: #d14825;
-        font-family: "Noto Sans", sans-serif;
-        font-optical-sizing: auto;
-        color: var(--primary);
-        box-sizing: border-box;
+    }
+
+    :global(*, *::before, *::after) {
+        font-family: inherit;
+        box-sizing: inherit;
         padding: 0;
         margin: 0;
     }
 
-    :global(html) {
+    :global(html, body) {
       font-size: 16px;
       background-color: var(--primary-bg);
       overflow: scroll;
       scrollbar-color: var(--secondary-bg) rgba(0, 0, 0, 0);
       scrollbar-width: thin;
+      font-family: "Noto Sans", sans-serif;
+      font-optical-sizing: auto;
+      color: var(--primary);
+      box-sizing: border-box;
     }
 
     @media (max-width: 768px) {
@@ -204,7 +218,7 @@
         border-color: var(--secondary-bg);
     }
 
-    :global(label:has(input)) {
+    :global(label:has(input), .interact-background) {
         background-color: var(--primary-bg-dark);
         padding: 0.5rem;
         border-radius: 64px;
@@ -260,7 +274,6 @@
     }
 
     /* End global styles*/
-
     .main-container {
         display: grid;
         grid-template-rows: auto 1fr auto;

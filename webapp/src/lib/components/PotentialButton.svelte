@@ -16,7 +16,6 @@
     blockClick?: string;
     onClicked?: (id: number) => void;
     editMode: boolean;
-    blockExceedMaxLevel?: string;
     level?: number
     onLevelChanged?: (id: number, level: number) => void;
   };
@@ -29,25 +28,47 @@
     blockClick = undefined,
     onClicked,
     editMode,
-    blockExceedMaxLevel = undefined,
     level = -1,
     onLevelChanged }: Props = $props();
+
   const active = $derived(activePotentialIds.includes(potential.id));
-  const maxLevel = potential.rarity === PotentialRarity.Main ? 1 : 6;
-  const localMaxLevel = $derived((level > maxLevel || blockExceedMaxLevel === undefined) ? maxLevel + 3 : maxLevel);
+  // We store params as [param1, param2, param3, ...]
+  // But some params don't scale with level and only have 1 value
+  // So max level is decided by biggest array, and others just repeat
+  const maxLevel = $derived(Object.values(potential.params).reduce((max, cur) => Math.max(cur.values.length, max), 0));
 
   if (level === -1 || level === undefined) {
     // svelte-ignore state_referenced_locally
-    level = maxLevel;
+    level = potential.rarity === PotentialRarity.Main ? 1 : 6;
   }
 
-  // TODO: actually query the param values from potentials
   const replaceText = (text: string) => {
-    return text
-      .replace(/<color[^>]*>.*?<\/color>/g, 'X') // Replace color tags with 'x'
-      .replace(/&[^&]*&/g, 'Y') // Replace special characters with 'x'
-      .replace(/##([^#]+)#[^#]*#/g, '$1') // Replace ##content#xxxx# patterns with just the content
-    ;
+    // Params are stored as &Param1&
+    const paramRegex = /&[^&]*&/g;
+
+    const paramTexts = text.match(paramRegex);
+    if (paramTexts === null) return text;
+
+    for (const paramText of paramTexts) {
+      let idx = parseInt(paramText.slice("&Param".length,paramText.length - 1));
+      const params = potential.params.find(param => param.idx === idx);
+      if (params !== undefined)
+      {
+        const levelIdx = Math.min((level - 1), params.values.length - 1);
+        const param = params.values[levelIdx];
+        text = text.replace(paramText, param);
+      }
+      else
+      {
+        text = text.replace(paramText, "MISSING");
+      }
+    }
+
+    // Replace all span color with bold
+    text = text.replace(/<span style="/g, '<b style="');
+    text = text.replace(/<\/span>/g, "</b>");
+
+    return text;
   };
 
   function handleLevelChange(event: Event) {
@@ -55,14 +76,7 @@
     const value = target.textContent;
     let newLevel = level;
     if (value === "++") {
-      if (level < maxLevel) {
-        newLevel = maxLevel;
-      }
-      else
-      {
-        // +1 to trigger over max for toast
-        newLevel = localMaxLevel + 1;
-      }
+      newLevel = level + 10;
     } else if (value === "+") {
       newLevel = level + 1;
     } else if (value === "−−") {
@@ -73,11 +87,8 @@
 
     if (newLevel < 1) {
       newLevel = 1;
-    } else if (newLevel > localMaxLevel) {
-      newLevel = localMaxLevel;
-      if (localMaxLevel == maxLevel && blockExceedMaxLevel) {
-        addToast({message: blockExceedMaxLevel, type: "error"});
-      }
+    } else if (newLevel > maxLevel) {
+      newLevel = maxLevel;
     }
 
     if (newLevel !== level) {
@@ -108,11 +119,6 @@
   const showDescLayout = $derived(showDesc || editMode);
 </script>
 
-<link rel="preload" as="image" href="{potentialBorder}"/>
-<link rel="preload" as="image" href="{potentialBorderActive}"/>
-<link rel="preload" as="image" href="{potentialBorderEdged}"/>
-<link rel="preload" as="image" href="{potentialBorderEdgedActive}"/>
-
 <button
     class="potential
     { onClicked && blockClick ? "disabled" : ""}
@@ -137,8 +143,8 @@
             <div class={level == 1 ? "disabled" : ""} onclick={(event) => { handleLevelChange(event); }}>−−</div>
             <div class={level == 1 ? "disabled" : ""} onclick={(event) => { handleLevelChange(event); }}>−</div>
             <span>Lv. {level}</span>
-            <div class={blockExceedMaxLevel !== undefined && level == localMaxLevel ? "disabled" : ""} onclick={(event) => { handleLevelChange(event); }}>+</div>
-            <div class={blockExceedMaxLevel !== undefined && level == localMaxLevel ? "disabled" : ""} onclick={(event) => { handleLevelChange(event); }}>++</div>
+            <div class={level == maxLevel ? "disabled" : ""} onclick={(event) => { handleLevelChange(event); }}>+</div>
+            <div class={level == maxLevel ? "disabled" : ""} onclick={(event) => { handleLevelChange(event); }}>++</div>
         </div>
         {/if}
     </div>
@@ -148,7 +154,8 @@
     </p>
     {/if}
 {#if showDesc}
-    <p class="description">{replaceText(showBrief ? potential.descShort : potential.descLong)}</p>
+    <!-- <p class="description">{replaceText(showBrief ? potential.descShort : potential.descLong)}</p> -->
+    <p class="description">{@html replaceText(showBrief ? potential.descShort : potential.descLong)}</p>
 {/if}
 </button>
 
@@ -176,7 +183,12 @@
         user-select: text;
         transition: transform 0.2s;
         padding: var(--padding);
-        background-color: var(--color);
+        background-image:
+          /*linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),*/
+          /*linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1)),*/
+          linear-gradient(var(--color), var(--color));
+        /*background-color: var(--color);*/
+
 
         /* To add radius the border-image */
         mask-image: radial-gradient(circle at center, black 99%, transparent 100%);
@@ -240,6 +252,7 @@
     .potential .description {
         text-align: left;
         margin: 0.5rem 0 0 0;
+        font-weight: 500;
     }
 
     .active {

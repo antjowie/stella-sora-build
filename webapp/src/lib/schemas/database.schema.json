@@ -17,7 +17,7 @@
         "mainBuild1Name",
         "mainBuild1Desc",
         "mainBuild2Name",
-        "supportBuild2Desc",
+        "mainBuild2Desc",
         "supportBuild1Name",
         "supportBuild1Desc",
         "supportBuild2Name",
@@ -85,7 +85,8 @@
         "descLong",
         "rarity",
         "build",
-        "type"
+        "type",
+        "params"
       ],
       "additionalProperties": false,
       "properties": {
@@ -111,6 +112,24 @@
         "type": {
           "$comment": "1 is main, 2 is support, 3 is both",
           "type": "integer"
+        },
+        "params": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "idx": {
+                "type": "number"
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": ["idx", "values"]
+          }
         }
       }
     }

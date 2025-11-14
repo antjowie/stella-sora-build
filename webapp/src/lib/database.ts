@@ -6,7 +6,7 @@ import type {
   Potential as GeneratedPotential,
 } from "$lib/database.types";
 
-export const database = databaseJson;
+export const database: Database = databaseJson;
 
 export enum CharacterGrade {
   SR = 1,

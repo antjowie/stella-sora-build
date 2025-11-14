@@ -16,7 +16,7 @@ export interface Character {
   mainBuild1Name: string;
   mainBuild1Desc: string;
   mainBuild2Name: string;
-  mainBuild2Desc?: string;
+  mainBuild2Desc: string;
   supportBuild1Name: string;
   supportBuild1Desc: string;
   supportBuild2Name: string;
@@ -31,4 +31,9 @@ export interface Potential {
   rarity: number;
   build: number;
   type: number;
+  params: {
+    idx: number;
+    values: string[];
+    [k: string]: unknown;
+  }[];
 }

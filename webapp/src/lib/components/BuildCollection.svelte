@@ -16,7 +16,17 @@
     levelMap?: [number, number][];
   };
 
-  let { character, showDesc, showBrief, showMain, title = "", activePotentialIds = [], onClicked, editMode, onLevelChanged, levelMap = [] }: Props = $props();
+  let {
+    character,
+    showDesc,
+    showBrief,
+    showMain,
+    title = "",
+    activePotentialIds = [],
+    onClicked,
+    editMode,
+    onLevelChanged,
+    levelMap = [] }: Props = $props();
 
   let blockedPotentialIds: number[] = $state([]);
 

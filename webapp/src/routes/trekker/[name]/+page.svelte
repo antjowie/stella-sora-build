@@ -1,17 +1,18 @@
 <script lang="ts">
-  import { database, getCharacterPortraitUrl } from "$lib/database";
+  import { database, getCharacterPortraitUrl, type Character } from "$lib/database";
   import { page } from "$app/state";
   import { CharacterElement, CharacterClass, characterClassColor, characterElementColor } from "$lib/database";
   import BuildCollection from "$lib/components/BuildCollection.svelte";
   import { browser } from "$app/environment";
-  import { loadPreference } from "$lib/util";
+  import { loadPreferenceBool, loadPreferenceNum } from "$lib/util";
   import { getElementIconUrl} from "$lib/database";
 
-  let character = database.find(c => c.name === page.params.name);
+  const character: Character | undefined = database.find(c => c.name === page.params.name);
 
-  let showDesc = $state(loadPreference("showDesc", true));
-  let showBrief = $state(loadPreference("showBrief", true));
+  let showDesc = $state(loadPreferenceBool("showDesc", true));
+  let showBrief = $state(loadPreferenceBool("showBrief", true));
   let showMain = $state(true);
+  let levelSlider = $state(loadPreferenceNum("levelSlider", 6));
 
   $effect(() => {
     if (browser) {
@@ -71,7 +72,23 @@
         Show Brief
     </label>
 </div>
-<BuildCollection {character} {showDesc} {showBrief} {showMain} editMode={false} />
+<div class="slider interact-background">
+    <label for="slider">Lvl. {levelSlider}</label>
+    <input
+    id="slider"
+    type="range"
+    min="1"
+    max="12"
+    bind:value={levelSlider}
+    step="1"
+    />
+</div>
+<BuildCollection
+    {character}
+    {showDesc}
+    {showBrief}
+    {showMain}
+    editMode={false} />
 {/if}
 
 <style>
@@ -124,6 +141,21 @@
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem;
+    }
+
+    .slider {
+        position: sticky;
+        top: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        margin: 0.5rem 0;
+        max-width: 250px;
+
+        & > input {
+            padding:0;
+        }
     }
 
 </style>

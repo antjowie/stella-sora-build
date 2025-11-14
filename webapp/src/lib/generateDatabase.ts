@@ -18,10 +18,10 @@ async function generateDatabase(): Promise<Database> {
   const database: Database = await res.json();
   const validate = ajv.compile(databaseSchema);
   const valid = validate(database);
-  if (valid == false) {
-    console.error(validate.errors);
+  if (valid === false) {
     console.error(database);
-    throw new Error("Invalid database");
+    console.error(validate.errors);
+    throw new Error("Failed to validate database");
   }
 
   fs.writeFileSync("src/lib/database.json", JSON.stringify(database, null, 2));

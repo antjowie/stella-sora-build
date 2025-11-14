@@ -2,7 +2,7 @@ name: Poll Data Repo and CICD
 
 on:
   schedule:
-    - cron: "0 0 * * *" # Check for updates once every day
+    - cron: "0 * * * *" # Check for updates once every day
   workflow_dispatch:
 
 permissions:
