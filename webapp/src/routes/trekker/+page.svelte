@@ -1,5 +1,5 @@
 <script>
-    import CharacterSelect from "$lib/components/CharacterSelect.svelte";
+  import CharacterSelect from "$lib/components/CharacterSelect.svelte";
 </script>
 
 <CharacterSelect />

@@ -37,7 +37,7 @@
     levelMap = [],
     levelOverride,
     blockClickReason,
-    blockedPotentialIds = []
+    blockedPotentialIds = [],
   }: Props = $props();
 
   function getTitle(title: string): string {
@@ -46,33 +46,55 @@
   }
 
   const getNameAndDesc = () => {
-    if (isMain)
-    {
+    if (isMain) {
       switch (buildIndex) {
-        case 1: return { name: getTitle(character.mainBuild1Name), desc: character.mainBuild1Desc };
-        case 2: return { name: getTitle(character.mainBuild2Name), desc: character.mainBuild2Desc };
-        default: return { name: getTitle("Generic build"), desc: "" };
+        case 1:
+          return {
+            name: getTitle(character.mainBuild1Name),
+            desc: character.mainBuild1Desc,
+          };
+        case 2:
+          return {
+            name: getTitle(character.mainBuild2Name),
+            desc: character.mainBuild2Desc,
+          };
+        default:
+          return { name: getTitle("Generic build"), desc: "" };
       }
-    }
-    else
-    {
+    } else {
       switch (buildIndex) {
-        case 1: return { name: getTitle(character.supportBuild1Name), desc: character.supportBuild1Desc };
-        case 2: return { name: getTitle(character.supportBuild2Name), desc: character.supportBuild2Desc };
-        default: return { name: getTitle("Generic build"), desc: "" };
+        case 1:
+          return {
+            name: getTitle(character.supportBuild1Name),
+            desc: character.supportBuild1Desc,
+          };
+        case 2:
+          return {
+            name: getTitle(character.supportBuild2Name),
+            desc: character.supportBuild2Desc,
+          };
+        default:
+          return { name: getTitle("Generic build"), desc: "" };
       }
     }
   };
 
   const buildName = getNameAndDesc().name;
   const buildDesc = getNameAndDesc().desc;
-  const potentials =
-    (overridePotentialIds.length > 0 ? overridePotentialIds.map(id => character.potentials.find(p => p.id === id)).filter(p => p !== undefined)
-    : character.potentials
-    // Filter out potentials that are not relevant to the current build
-    .filter((potential) => potential.build === buildIndex &&
-      ((isMain ? potential.type === 1 : potential.type === 2)|| potential.type === 3)))
-    .sort(sortPotentials);
+  const potentials = (
+    overridePotentialIds.length > 0
+      ? overridePotentialIds
+          .map((id) => character.potentials.find((p) => p.id === id))
+          .filter((p) => p !== undefined)
+      : character.potentials
+          // Filter out potentials that are not relevant to the current build
+          .filter(
+            (potential) =>
+              potential.build === buildIndex &&
+              ((isMain ? potential.type === 1 : potential.type === 2) ||
+                potential.type === 3),
+          )
+  ).sort(sortPotentials);
 
   function getLevel(id: number): number | undefined {
     return levelMap.find(([potentialId, level]) => potentialId === id)?.[1];
@@ -81,48 +103,50 @@
 
 <h3 class="build-name">{buildName}</h3>
 {#if buildDesc!.length > 0}
-    <p class="build-desc">{buildDesc}</p>
+  <p class="build-desc">{buildDesc}</p>
 {/if}
 
 <div class="potentials-container">
-    {#each potentials as potential}
-        <PotentialButton
-            {potential}
-            {showBrief}
-            {showDesc}
-            {activePotentialIds}
-            {onClicked}
-            {editMode}
-            {onLevelChanged}
-            level={levelOverride ?? getLevel(potential.id)}
-            blockClick={blockedPotentialIds.includes(potential.id) ? blockClickReason : undefined}
-        />
-    {/each}
+  {#each potentials as potential}
+    <PotentialButton
+      {potential}
+      {showBrief}
+      {showDesc}
+      {activePotentialIds}
+      {onClicked}
+      {editMode}
+      {onLevelChanged}
+      level={levelOverride ?? getLevel(potential.id)}
+      blockClick={blockedPotentialIds.includes(potential.id)
+        ? blockClickReason
+        : undefined}
+    />
+  {/each}
 </div>
 
 <style>
-.potentials-container {
+  .potentials-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 1rem;
-}
+  }
 
-@media (min-width: 768px) {
+  @media (min-width: 768px) {
     .potentials-container {
-        grid-template-columns: repeat(auto-fill, 300px);
-        justify-content: start;
+      grid-template-columns: repeat(auto-fill, 300px);
+      justify-content: start;
     }
-}
+  }
 
-.build-name {
+  .build-name {
     font-size: 1.5rem;
     font-weight: 700;
     padding: 0.5rem 0;
-}
+  }
 
-.build-desc {
+  .build-desc {
     font-size: 1rem;
     font-weight: normal;
     margin-bottom: 1rem;
-}
+  }
 </style>
