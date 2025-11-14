@@ -292,6 +292,7 @@
     border-radius: 64px;
     outline: none;
     background-color: var(--primary-bg-dark);
+    accent-color: var(--secondary-bg);
     transition: 0.2s;
   }
 

@@ -330,8 +330,9 @@
   }
 
   .build-container > .build-container-button {
-    padding: 1rem;
-    margin: 1rem;
+    padding: 1rem 2rem;
+    margin: 1rem 0.25rem;
+    border-radius: 100px;
   }
 
   .build-grid {

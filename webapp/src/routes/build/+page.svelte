@@ -263,7 +263,7 @@
 
 <div class="build-editor">
   <div class="button-container">
-    <label>
+    <label class="toggle">
       <input type="checkbox" name="editMode" bind:checked={editMode} />
       Edit Mode
     </label>
