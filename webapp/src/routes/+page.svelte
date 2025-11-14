@@ -71,13 +71,21 @@
   function addBuilds(importedBuilds: BuildData[]) {
     try {
       if (!Array.isArray(importedBuilds)) {
-        throw new Error("Invalid format: expected a JSON array.");
+        addToast({
+          message: `JSON array expected!`,
+          type: "error",
+        });
+        return;
       }
 
       let hasInvalidBuild = false;
+      let usedIds = new Set<string>();
       for (let i = 0; i < importedBuilds.length; i++) {
         try {
           validate(importedBuilds[i]);
+          if (usedIds.has(importedBuilds[i].id))
+            throw new Error(`Duplicate ID: ${importedBuilds[i].id}`);
+          usedIds.add(importedBuilds[i].id);
         } catch (error) {
           console.error(`Validation failed for build ${i + 1}:`, error);
           importedBuilds.splice(i, 1);
@@ -329,7 +337,7 @@
     border-radius: 4px;
   }
 
-  .build-container > .build-container-button {
+  .build-container-button {
     padding: 1rem 2rem;
     margin: 1rem 0.25rem;
     border-radius: 100px;
