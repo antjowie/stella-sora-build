@@ -18,8 +18,8 @@
     type Potential,
   } from "$lib/database";
   import { loadPreferenceBool } from "$lib/util";
-  import { fade, fly } from "svelte/transition";
-  import { afterNavigate, replaceState } from "$app/navigation";
+  import { fly } from "svelte/transition";
+  import { replaceState } from "$app/navigation";
   import { onMount, tick } from "svelte";
   import { addToast } from "$lib/toastStore";
   import { localStorageBuildsKey } from "$lib/global";
@@ -54,13 +54,16 @@
   let selectedPotentialsViewMode = $state<number[]>(
     defaultBuildData.potentialIds,
   );
-  // If not true, we get hydration warning. Not too sure why actually...
   let editMode = $state(false);
   let showDesc = $state(true);
   let showBrief = $state(true);
   let id: string = $state(crypto.randomUUID());
   // Each entry is a pair of [id, level]
   let levelMap: [number, number][] = $state([]);
+  let localBuilds = $state(getLocalStoredBuilds());
+  const isNewBuild = $derived(
+    localBuilds.find((build) => build.id === id) === undefined,
+  );
   let buildData: BuildData = $derived({
     name,
     description,
@@ -72,6 +75,17 @@
     levelMap,
     editMode,
   });
+  const hasUnsavedChanges = $derived(
+    JSON.stringify(
+      localBuilds
+        .map((build) => {
+          let b = { ...build };
+          b.editMode = editMode;
+          return b;
+        })
+        .find((build) => build.id === id),
+    ) !== JSON.stringify(buildData),
+  );
 
   function handleCharacterSelect(character: Character) {
     switch (selectedRole) {
@@ -124,7 +138,10 @@
   }
 
   function resetBuild() {
-    if (confirm("Are you sure you want to clear this build?")) {
+    if (
+      hasUnsavedChanges === false ||
+      confirm("This will clear your unsaved changes. Are you sure?")
+    ) {
       name = defaultBuildData.name;
       description = defaultBuildData.description;
       id = crypto.randomUUID();
@@ -133,7 +150,6 @@
       supportCharacter2 = undefined;
       selectedPotentials = [];
       levelMap = [];
-      addToast({ message: "Build cleared!", type: "success" });
     }
   }
 
@@ -143,14 +159,14 @@
   }
 
   function saveBuild() {
-    let localBuilds = getLocalStoredBuilds();
     // Check if id already exists, if not this could be a new build or an
     // existing one we modified. In this case we need to regenerate the ID.
     // Otherwise if we send the build back to the original author their build
     // will be overwritten.
-    const buildExists = localBuilds.some((build) => build.id === buildData.id);
-    if (!buildExists) {
-      buildData.id = crypto.randomUUID();
+    if (isNewBuild) {
+      id = crypto.randomUUID();
+      // Update manually cuz reactivity happens after this function
+      buildData.id = id;
     }
 
     let idx = localBuilds.findIndex((build) => build.id === buildData.id);
@@ -160,6 +176,7 @@
       localBuilds = [buildData, ...localBuilds];
     }
     localStorage.setItem(localStorageBuildsKey, JSON.stringify(localBuilds));
+    localBuilds = getLocalStoredBuilds();
     addToast({ message: "Build saved!", type: "success" });
   }
 
@@ -186,15 +203,20 @@
     }
   }
 
-  afterNavigate(async (navigation) => {
+  onMount(async () => {
+    editMode = defaultBuildData.editMode;
+    showDesc = loadPreferenceBool("showDesc", showDesc);
+    showBrief = loadPreferenceBool("showBrief", showBrief);
+
+    // Prevent error in console as navigation handler might not be ready yet
     try {
-      let buildBase64;
+      let buildBase64 = page.url.searchParams.get("build");
       // If we navigate back, the searchParams even though updated with updateState, they always return 0
       // so we just use cached localStorage whenever we do a navigation
       // popstate is on both forward and backward navigation
-      if (navigation.type === "popstate")
+      if (buildBase64 === null) {
         buildBase64 = localStorage.getItem("cachedBuild");
-      else buildBase64 = page.url.searchParams.get("build");
+      }
 
       if (buildBase64 !== null) {
         const build: BuildData = decodeJson(buildBase64);
@@ -216,9 +238,6 @@
       console.error("Error decoding build:", error);
     }
 
-    // Prevent error in console
-    await tick();
-    mounted = true;
     if (
       selectedPotentials.length === 0 &&
       mainCharacter === undefined &&
@@ -227,28 +246,38 @@
     ) {
       editMode = true;
     }
+    await tick();
+    mounted = true;
     updateUrlAndCache(buildData);
   });
 
-  onMount(() => {
-    editMode = defaultBuildData.editMode;
-    showDesc = loadPreferenceBool("showDesc", showDesc);
-    showBrief = loadPreferenceBool("showBrief", showBrief);
-  });
-
-  // Save changes to URL when build data changes
+  // Resize description textarea when content changes
   let descriptionElem: HTMLTextAreaElement | undefined = $state();
   $effect(() => {
     if (descriptionElem) {
       descriptionElem.style.height = "auto";
       descriptionElem.style.height = `${descriptionElem.scrollHeight + 4}px`;
     }
+  });
 
-    selectedPotentialsViewMode = [];
+  // Save changes to URL when build data changes
+  $effect(() => {
     updateUrlAndCache(buildData);
+  });
+
+  // Update page title when build name changes
+  $effect(() => {
     document.title = page.data.title.replace(
       "- Build",
       "- " + (name.length == 0 ? "Build" : name),
+    );
+  });
+
+  // Generate description to display after rendering to prevent hydration mismatch
+  let sanitizedDescription = $state();
+  $effect(() => {
+    sanitizedDescription = DOMPurify.sanitize(
+      marked(description, { async: false }),
     );
   });
 
@@ -267,7 +296,9 @@
       <input type="checkbox" name="editMode" bind:checked={editMode} />
       Edit Mode
     </label>
-    <button onclick={saveBuild}>Save Build</button>
+    {#if isNewBuild === false}
+      <button onclick={saveBuild}>Overwrite Build</button>
+    {/if}
     <button
       onclick={() => {
         id = crypto.randomUUID();
@@ -275,13 +306,10 @@
       }}>Save as new Build</button
     >
     <button onclick={copyBuildURLToClipboard}>Copy Build URL</button>
-    {#if editMode}
-      <button
-        transition:fade={{ duration: 300 }}
-        class="reset-button"
-        onclick={resetBuild}>Reset Build</button
-      >
-    {/if}
+    <button
+      class="reset-button {hasUnsavedChanges ? 'unsaved-changes' : ''}"
+      onclick={resetBuild}>Create new Build</button
+    >
   </div>
 
   {#key editMode}
@@ -315,7 +343,7 @@
         <div class="text-container">
           <h2>{name}</h2>
           <p>
-            {@html DOMPurify.sanitize(marked(description, { async: false }))}
+            {@html sanitizedDescription}
           </p>
         </div>
       {/if}
@@ -465,11 +493,19 @@
   }
 
   .reset-button {
-    background-color: var(--light-red);
+    background-color: var(--secondary-bg);
     color: var(--secondary);
   }
 
   .reset-button:hover {
+    background-color: var(--secondary-bg-dark);
+  }
+
+  .unsaved-changes {
+    background-color: var(--red);
+  }
+
+  .unsaved-changes:hover {
     background-color: var(--red);
   }
 

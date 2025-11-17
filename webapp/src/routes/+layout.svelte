@@ -218,10 +218,11 @@
     --primary-bg-dark: #f3efe7;
     --primary-bg-darker: #e7e3db;
     --secondary-bg: #49568b;
+    --secondary-bg-dark: #264278;
     --bg-stripe: #f9ebb3;
     --green: #89b486;
-    --light-red: #e55833;
     --red: #d14825;
+    --red-light: #e55833;
   }
 
   :global(*, *::before, *::after) {
