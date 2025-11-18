@@ -5,6 +5,11 @@
   import Modal from "$lib/components/Modal.svelte";
   import { afterNavigate } from "$app/navigation";
   import { encodeJson, getLocalStoredBuilds } from "$lib/build";
+  import { fade } from "svelte/transition";
+  import { loadPreferenceBool } from "$lib/util";
+  import { onMount } from "svelte";
+  import { darkModeBrightness, global } from "$lib/global.svelte";
+  import { browser } from "$app/environment";
 
   let { children } = $props();
   let shouldMigrate = $state(false);
@@ -22,6 +27,20 @@
       const encodedBuilds = encodeJson(localBuilds);
       migrationLink = migrationLink + "?import=" + encodedBuilds;
     }
+  });
+
+  try {
+    if (browser) {
+      global.darkMode = loadPreferenceBool("darkMode", false);
+      document.documentElement.classList.toggle("dark", global.darkMode);
+      document.documentElement.classList.remove("not-mounted");
+      localStorage.setItem("darkMode", String(global.darkMode));
+    }
+  } catch (error) {}
+
+  $effect(() => {
+    document.documentElement.classList.toggle("dark", global.darkMode);
+    localStorage.setItem("darkMode", String(global.darkMode));
   });
 </script>
 
@@ -52,7 +71,10 @@
   <meta property="og:image" content={page.data.ogImage} />
 </svelte:head>
 
-<div class="main-container">
+<div
+  class="main-container"
+  style:--brightness={global.darkMode ? darkModeBrightness : 1}
+>
   <nav>
     <a
       class="underline"
@@ -76,6 +98,48 @@
         >
       </p>
     {/if}
+
+    <svg
+      onclick={() => (global.darkMode = !global.darkMode)}
+      role="button"
+      viewBox="0 0 24 24"
+      class="theme-toggle"
+    >
+      {#if global.darkMode}
+        <!-- Moon -->
+        <path
+          d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"
+          fill="#844a7b"
+          in:fade={{ duration: 300, delay: 150 }}
+          out:fade={{ duration: 150 }}
+        />
+      {:else}
+        <!-- Sun -->
+        <circle
+          cx="12"
+          cy="12"
+          r="5"
+          fill="#f9ebb3"
+          in:fade={{ duration: 300, delay: 150 }}
+          out:fade={{ duration: 150 }}
+        />
+        <g
+          stroke="#f9ebb3"
+          stroke-width="2"
+          in:fade={{ duration: 300, delay: 150 }}
+          out:fade={{ duration: 150 }}
+        >
+          <line x1="12" y1="1" x2="12" y2="3" />
+          <line x1="12" y1="21" x2="12" y2="23" />
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+          <line x1="1" y1="12" x2="3" y2="12" />
+          <line x1="21" y1="12" x2="23" y2="12" />
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </g>
+      {/if}
+    </svg>
   </nav>
 
   <Toasts />
@@ -211,7 +275,33 @@
     src: url("$lib/assets/fonts/noto-sans-v42-latin-900.woff2") format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
   }
 
-  :root {
+  :global(*, *::before, *::after) {
+    font-family: inherit;
+    box-sizing: inherit;
+    padding: 0;
+    margin: 0;
+    transition:
+      background-color 0.2s,
+      border-color 0.2s,
+      color 0.2s;
+  }
+
+  :global(html, body) {
+    font-size: 16px;
+    background-color: var(--primary-bg);
+    scrollbar-color: var(--secondary-bg) rgba(0, 0, 0, 0);
+    scrollbar-width: thin;
+    font-family: "Noto Sans", sans-serif;
+    font-optical-sizing: auto;
+    color: var(--primary);
+    box-sizing: border-box;
+    --primary-content: #264278;
+    --primary-bg-dark-content: #f3efe7;
+    --primary-bg-darker-content: #e7e3db;
+  }
+
+  :global(html) {
+    --white: #f9f9f7;
     --primary: #264278;
     --secondary: #f9f9f7;
     --primary-bg: #fbf9f3;
@@ -225,22 +315,19 @@
     --red-light: #e55833;
   }
 
-  :global(*, *::before, *::after) {
-    font-family: inherit;
-    box-sizing: inherit;
-    padding: 0;
-    margin: 0;
-  }
-
-  :global(html, body) {
-    font-size: 16px;
-    background-color: var(--primary-bg);
-    scrollbar-color: var(--secondary-bg) rgba(0, 0, 0, 0);
-    scrollbar-width: thin;
-    font-family: "Noto Sans", sans-serif;
-    font-optical-sizing: auto;
-    color: var(--primary);
-    box-sizing: border-box;
+  :global(html.dark) {
+    --white: #bfbfbf;
+    --primary: #bfbfbf;
+    --secondary: #1e1e1e;
+    --primary-bg: #121212;
+    --primary-bg-dark: #1a1a1a;
+    --primary-bg-darker: #222222;
+    --secondary-bg: #333d64;
+    --secondary-bg-dark: #181d30;
+    --bg-stripe: #3a3a2a;
+    --green: #9fd7a0;
+    --red: #ff6b5a;
+    --red-light: #ff8a70;
   }
 
   @media (max-width: 768px) {
@@ -270,12 +357,8 @@
   }
 
   :global(a.button.primary, button.primary) {
-    color: var(--secondary) !important;
+    color: var(--white) !important;
     background-color: var(--secondary-bg) !important;
-  }
-
-  :global(a.button.primary:hover, button.primary:hover) {
-    background-color: var(--primary) !important;
   }
 
   :global(a:hover:active, button:hover:active) {
@@ -330,7 +413,7 @@
   :global(.underline::before) {
     content: "";
     position: absolute;
-    border-color: var(--secondary);
+    border-color: var(--white);
     border-style: solid;
     border-width: 1px;
     width: 100%;
@@ -364,6 +447,17 @@
     min-width: 100vw;
   }
 
+  .theme-toggle {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+    z-index: 100;
+    transform: translateY(-50%);
+  }
+
   nav {
     position: sticky;
     top: 0;
@@ -376,7 +470,7 @@
   }
 
   nav > a {
-    color: var(--secondary);
+    color: var(--white);
     text-decoration: none;
   }
 
@@ -401,5 +495,9 @@
     padding: 1rem;
     background-color: var(--primary-bg-darker);
     z-index: 1;
+  }
+
+  footer a {
+    color: var(--primary);
   }
 </style>

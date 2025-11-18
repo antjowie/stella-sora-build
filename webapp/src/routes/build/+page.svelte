@@ -22,7 +22,7 @@
   import { replaceState } from "$app/navigation";
   import { onMount, tick } from "svelte";
   import { addToast } from "$lib/toastStore";
-  import { localStorageBuildsKey } from "$lib/global";
+  import { localStorageBuildsKey } from "$lib/global.svelte";
   import { marked } from "marked";
   import DOMPurify from "isomorphic-dompurify";
   // Only allow markdown so user can't run arbitrary code
@@ -196,7 +196,7 @@
     try {
       const data = encodeJson(build);
       replaceState(page.url.pathname + "?&build=" + data, "");
-      localStorage.setItem("cachedBuild", data);
+      if (editMode) localStorage.setItem("cachedBuild", data);
     } catch (error) {
       addToast({ message: "Error saving build!", type: "error" });
       console.error("Error saving build:", error);
@@ -292,6 +292,10 @@
 
 <div class="build-editor">
   <div class="button-container">
+    <button
+      class="reset-button {hasUnsavedChanges ? 'unsaved-changes' : ''}"
+      onclick={resetBuild}>Create new Build</button
+    >
     <label class="toggle">
       <input type="checkbox" name="editMode" bind:checked={editMode} />
       Edit Mode
@@ -306,10 +310,6 @@
       }}>Save as new Build</button
     >
     <button onclick={copyBuildURLToClipboard}>Copy Build URL</button>
-    <button
-      class="reset-button {hasUnsavedChanges ? 'unsaved-changes' : ''}"
-      onclick={resetBuild}>Create new Build</button
-    >
   </div>
 
   {#key editMode}
@@ -321,6 +321,7 @@
         <div class="text-container">
           <label for="name">Build Name:</label>
           <input
+            class="input"
             id="name"
             maxlength="22"
             type="text"
@@ -331,6 +332,7 @@
         <div class="text-container">
           <label for="description">Description (markdown):</label>
           <textarea
+            class="input"
             id="description"
             maxlength="2500"
             bind:value={description}
@@ -494,7 +496,7 @@
 
   .reset-button {
     background-color: var(--secondary-bg);
-    color: var(--secondary);
+    color: var(--white);
   }
 
   .reset-button:hover {
@@ -503,10 +505,12 @@
 
   .unsaved-changes {
     background-color: var(--red);
+    color: var(--secondary);
   }
 
   .unsaved-changes:hover {
     background-color: var(--red);
+    filter: brightness(0.9);
   }
 
   .text-container {
@@ -527,6 +531,10 @@
   .text-container input:focus {
     outline: none;
     border-color: var(--secondary-bg);
+  }
+
+  .input {
+    color: var(--primary);
   }
 
   textarea {
@@ -557,15 +565,17 @@
 
   .character-selector {
     position: relative;
-    border: 3px solid #f3efe7;
+    /*border: 3px solid #f3efe7;*/
     border-radius: 0.5rem;
     overflow: hidden;
     cursor: pointer;
     transition: 0.2s;
-    background-color: var(--primary-bg-dark);
+    background-color: #f3efe7;
     padding: 0;
     display: flex;
     background-size: cover;
+    color: var(--primary-content);
+    filter: brightness(var(--brightness));
   }
 
   .character-selector img {
@@ -626,7 +636,6 @@
     justify-content: center;
     text-align: center;
     padding: 1rem;
-    color: #3e4566;
     font-weight: 600;
   }
 

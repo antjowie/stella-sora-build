@@ -1,5 +1,5 @@
 import { database, getCharacterPortraitUrl } from "$lib/database";
-import { title, url } from "$lib/global";
+import { title, url } from "$lib/global.svelte";
 import type { EntryGenerator } from "./$types";
 
 export const prerender = true;

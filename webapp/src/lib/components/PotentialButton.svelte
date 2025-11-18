@@ -1,8 +1,6 @@
 <script lang="ts">
-  import { base } from "$app/paths";
   import {
     PotentialRarity,
-    potentialRarityColor,
     potentialRarityColorDesaturated,
   } from "$lib/database";
   import type { Potential } from "$lib/database.types";
@@ -11,6 +9,7 @@
   import potentialBorderActive from "$lib/assets/borders/potential-border-active.webp";
   import potentialBorderEdged from "$lib/assets/borders/potential-border-edged.webp";
   import potentialBorderEdgedActive from "$lib/assets/borders/potential-border-edged-active.webp";
+  import { darkModeBrightness, global } from "$lib/global.svelte";
 
   function clampLevel(inLevel: number): number {
     if (inLevel < 1) inLevel = 1;
@@ -235,8 +234,8 @@
       transparent 100%
     );
     -webkit-mask-composite: destination-in;
-    /*filter: brightness(0.9);*/
-    /*filter: drop-shadow(0px 4px 0px rgba(0, 0, 0, 0.2));*/
+    color: var(--primary-content);
+    filter: grayscale(0) brightness(var(--brightness));
   }
 
   .potential .name {
@@ -285,7 +284,7 @@
   }
 
   .potential .edit div {
-    background-color: var(--primary-bg-dark);
+    background-color: var(--primary-bg-dark-content);
     padding: 0 4px;
   }
 
@@ -312,7 +311,7 @@
 
   .active {
     --border-color: var(--green);
-    filter: grayscale(0);
+    filter: grayscale(0) brightness(var(--brightness));
     box-shadow:
       inset var(--radius) var(--radius) var(--border-color),
       inset var(--radius) calc(-1 * var(--radius)) var(--border-color),
@@ -323,7 +322,7 @@
 
   .inactive {
     --border-color: white;
-    filter: grayscale(0.25);
+    filter: grayscale(0.25) brightness(var(--brightness));
   }
 
   .active:hover:active,

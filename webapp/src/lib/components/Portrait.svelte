@@ -8,6 +8,8 @@
     getCharacterPortraitUrl,
   } from "$lib/database";
   import { base } from "$app/paths";
+  import { global } from "$lib/global.svelte";
+  import { darkModeBrightness } from "$lib/global.svelte";
 
   interface Props {
     character: Character;
@@ -18,7 +20,10 @@
 </script>
 
 {#snippet portrait()}
-  <div class="button-wrapper">
+  <div
+    class="button-wrapper"
+    style="--brightness: {global.darkMode ? darkModeBrightness : 1}"
+  >
     <button
       class="button
       {character.grade == 1 ? 'grade-1' : 'grade-2'}
@@ -63,7 +68,8 @@
     display: block;
     cursor: pointer;
     aspect-ratio: 265/362;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5))
+      brightness(var(--brightness));
     transition: 0.2s;
 
     &:hover {
@@ -108,6 +114,7 @@
     overflow: hidden;
     font-weight: 600;
     padding: 0;
+    color: var(--primary-content);
 
     /* bottom and top*/
     &::before {

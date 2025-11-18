@@ -148,6 +148,7 @@
 
   .character-container img {
     width: 12rem;
+    filter: brightness(var(--brightness));
   }
 
   .character-info {

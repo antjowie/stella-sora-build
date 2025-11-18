@@ -1,4 +1,4 @@
-import { title, url } from "$lib/global";
+import { title, url } from "$lib/global.svelte";
 
 export const prerender = true;
 

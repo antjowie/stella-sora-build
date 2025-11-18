@@ -11,9 +11,7 @@ const ajv = new Ajv();
 async function generateDatabase(): Promise<Database> {
   console.log("Fetching and parsing external data...");
   // Validate Database
-  const res = await fetch(
-    "https://raw.githubusercontent.com/antjowie/StellaSoraData/refs/heads/main/database.json",
-  );
+  const res = await fetch("https://stellabuildsdata.pages.dev/database.json");
 
   const database: Database = await res.json();
   const validate = ajv.compile(databaseSchema);
@@ -31,7 +29,7 @@ async function generateDatabase(): Promise<Database> {
 async function fetchPortraits(characters: string[]): Promise<void> {
   fs.mkdirSync("static/portraits", { recursive: true });
   const promises = characters.map(async (character) => {
-    const url = `https://raw.githubusercontent.com/antjowie/StellaSoraData/refs/heads/main/portraits/${character}.webp`;
+    const url = `https://stellabuildsdata.pages.dev/portraits/${character}.webp`;
     const path = `static/portraits/${character}.webp`;
     const buffer = await ky(url).arrayBuffer();
     fs.writeFileSync(path, Buffer.from(buffer));

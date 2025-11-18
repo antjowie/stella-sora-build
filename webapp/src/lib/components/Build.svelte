@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { PotentialRarity } from "$lib/database";
-  import type { Character, Potential } from "$lib/database.types";
+  import type { Character } from "$lib/database.types";
   import { sortPotentials } from "$lib/util";
   import PotentialButton from "./PotentialButton.svelte";
 

@@ -2,7 +2,7 @@ import Ajv from "ajv";
 import type { BuildData } from "./buildData.types";
 import buildDataSchema from "$lib/schemas/buildData.schema.json";
 import { browser } from "$app/environment";
-import { localStorageBuildsKey } from "./global";
+import { localStorageBuildsKey } from "$lib/global.svelte";
 const ajv = new Ajv();
 const ajvValidate = ajv.compile(buildDataSchema);
 
@@ -36,6 +36,7 @@ export function decodeJson(encodedBase64: string): any {
     const build = JSON.parse(decoded);
     return build;
   } catch (e) {
+    console.error(e);
     throw new Error("Invalid build data");
   }
 }

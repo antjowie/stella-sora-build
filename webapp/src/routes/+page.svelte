@@ -5,13 +5,18 @@
   import { decodeJson, encodeJson, validate } from "$lib/build";
   import type { BuildData } from "$lib/buildData.types";
   import { database, getCharacterPortraitUrl } from "$lib/database";
-  import { localStorageBuildsKey, title } from "$lib/global";
+  import {
+    darkModeBrightness,
+    localStorageBuildsKey,
+    title,
+  } from "$lib/global.svelte";
   import { addToast } from "$lib/toastStore";
   import { getLocalStoredBuilds } from "$lib/build";
   import { flip } from "svelte/animate";
   import { fade } from "svelte/transition";
   import { onMount } from "svelte";
   import { page } from "$app/state";
+  import { global } from "$lib/global.svelte";
 
   let localBuilds = $state<BuildData[]>(getLocalStoredBuilds());
   let reorderMode = $state(false);
@@ -146,6 +151,7 @@
     src={landing}
     alt="Landing"
     fetchpriority="high"
+    style:--brightness={global.darkMode ? 0.3 : 0.7}
   />
   <div class="text-container">
     <h1>{title}</h1>
@@ -195,7 +201,9 @@
               animate:flip={{ duration: 300 }}
               out:fade={{ duration: 300 }}
             >
-              <p style:grid-area="title" class="build-title">{build.name}</p>
+              <p style:grid-area="title" class="build-title">
+                {build.name}
+              </p>
               <div
                 style:grid-area="main"
                 class="build-image"
@@ -218,23 +226,24 @@
                 )})"
               ></div>
               <div style:grid-area="buttons" class="build-buttons-container">
-                <button
+                <a
                   class="build-edit"
-                  onclick={() => {
-                    build.editMode = false;
-                    window.location.href = `${base}/build?&build=${encodeJson(build)}`;
-                  }}>View</button
+                  href="/build?&build={encodeJson({
+                    ...build,
+                    editMode: false,
+                  })}">View</a
                 >
-                <button
+                <a
                   class="build-edit"
-                  onclick={() => {
-                    build.editMode = true;
-                    window.location.href = `${base}/build?&build=${encodeJson(build)}`;
-                  }}>Edit</button
+                  href="/build?&build={encodeJson({
+                    ...build,
+                    editMode: true,
+                  })}">Edit</a
                 >
-                <button
+                <a
                   class="build-delete"
-                  onclick={() => deleteBuild(build.id)}>Delete</button
+                  href="/"
+                  onclick={() => deleteBuild(build.id)}>Delete</a
                 >
               </div>
             </div>
@@ -260,8 +269,9 @@
     width: 100%;
     height: 100%;
     object-position: center;
-    filter: blur(6px) brightness(0.7);
+    filter: blur(6px) brightness(var(--brightness));
     transform: scale(1.2);
+    transition: 0.2s;
   }
 
   .text-container {
@@ -274,21 +284,19 @@
     padding: 1rem;
     padding-top: 4rem;
     text-align: center;
+    color: var(--white);
   }
 
   .text-container h1 {
-    color: var(--secondary);
     padding-top: 2rem;
     font-size: 4rem;
   }
 
   .text-container h2 {
-    color: var(--secondary);
     font-size: 2rem;
   }
 
   .text-container p {
-    color: var(--secondary);
     font-size: 1.5rem;
   }
 
@@ -341,6 +349,10 @@
     padding: 1rem 2rem;
     margin: 1rem 0.25rem;
     border-radius: 100px;
+
+    &:hover {
+      background-color: var(--primary-bg-darker);
+    }
   }
 
   .build-grid {
@@ -396,6 +408,7 @@
     background-repeat: no-repeat;
     background-size: 130%;
     background-position: 50% 50%;
+    filter: brightness(var(--brightness));
   }
 
   .build-buttons-container {
@@ -406,14 +419,22 @@
     gap: 0.5rem;
   }
 
-  .build-buttons-container > button {
+  .build-buttons-container > a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: var(--primary-bg-dark);
     width: 100%;
     height: 100%;
-  }
+    border-radius: 4px;
+    padding: 0.5rem;
+    user-select: none;
+    transition: 0.2s;
 
-  .build-container-button:hover {
-    background-color: var(--primary-bg-darker);
+    &:hover {
+      background-color: var(--primary-bg-darker);
+      transform: scale(1.05);
+    }
   }
 
   .build-delete {
@@ -422,6 +443,11 @@
 
   .build-delete:hover {
     color: var(--secondary);
-    background-color: var(--red);
+    background-color: var(--red) !important;
+  }
+
+  a {
+    text-decoration: none;
+    color: var(--primary);
   }
 </style>

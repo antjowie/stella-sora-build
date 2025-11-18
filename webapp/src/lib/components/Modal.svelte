@@ -74,7 +74,7 @@
   }
 
   .modal-header h2 {
-    color: var(--secondary);
+    color: var(--white);
     margin: 0;
   }
 

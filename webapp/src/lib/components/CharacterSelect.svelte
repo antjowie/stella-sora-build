@@ -6,6 +6,7 @@
     getElementIconUrlFromString,
   } from "$lib/database";
   import Portrait from "$lib/components/Portrait.svelte";
+  import { darkModeBrightness, global } from "$lib/global.svelte";
 
   interface Props {
     excludedCharacters?: number[];
@@ -81,6 +82,7 @@
     display: flex;
     align-items: center;
     height: 2.5rem;
+    color: var(--primary);
   }
 
   .toggle {
@@ -94,6 +96,7 @@
     right: 6px;
     width: 3rem;
     transform: translateY(-50%);
+    filter: brightness(var(--brightness));
   }
 
   .character-container {
