@@ -149,8 +149,15 @@
       role="button"
       aria-current={priority === 1}
       onclick={(e) => handlePriorityChange(e, 1)}
+      style:--color-bg="var(--red)"
     >
-      <Icon icon="mdi:triangle-down" color="var(--red)" />
+      <Icon
+        icon="mdi:triangle-down"
+        color="var(--red)"
+        width="0.9em"
+        height="0.9em"
+      />
+      <Icon icon="mdi:triangle-down-outline" color="white" />
     </div>
   {:else if visualPriority === 2}
     <div
@@ -158,6 +165,7 @@
       role="button"
       aria-current={priority === 2}
       onclick={(e) => handlePriorityChange(e, 2)}
+      style:--color-bg="currentColor"
     >
       <Icon icon="mdi:horizontal-line" />
     </div>
@@ -167,8 +175,15 @@
       role="button"
       aria-current={priority === 3}
       onclick={(e) => handlePriorityChange(e, 3)}
+      style:--color-bg="var(--green)"
     >
-      <Icon icon="mdi:triangle" color="var(--green)" />
+      <Icon
+        icon="mdi:triangle"
+        color="var(--green)"
+        width="0.9em"
+        height="0.9em"
+      />
+      <Icon icon="mdi:triangle-outline" color="white" />
     </div>
   {/if}
 {/snippet}
@@ -322,13 +337,16 @@
   }
 
   .priority {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
+    display: grid;
+    place-items: center;
+    grid-template-columns: 1;
+    grid-template-rows: 1;
+    font-size: 1.25rem;
     height: 1.5rem;
     width: 1.5rem;
+
     --border-color: transparent;
+    --radius: 100px;
     transition: 0.2s;
     box-shadow:
       inset var(--radius) var(--radius) var(--border-color),
@@ -338,8 +356,20 @@
       inset calc(-1 * var(--radius)) var(--radius) var(--border-color);
   }
 
-  .button.priority[aria-current="true"] {
-    --border-color: var(--green);
+  :global(.priority svg) {
+    grid-row: 1 / 2;
+    grid-column: 1 / 2;
+    /*filter: saturate(2);*/
+    transition: 0.2s;
+    /*filter: saturate(calc((2 - var(--brightness)) * 2));*/
+  }
+
+  :global(.button.priority[aria-current="true"]) {
+    --border-color: var(--color-bg);
+
+    & svg {
+      color: white !important;
+    }
   }
 
   .potential .level {
@@ -434,6 +464,6 @@
 
   .active:hover,
   .inactive:hover {
-    transform: scale(1.05);
+    transform: scale(1.01);
   }
 </style>
