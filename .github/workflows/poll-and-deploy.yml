@@ -67,3 +67,4 @@ jobs:
     needs: poll-external-repo
     if: needs.poll-external-repo.outputs.changed == 'true'
     uses: ./.github/workflows/cicd.yml
+    secrets: inherit
