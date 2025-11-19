@@ -6,14 +6,13 @@
     getElementIconUrlFromString,
   } from "$lib/database";
   import Portrait from "$lib/components/Portrait.svelte";
-  import { darkModeBrightness, global } from "$lib/global.svelte";
 
   interface Props {
     excludedCharacters?: number[];
     clickOverride?: (character: Character) => void;
   }
 
-  let { excludedCharacters = [], clickOverride }: Props = $props();
+  const { excludedCharacters = [], clickOverride }: Props = $props();
 
   let searchQuery = $state("");
   const allElementsStrings: string[] = Object.values(CharacterElement)

@@ -9,7 +9,7 @@
     excludedCharacters: number[];
   }
 
-  let { onSelect, onClose, excludedCharacters }: Props = $props();
+  const { onSelect, onClose, excludedCharacters }: Props = $props();
 
   function handleSelect(character: Character) {
     onSelect(character);

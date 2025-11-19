@@ -129,6 +129,7 @@
     {showDesc}
     {showBrief}
     {showMain}
+    showPriority={false}
     levelOverride={levelSlider}
     editMode={false}
   />
