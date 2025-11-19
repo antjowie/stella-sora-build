@@ -41,6 +41,7 @@
     "vitest-browser-svelte": "^2.0.1"
   },
   "dependencies": {
+    "@iconify/svelte": "^5.1.0",
     "ajv": "^8.17.1",
     "isomorphic-dompurify": "^2.32.0",
     "marked": "^17.0.0"

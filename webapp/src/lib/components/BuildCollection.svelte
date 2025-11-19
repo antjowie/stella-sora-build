@@ -2,6 +2,7 @@
   import { PotentialRarity, type Character } from "$lib/database";
   import { fly } from "svelte/transition";
   import Build from "./Build.svelte";
+  import type { PotentialConfig } from "$lib/buildData.types";
 
   interface Props {
     character: Character;
@@ -12,37 +13,31 @@
     activePotentialIds?: number[];
     onClicked?: (id: number) => void;
     editMode: boolean;
-    onLevelChanged?: (id: number, level: number) => void;
-    levelMap?: [number, number][];
+    onPotentialConfigChanged?: (id: number, config: PotentialConfig) => void;
+    potentialConfigs?: [number, PotentialConfig][];
     levelOverride?: number;
+    showPriority: boolean;
+  }
+  const props: Props = $props();
+
+  const activeEpicPotentials =
+    props.activePotentialIds?.filter(
+      (id) =>
+        props.character.potentials.find((p) => p.id === id)?.rarity ===
+        PotentialRarity.Main,
+    ) ?? [];
+  let blockedPotentialIds: number[] = [];
+  if (activeEpicPotentials.length >= 2) {
+    const epicPotentials = props.character.potentials.filter(
+      (id) => id.rarity === PotentialRarity.Main,
+    );
+    blockedPotentialIds = epicPotentials
+      .filter((p) => activeEpicPotentials.includes(p.id) === false)
+      .map((p) => p.id);
   }
 
-  let {
-    character,
-    showDesc,
-    showBrief,
-    showMain,
-    title = "",
-    activePotentialIds = [],
-    onClicked,
-    editMode,
-    onLevelChanged,
-    levelMap = [],
-    levelOverride,
-  }: Props = $props();
-
-  let blockedPotentialIds: number[] = $state([]);
-
-  let data = $derived({
-    showDesc,
-    showBrief,
-    character,
-    activePotentialIds,
-    onClicked,
-    editMode,
-    onLevelChanged,
-    levelMap,
-    levelOverride,
+  const data = $derived({
+    ...props,
     blockedPotentialIds,
     blockClickReason: "Can only select 2 main potentials!",
   });
@@ -53,37 +48,20 @@
   const build4 = $derived({ buildIndex: 1, isMain: false, ...data });
   const build5 = $derived({ buildIndex: 2, isMain: false, ...data });
   const build6 = $derived({ buildIndex: 3, isMain: false, ...data });
-
-  $effect(() => {
-    const activeEpicPotentials = activePotentialIds.filter(
-      (id) =>
-        character.potentials.find((p) => p.id === id)?.rarity ===
-        PotentialRarity.Main,
-    );
-    blockedPotentialIds = [];
-    if (activeEpicPotentials.length >= 2) {
-      const epicPotentials = character.potentials.filter(
-        (id) => id.rarity === PotentialRarity.Main,
-      );
-      blockedPotentialIds = epicPotentials
-        .filter((p) => activeEpicPotentials.includes(p.id) === false)
-        .map((p) => p.id);
-    }
-  });
 </script>
 
-{#key showMain}
+{#key props.showMain}
   <div
     in:fly={{ duration: 300, delay: 150, x: -100 }}
     out:fly={{ duration: 150, x: 100 }}
   >
-    {#if showMain}
-      <h1 class="title">{title.length == 0 ? "Main builds" : title}</h1>
+    {#if props.showMain}
+      <h1 class="title">{props.title ?? "Main builds"}</h1>
       <Build {...build1} />
       <Build {...build2} />
       <Build {...build3} />
     {:else}
-      <h1 class="title">{title.length == 0 ? "Support builds" : title}</h1>
+      <h1 class="title">{props.title ?? "Support builds"}</h1>
       <Build {...build4} />
       <Build {...build5} />
       <Build {...build6} />

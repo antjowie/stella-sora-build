@@ -16,7 +16,7 @@
     clickOverride?: (character: Character) => void;
   }
 
-  let { character, clickOverride }: Props = $props();
+  const { character, clickOverride }: Props = $props();
 </script>
 
 {#snippet portrait()}

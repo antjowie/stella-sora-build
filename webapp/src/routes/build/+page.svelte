@@ -7,7 +7,7 @@
     getLocalStoredBuilds,
     validate,
   } from "$lib/build";
-  import type { BuildData } from "$lib/buildData.types";
+  import type { BuildData, PotentialConfig } from "$lib/buildData.types";
   import Build from "$lib/components/Build.svelte";
   import BuildCollection from "$lib/components/BuildCollection.svelte";
   import CharacterSelectModal from "$lib/components/CharacterSelectModal.svelte";
@@ -59,7 +59,7 @@
   let showBrief = $state(true);
   let id: string = $state(crypto.randomUUID());
   // Each entry is a pair of [id, level]
-  let levelMap: [number, number][] = $state([]);
+  let potentialConfigs: [number, PotentialConfig][] = $state([]);
   let localBuilds = $state(getLocalStoredBuilds());
   const isNewBuild = $derived(
     localBuilds.find((build) => build.id === id) === undefined,
@@ -72,7 +72,7 @@
     support1Id: supportCharacter1?.id,
     support2Id: supportCharacter2?.id,
     potentialIds: selectedPotentials,
-    levelMap,
+    potentialConfigs,
     editMode,
   });
   const hasUnsavedChanges = $derived(
@@ -122,7 +122,9 @@
     selectedPotentials = selectedPotentials.filter((id) =>
       availableIds.includes(id),
     );
-    levelMap = levelMap.filter(([id, level]) => availableIds.includes(id));
+    potentialConfigs = potentialConfigs.filter(([id, obj]) =>
+      availableIds.includes(id),
+    );
     showCharacterModal = false;
   }
 
@@ -149,7 +151,7 @@
       supportCharacter1 = undefined;
       supportCharacter2 = undefined;
       selectedPotentials = [];
-      levelMap = [];
+      potentialConfigs = [];
     }
   }
 
@@ -180,12 +182,12 @@
     addToast({ message: "Build saved!", type: "success" });
   }
 
-  function onLevelChanged(id: number, level: number) {
-    let idx = levelMap.findIndex(([id2, level]) => id === id2);
+  function onPotentialConfigChanged(id: number, config: PotentialConfig) {
+    let idx = potentialConfigs.findIndex(([id2, c]) => id === id2);
     if (idx >= 0) {
-      levelMap[idx] = [id, level];
-    } else if (levelMap) {
-      levelMap.push([id, level]);
+      potentialConfigs[idx] = [id, config];
+    } else {
+      potentialConfigs.push([id, config]);
     }
   }
 
@@ -230,7 +232,24 @@
         supportCharacter1 = getChar(build.support1Id);
         supportCharacter2 = getChar(build.support2Id);
         selectedPotentials = build.potentialIds;
-        levelMap = build.levelMap ?? [];
+        const levelMap = build.levelMap ?? [];
+        potentialConfigs = build.potentialConfigs ?? [];
+        // Import levelMap into potentialConfigs
+        for (let i = 0; i < levelMap.length; i++) {
+          const levelKv = levelMap[i];
+          const idx = potentialConfigs.findIndex((kv) => kv[0] === levelKv[0]);
+          if (idx >= 0) {
+            potentialConfigs[idx][1].level = levelKv[1];
+          } else {
+            potentialConfigs.push([
+              levelKv[0],
+              {
+                level: levelKv[1],
+              },
+            ]);
+          }
+        }
+
         editMode = build.editMode;
       }
     } catch (error) {
@@ -431,10 +450,11 @@
                   {showDesc}
                   {showBrief}
                   {editMode}
-                  {onLevelChanged}
-                  {levelMap}
+                  {onPotentialConfigChanged}
+                  {potentialConfigs}
                   title={character.name}
                   {character}
+                  showPriority={true}
                   showMain={mainCharacter !== undefined &&
                     character.id === mainCharacter.id}
                   activePotentialIds={selectedPotentials}
@@ -451,8 +471,9 @@
                 {showBrief}
                 {showDesc}
                 {editMode}
-                {levelMap}
+                {potentialConfigs}
                 {character}
+                showPriority={true}
                 overrideTitle=""
                 overridePotentialIds={selectedPotentials}
                 activePotentialIds={selectedPotentialsViewMode}

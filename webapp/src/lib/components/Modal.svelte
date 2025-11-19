@@ -8,7 +8,7 @@
     onClose: () => void;
   }
 
-  let { title, onClose, content }: Props = $props();
+  const { title, onClose, content }: Props = $props();
 
   function handleBackdropClick(event: MouseEvent) {
     if (event.target === event.currentTarget) {

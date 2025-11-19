@@ -2,6 +2,15 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "BuildData",
   "type": "object",
+  "$defs": {
+    "PotentialConfig": {
+      "type": "object",
+      "properties": {
+        "level": { "type": "integer" },
+        "priority": { "type": "integer" }
+      }
+    }
+  },
   "required": ["name", "description", "id", "potentialIds", "editMode"],
   "properties": {
     "name": {
@@ -28,7 +37,23 @@
         "type": "integer"
       }
     },
+    "potentialConfigs": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": [
+          { "type": "integer" },
+          {
+            "type": "object",
+            "$ref": "#/$defs/PotentialConfig"
+          }
+        ],
+        "minItems": 2,
+        "maxItems": 2
+      }
+    },
     "levelMap": {
+      "$comment": "deprecated, will keep to not lose custom builds, use potentialConfig object map in favor",
       "type": "array",
       "items": {
         "type": "array",

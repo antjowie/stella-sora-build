@@ -1,6 +1,7 @@
 <script lang="ts">
+  import type { PotentialConfig } from "$lib/buildData.types";
   import type { Character } from "$lib/database.types";
-  import { sortPotentials } from "$lib/util";
+  import { sortPotentialPriorities, sortPotentials } from "$lib/util";
   import PotentialButton from "./PotentialButton.svelte";
 
   interface Props {
@@ -14,14 +15,15 @@
     activePotentialIds?: number[];
     onClicked?: (id: number) => void;
     editMode: boolean;
-    onLevelChanged?: (id: number, level: number) => void;
-    levelMap?: [number, number][];
+    onPotentialConfigChanged?: (id: number, config: PotentialConfig) => void;
+    potentialConfigs?: [number, PotentialConfig][];
     levelOverride?: number;
+    showPriority: boolean;
     blockClickReason?: string;
     blockedPotentialIds?: number[];
   }
 
-  let {
+  const {
     buildIndex,
     isMain,
     overrideTitle,
@@ -32,9 +34,10 @@
     activePotentialIds = [],
     onClicked,
     editMode,
-    onLevelChanged,
-    levelMap = [],
+    onPotentialConfigChanged,
+    potentialConfigs = [],
     levelOverride,
+    showPriority,
     blockClickReason,
     blockedPotentialIds = [],
   }: Props = $props();
@@ -80,7 +83,7 @@
 
   const buildName = getNameAndDesc().name;
   const buildDesc = getNameAndDesc().desc;
-  const potentials = (
+  let potentials = (
     overridePotentialIds.length > 0
       ? overridePotentialIds
           .map((id) => character.potentials.find((p) => p.id === id))
@@ -95,8 +98,31 @@
           )
   ).sort(sortPotentials);
 
-  function getLevel(id: number): number | undefined {
-    return levelMap.find(([potentialId, level]) => potentialId === id)?.[1];
+  if (editMode === false) {
+    potentials = potentials.sort(sortPotentialPriorities(potentialConfigs));
+  }
+
+  function getPotentialConfig(id: number): PotentialConfig {
+    const orig =
+      potentialConfigs.find(
+        ([potentialId, value]) => potentialId === id,
+      )?.[1] ?? {};
+
+    // Create a copy of the config object
+    let config = { ...orig };
+
+    if (levelOverride !== undefined) {
+      config.level = levelOverride;
+    }
+
+    // If we want to show priority and it's not already set
+    // set it to a default value
+    // 0 means don't show, 1, 2 and 3 are low to high priority
+    if (showPriority && config.priority === undefined) {
+      config.priority = 2;
+    }
+
+    return config;
   }
 </script>
 
@@ -114,8 +140,8 @@
       {activePotentialIds}
       {onClicked}
       {editMode}
-      {onLevelChanged}
-      level={levelOverride ?? getLevel(potential.id)}
+      {onPotentialConfigChanged}
+      potentialConfig={getPotentialConfig(potential.id)}
       blockClick={blockedPotentialIds.includes(potential.id)
         ? blockClickReason
         : undefined}

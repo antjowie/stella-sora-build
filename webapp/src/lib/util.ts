@@ -1,4 +1,5 @@
 import { browser } from "$app/environment";
+import type { PotentialConfig } from "./buildData.types";
 import type { Potential } from "./database.types";
 
 export function loadPreferenceBool(
@@ -26,3 +27,19 @@ export function loadPreferenceNum(key: string, defaultValue: number): number {
 // This seems to match the game quite well
 export const sortPotentials = (a: Potential, b: Potential) =>
   a.id + (3 - a.rarity) * 1000 - (b.id + (3 - b.rarity) * 1000);
+
+export const sortPotentialPriorities =
+  (potentialConfigs: [number, PotentialConfig][]) =>
+  (a: Potential, b: Potential) => {
+    {
+      const aPrio =
+        potentialConfigs.find(
+          ([potentialId, value]) => potentialId === a.id,
+        )?.[1].priority ?? 2;
+      const bPrio =
+        potentialConfigs.find(
+          ([potentialId, value]) => potentialId === b.id,
+        )?.[1].priority ?? 2;
+      return bPrio - aPrio;
+    }
+  };

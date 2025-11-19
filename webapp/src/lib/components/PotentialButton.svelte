@@ -9,7 +9,8 @@
   import potentialBorderActive from "$lib/assets/borders/potential-border-active.webp";
   import potentialBorderEdged from "$lib/assets/borders/potential-border-edged.webp";
   import potentialBorderEdgedActive from "$lib/assets/borders/potential-border-edged-active.webp";
-  import { darkModeBrightness, global } from "$lib/global.svelte";
+  import Icon from "@iconify/svelte";
+  import type { PotentialConfig } from "$lib/buildData.types";
 
   function clampLevel(inLevel: number): number {
     if (inLevel < 1) inLevel = 1;
@@ -25,11 +26,11 @@
     blockClick?: string;
     onClicked?: (id: number) => void;
     editMode: boolean;
-    level?: number;
-    onLevelChanged?: (id: number, level: number) => void;
+    onPotentialConfigChanged?: (id: number, level: PotentialConfig) => void;
+    potentialConfig: PotentialConfig;
   }
 
-  let {
+  const {
     potential,
     showBrief,
     showDesc,
@@ -37,26 +38,27 @@
     blockClick = undefined,
     onClicked,
     editMode,
-    level = -1,
-    onLevelChanged,
+    onPotentialConfigChanged,
+    potentialConfig,
   }: Props = $props();
 
   const active = $derived(activePotentialIds.includes(potential.id));
   // We store params as [param1, param2, param3, ...]
   // But some params don't scale with level and only have 1 value
   // So max level is decided by biggest array, and others just repeat
-  const maxLevel = $derived(
-    Object.values(potential.params).reduce(
-      (max, cur) => Math.max(cur.values.length, max),
-      1,
+  const maxLevel = Object.values(potential.params).reduce(
+    (max, cur) => Math.max(cur.values.length, max),
+    1,
+  );
+
+  const level = $derived(
+    clampLevel(
+      potentialConfig.level ??
+        (potential.rarity === PotentialRarity.Main ? 1 : 6),
     ),
   );
-  const clampedLevel = $derived(clampLevel(level));
 
-  if (level === -1 || level === undefined) {
-    // svelte-ignore state_referenced_locally
-    level = potential.rarity === PotentialRarity.Main ? 1 : 6;
-  }
+  const priority = $derived(potentialConfig.priority ?? 0);
 
   const replaceText = (text: string) => {
     // Replace all span color with bold
@@ -74,7 +76,7 @@
       );
       const params = potential.params.find((param) => param.idx === idx);
       if (params !== undefined) {
-        const levelIdx = Math.min(clampedLevel - 1, params.values.length - 1);
+        const levelIdx = Math.min(level - 1, params.values.length - 1);
         const param = params.values[levelIdx];
         text = text.replace(paramText, param);
       } else {
@@ -85,29 +87,6 @@
     return text;
   };
 
-  function handleLevelChange(event: Event) {
-    const target = event.target as HTMLDivElement;
-    const value = target.textContent;
-    let newLevel = clampedLevel;
-    if (value === "++") {
-      newLevel = clampedLevel + 5;
-    } else if (value === "+") {
-      newLevel = clampedLevel + 1;
-    } else if (value === "−−") {
-      newLevel = clampedLevel - 5;
-    } else if (value === "−") {
-      newLevel = clampedLevel - 1;
-    }
-
-    newLevel = clampLevel(newLevel);
-
-    if (newLevel !== clampedLevel) {
-      level = newLevel;
-      onLevelChanged?.(potential.id, clampedLevel);
-    }
-    event.stopPropagation();
-  }
-
   function handleOnClick() {
     if (onClicked) {
       if (blockClick) {
@@ -115,6 +94,41 @@
       } else {
         onClicked(potential.id);
       }
+    }
+  }
+
+  function handleLevelChange(event: Event) {
+    event.stopPropagation();
+    const target = event.target as HTMLDivElement;
+    const value = target.textContent;
+    let newLevel = level;
+    if (value === "++") {
+      newLevel = level + 5;
+    } else if (value === "+") {
+      newLevel = level + 1;
+    } else if (value === "−−") {
+      newLevel = level - 5;
+    } else if (value === "−") {
+      newLevel = level - 1;
+    }
+
+    newLevel = clampLevel(newLevel);
+
+    if (newLevel !== level) {
+      onPotentialConfigChanged?.(potential.id, {
+        ...potentialConfig,
+        level: newLevel,
+      });
+    }
+  }
+
+  function handlePriorityChange(event: Event, newPriority: number) {
+    event.stopPropagation();
+    if (potentialConfig.priority !== newPriority) {
+      onPotentialConfigChanged?.(potential.id, {
+        ...potentialConfig,
+        priority: newPriority,
+      });
     }
   }
 
@@ -127,6 +141,95 @@
   const showDescLayout = $derived(showDesc || editMode);
 </script>
 
+{#snippet priorityComponent(visualPriority: number, canEdit: boolean)}
+  {#if visualPriority === 1}
+    <div
+      class="{canEdit ? 'button' : ''} priority"
+      role="button"
+      aria-current={priority === 1}
+      onclick={(e) => handlePriorityChange(e, 1)}
+    >
+      <Icon icon="mdi:triangle-down" color="var(--red)" />
+    </div>
+  {:else if visualPriority === 2}
+    <div
+      class="{canEdit ? 'button' : ''} priority"
+      role="button"
+      aria-current={priority === 2}
+      onclick={(e) => handlePriorityChange(e, 2)}
+    >
+      <Icon icon="mdi:horizontal-line" />
+    </div>
+  {:else if visualPriority === 3}
+    <div
+      class="{canEdit ? 'button' : ''} priority"
+      role="button"
+      aria-current={priority === 3}
+      onclick={(e) => handlePriorityChange(e, 3)}
+    >
+      <Icon icon="mdi:triangle" color="var(--green)" />
+    </div>
+  {/if}
+{/snippet}
+
+{#snippet nameComponent()}
+  <div class="name">
+    <span>{potential.name}</span>
+    <div class="priority-container">
+      {#if editMode}
+        {@render priorityComponent(3, true)}
+        {@render priorityComponent(2, true)}
+        {@render priorityComponent(1, true)}
+      {:else}
+        {#if priority === 3}
+          {@render priorityComponent(3, false)}
+        {/if}
+        <!-- {#if priority === 2}
+          {@render priorityComponent(2, false)}
+        {/if} -->
+        {#if priority === 1}
+          {@render priorityComponent(1, false)}
+        {/if}
+      {/if}
+    </div>
+  </div>
+{/snippet}
+
+{#snippet lvlComponent()}
+  <div class="level {showDescLayout ? 'showDesc' : 'notShowDesc'}">
+    Lv. {level}
+    {#if editMode}
+      <div class="edit clampedLevel">
+        <div
+          class="button {level == 1 ? 'disabled' : ''}"
+          onclick={handleLevelChange}
+        >
+          −−
+        </div>
+        <div
+          class="button {level == 1 ? 'disabled' : ''}"
+          onclick={handleLevelChange}
+        >
+          −
+        </div>
+        <span>Lv. {level}</span>
+        <div
+          class="button {level == maxLevel ? 'disabled' : ''}"
+          onclick={handleLevelChange}
+        >
+          +
+        </div>
+        <div
+          class="button {level == maxLevel ? 'disabled' : ''}"
+          onclick={handleLevelChange}
+        >
+          ++
+        </div>
+      </div>
+    {/if}
+  </div>
+{/snippet}
+
 <button
   class="potential
     {onClicked && blockClick ? 'disabled' : ''}
@@ -138,48 +241,13 @@
     handleOnClick();
   }}
 >
-  <!-- Put name first or after level based on layout for proper selection logic -->
+  <!-- Put name first or after level based on layout for proper text select logic -->
   {#if showDescLayout}
-    <p class="name">
-      <span>{potential.name}</span>
-    </p>
-  {/if}
-  <div class="level {showDescLayout ? 'showDesc' : 'notShowDesc'}">
-    Lv. {clampedLevel}
-    {#if editMode}
-      <div class="edit clampedLevel">
-        <div
-          class={clampedLevel == 1 ? "disabled" : ""}
-          onclick={handleLevelChange}
-        >
-          −−
-        </div>
-        <div
-          class={clampedLevel == 1 ? "disabled" : ""}
-          onclick={handleLevelChange}
-        >
-          −
-        </div>
-        <span>Lv. {clampedLevel}</span>
-        <div
-          class={clampedLevel == maxLevel ? "disabled" : ""}
-          onclick={handleLevelChange}
-        >
-          +
-        </div>
-        <div
-          class={clampedLevel == maxLevel ? "disabled" : ""}
-          onclick={handleLevelChange}
-        >
-          ++
-        </div>
-      </div>
-    {/if}
-  </div>
-  {#if showDescLayout === false}
-    <p class="name">
-      <span>{potential.name}</span>
-    </p>
+    {@render nameComponent()}
+    {@render lvlComponent()}
+  {:else}
+    {@render lvlComponent()}
+    {@render nameComponent()}
   {/if}
   {#if showDesc}
     <!-- <p class="description">{replaceText(showBrief ? potential.descShort : potential.descLong)}</p> -->
@@ -241,6 +309,37 @@
   .potential .name {
     font-weight: 700;
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .priority-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .priority {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 1.5rem;
+    width: 1.5rem;
+    --border-color: transparent;
+    transition: 0.2s;
+    box-shadow:
+      inset var(--radius) var(--radius) var(--border-color),
+      inset var(--radius) calc(-1 * var(--radius)) var(--border-color),
+      inset calc(-1 * var(--radius)) calc(-1 * var(--radius))
+        var(--border-color),
+      inset calc(-1 * var(--radius)) var(--radius) var(--border-color);
+  }
+
+  .button.priority[aria-current="true"] {
+    --border-color: var(--green);
   }
 
   .potential .level {
@@ -263,12 +362,6 @@
     height: calc(var(--padding));
   }
 
-  .potential.active .level.notShowDesc {
-    color: white !important;
-    /* Not sure if it fits but if it's to unreadable we can add shadow */
-    /*text-shadow: 0 0 2px var(--primary);*/
-  }
-
   .potential .edit {
     position: absolute;
     top: 0;
@@ -284,7 +377,6 @@
   }
 
   .potential .edit div {
-    background-color: var(--primary-bg-dark-content);
     padding: 0 4px;
   }
 
@@ -301,12 +393,22 @@
     }
   }
 
+  /* For the param values */
   :global(.outline) {
     /*-webkit-text-stroke: 3px var(--secondary);*/
     -webkit-text-stroke: 3px rgba(255, 255, 255, 0.75);
     paint-order: stroke fill;
     /*font-weight: 900;*/
     /*font-weight: ;*/
+  }
+
+  .button {
+    background-color: var(--primary-bg-dark-content);
+
+    transition: filter 0.2s;
+    &:hover {
+      filter: brightness(0.8);
+    }
   }
 
   .active {
