@@ -83,6 +83,7 @@
 
   const buildName = getNameAndDesc().name;
   const buildDesc = getNameAndDesc().desc;
+  // svelte-ignore non_reactive_update
   let potentials = (
     overridePotentialIds.length > 0
       ? overridePotentialIds

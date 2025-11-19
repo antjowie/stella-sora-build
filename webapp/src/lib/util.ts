@@ -10,7 +10,7 @@ export function loadPreferenceBool(
     const stored = localStorage.getItem(key);
     return stored !== null ? stored === "true" : defaultValue;
   }
-  console.log("loadPreferenceBool called in non-browser environment");
+  console.error("loadPreferenceBool called in non-browser environment");
   return defaultValue;
 }
 
@@ -19,7 +19,7 @@ export function loadPreferenceNum(key: string, defaultValue: number): number {
     const stored = localStorage.getItem(key);
     return stored !== null ? parseInt(stored) : defaultValue;
   }
-  console.log("loadPreferenceNum called in non-browser environment");
+  console.error("loadPreferenceNum called in non-browser environment");
   return defaultValue;
 }
 

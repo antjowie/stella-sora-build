@@ -64,6 +64,7 @@
     // Replace all span color with bold
     text = text.replace(/<span style="/g, '<b class="outline" style="');
     text = text.replace(/<\/span>/g, "</b>");
+    text = text.replace(/\u000b/g, "<br/>");
 
     // Params are stored as &Param1&
     const paramRegex = /&[^&]*&/g;
@@ -250,7 +251,6 @@
     {@render nameComponent()}
   {/if}
   {#if showDesc}
-    <!-- <p class="description">{replaceText(showBrief ? potential.descShort : potential.descLong)}</p> -->
     <p class="description">
       {@html replaceText(showBrief ? potential.descShort : potential.descLong)}
     </p>
