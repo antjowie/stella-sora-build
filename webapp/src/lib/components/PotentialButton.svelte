@@ -11,6 +11,7 @@
   import potentialBorderEdgedActive from "$lib/assets/borders/potential-border-edged-active.webp";
   import Icon from "@iconify/svelte";
   import type { PotentialConfig } from "$lib/buildData.types";
+  import { patchDescription } from "$lib/util";
 
   function clampLevel(inLevel: number): number {
     if (inLevel < 1) inLevel = 1;
@@ -59,34 +60,6 @@
   );
 
   const priority = $derived(potentialConfig.priority ?? 0);
-
-  const replaceText = (text: string) => {
-    // Replace all span color with bold
-    text = text.replace(/<span style="/g, '<b class="outline" style="');
-    text = text.replace(/<\/span>/g, "</b>");
-    text = text.replace(/\u000b/g, "<br/>");
-
-    // Params are stored as &Param1&
-    const paramRegex = /&[^&]*&/g;
-    const paramTexts = text.match(paramRegex);
-    if (paramTexts === null) return text;
-
-    for (const paramText of paramTexts) {
-      let idx = parseInt(
-        paramText.slice("&Param".length, paramText.length - 1),
-      );
-      const params = potential.params.find((param) => param.idx === idx);
-      if (params !== undefined) {
-        const levelIdx = Math.min(level - 1, params.values.length - 1);
-        const param = params.values[levelIdx];
-        text = text.replace(paramText, param);
-      } else {
-        text = text.replace(paramText, "MISSING");
-      }
-    }
-
-    return text;
-  };
 
   function handleOnClick() {
     if (onClicked) {
@@ -267,7 +240,11 @@
   {/if}
   {#if showDesc}
     <p class="description">
-      {@html replaceText(showBrief ? potential.descShort : potential.descLong)}
+      {@html patchDescription(
+        showBrief ? potential.descShort : potential.descLong,
+        potential.params,
+        level,
+      )}
     </p>
   {/if}
 </button>

@@ -5,8 +5,10 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type Database = Character[];
-
+export interface Database {
+  characters: Character[];
+  discs: Disc[];
+}
 export interface Character {
   id: number;
   name: string;
@@ -35,5 +37,21 @@ export interface Potential {
     idx: number;
     values: string[];
     [k: string]: unknown;
+  }[];
+}
+export interface Disc {
+  id: number;
+  name: string;
+  desc: string;
+  element: number;
+  rarity: number;
+  skills: {
+    name: string;
+    desc: string;
+    params: {
+      idx: number;
+      values: string[];
+    }[];
+    notes: [number, number][][];
   }[];
 }

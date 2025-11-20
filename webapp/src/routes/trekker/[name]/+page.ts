@@ -6,13 +6,13 @@ export const prerender = true;
 
 export const entries: EntryGenerator = async () => {
   // Generate a route for each character in the database
-  return database.map((character) => ({
+  return database.characters.map((character) => ({
     name: character.name,
   }));
 };
 
 export async function load({ params }) {
-  const character = database.find((c) => c.name === params.name);
+  const character = database.characters.find((c) => c.name === params.name);
   if (character === undefined) {
     return {};
   }

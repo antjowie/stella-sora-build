@@ -41,4 +41,4 @@ async function fetchPortraits(characters: string[]): Promise<void> {
 }
 
 const db = await generateDatabase();
-await fetchPortraits(db.map((character) => character.name));
+await fetchPortraits(db.characters.map((character) => character.name));

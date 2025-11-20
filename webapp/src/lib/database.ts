@@ -30,6 +30,7 @@ export enum CharacterElement {
   Ventus = 4,
   Lux = 5,
   Umbra = 6,
+  None = 7,
 }
 
 export function getCharacterPortraitUrl(characterName: string): string {

@@ -17,7 +17,7 @@
   import { getElementIconUrl } from "$lib/database";
   import { onMount } from "svelte";
 
-  const character: Character | undefined = database.find(
+  const character: Character | undefined = database.characters.find(
     (c) => c.name === page.params.name,
   );
 

@@ -275,7 +275,7 @@
         const build: BuildData = decodeJson(buildBase64);
         validate(build);
         const getChar = (id?: number): Character | undefined =>
-          database.find((c) => c.id === id);
+          database.characters.find((c) => c.id === id);
         name = build.name;
         description = build.description;
         id = build.id;

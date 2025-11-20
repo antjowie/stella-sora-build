@@ -91,6 +91,11 @@
       href={resolve("/trekker")}
       aria-current={page.url.pathname.search("/trekker") >= 0}>Trekkers</a
     >
+    <a
+      class="underline"
+      href={resolve("/disc")}
+      aria-current={page.url.pathname.search("/disc") >= 0}>Discs</a
+    >
     {#if shouldMigrate}
       <p class="migration-warning">
         Outdated site, please use <a
@@ -350,6 +355,15 @@
     border-radius: 0.5rem;
     cursor: pointer;
     transition: 0.2s;
+  }
+
+  /* For the param values */
+  :global(.outline) {
+    /*-webkit-text-stroke: 3px var(--secondary);*/
+    -webkit-text-stroke: 3px rgba(255, 255, 255, 0.75);
+    paint-order: stroke fill;
+    /*font-weight: 900;*/
+    /*font-weight: ;*/
   }
 
   :global(button, rem) {

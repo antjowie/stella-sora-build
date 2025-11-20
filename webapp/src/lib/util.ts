@@ -25,11 +25,13 @@ export function loadPreferenceNum(key: string, defaultValue: number): number {
 
 // Sort potentials by ID and rarity, multiply so we can "categorize" them
 // This seems to match the game quite well
-export const sortPotentials = (a: Potential, b: Potential) =>
+export function sortPotentials(a: Potential, b: Potential) {
   a.id + (3 - a.rarity) * 1000 - (b.id + (3 - b.rarity) * 1000);
+}
 
-export const sortPotentialPriorities =
-  (potentialConfigs: [number, PotentialConfig][]) =>
+export function sortPotentialPriorities(
+  potentialConfigs: [number, PotentialConfig][],
+) {
   (a: Potential, b: Potential) => {
     {
       const aPrio =
@@ -43,3 +45,30 @@ export const sortPotentialPriorities =
       return bPrio - aPrio;
     }
   };
+}
+
+export function patchDescription(text: string, inParams: any[], level: number) {
+  // Replace all span color with bold
+  text = text.replace(/<span style="/g, '<b class="outline" style="');
+  text = text.replace(/<\/span>/g, "</b>");
+  text = text.replace(/\u000b/g, "<br/>");
+
+  // Params are stored as &Param1&
+  const paramRegex = /&[^&]*&/g;
+  const paramTexts = text.match(paramRegex);
+  if (paramTexts === null) return text;
+
+  for (const paramText of paramTexts) {
+    let idx = parseInt(paramText.slice("&Param".length, paramText.length - 1));
+    const params = inParams.find((param) => param.idx === idx);
+    if (params !== undefined) {
+      const levelIdx = Math.min(level - 1, params.values.length - 1);
+      const param = params.values[levelIdx];
+      text = text.replace(paramText, param);
+    } else {
+      text = text.replace(paramText, "MISSING");
+    }
+  }
+
+  return text;
+}

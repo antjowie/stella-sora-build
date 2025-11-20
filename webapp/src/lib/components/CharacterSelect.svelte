@@ -21,7 +21,7 @@
   let elementStrings = $state<string[]>([]);
 
   let filteredCharacters = $derived(
-    database
+    database.characters
       .filter(
         (character) =>
           (searchQuery.length === 0 ||
