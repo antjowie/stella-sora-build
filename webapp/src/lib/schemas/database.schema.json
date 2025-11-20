@@ -1,9 +1,22 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Database",
-  "type": "array",
-  "items": {
-    "$ref": "#/$defs/Character"
+  "type": "object",
+  "required": ["characters", "discs"],
+  "additionalProperties": false,
+  "properties": {
+    "characters": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Character"
+      }
+    },
+    "discs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Disc"
+      }
+    }
   },
   "$defs": {
     "Character": {
@@ -37,7 +50,7 @@
           "type": "integer"
         },
         "element": {
-          "$comment": "one of 6 elemental types",
+          "$comment": "one of 6 elemental types, 7 is none",
           "type": "integer"
         },
         "grade": {
@@ -129,6 +142,76 @@
               }
             },
             "required": ["idx", "values"]
+          }
+        }
+      }
+    },
+    "Disc": {
+      "type": "object",
+      "required": ["id", "name", "desc", "element", "rarity", "skills"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "desc": {
+          "type": "string"
+        },
+        "element": {
+          "$comment": "one of 6 elemental types, 7 is none",
+          "type": "integer"
+        },
+        "rarity": {
+          "type": "integer"
+        },
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "desc", "params", "notes"],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "desc": {
+                "type": "string"
+              },
+              "params": {
+                "type": "array",
+                "items": {
+                  "required": ["idx", "values"],
+                  "additionalProperties": false,
+                  "type": "object",
+                  "properties": {
+                    "idx": {
+                      "type": "integer"
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "notes": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": [{ "type": "integer" }, { "type": "integer" }],
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            }
           }
         }
       }

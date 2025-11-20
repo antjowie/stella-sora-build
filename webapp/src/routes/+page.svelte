@@ -208,21 +208,24 @@
                 style:grid-area="main"
                 class="build-image"
                 style:background-image="url({getCharacterPortraitUrl(
-                  database.find((c) => c.id === build.mainId)?.name || '',
+                  database.characters.find((c) => c.id === build.mainId)
+                    ?.name || '',
                 )})"
               ></div>
               <div
                 style:grid-area="sup1"
                 class="build-image"
                 style:background-image="url({getCharacterPortraitUrl(
-                  database.find((c) => c.id === build.support1Id)?.name || '',
+                  database.characters.find((c) => c.id === build.support1Id)
+                    ?.name || '',
                 )})"
               ></div>
               <div
                 style:grid-area="sup2"
                 class="build-image"
                 style:background-image="url({getCharacterPortraitUrl(
-                  database.find((c) => c.id === build.support2Id)?.name || '',
+                  database.characters.find((c) => c.id === build.support2Id)
+                    ?.name || '',
                 )})"
               ></div>
               <div style:grid-area="buttons" class="build-buttons-container">
