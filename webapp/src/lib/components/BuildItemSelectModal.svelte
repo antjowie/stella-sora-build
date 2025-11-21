@@ -1,15 +1,15 @@
 <script lang="ts">
   import CharacterSelect from "$lib/components/CharacterSelect.svelte";
-  import type { Character } from "$lib/database";
+  import type { Character } from "$lib/types/database.types";
   import Modal from "./Modal.svelte";
 
   interface Props {
     onSelect: (character: Character) => void;
     onClose: () => void;
-    excludedCharacters: number[];
+    excludedIds: number[];
   }
 
-  const { onSelect, onClose, excludedCharacters }: Props = $props();
+  const { onSelect, onClose, excludedIds }: Props = $props();
 
   function handleSelect(character: Character) {
     onSelect(character);
@@ -18,6 +18,6 @@
 
 <Modal title="Select Character" {onClose}>
   {#snippet content()}
-    <CharacterSelect {excludedCharacters} clickOverride={handleSelect} />
+    <CharacterSelect {excludedIds} clickOverride={handleSelect} />
   {/snippet}
 </Modal>

@@ -1,18 +1,20 @@
-import { database } from "$lib/database";
+import { global, url } from "$lib/global.svelte";
 import { title } from "$lib/global.svelte";
+import { getDiscCoverUrl } from "$lib/util";
 import type { EntryGenerator } from "./$types";
 
 export const prerender = true;
 
 export const entries: EntryGenerator = async () => {
   // Generate a route for each character in the database
-  return database.discs.map((disc) => ({
+  return global.database.discs.map((disc) => ({
     id: String(disc.id),
   }));
 };
 
 export async function load({ params }) {
-  const disc = database.discs.find((c) => c.id === parseInt(params.id));
+  console.log("Loading disc page");
+  const disc = global.database.discs.find((c) => c.id === parseInt(params.id));
   if (disc === undefined) {
     return {};
   }
@@ -20,6 +22,6 @@ export async function load({ params }) {
   return {
     title: `${title} - ${disc.name}`,
     description: `${disc.desc}`,
-    // ogImage: `${url}/${getCharacterPortraitUrl(character.name).replace(/^([^\/]*\/){2}/, "portraits/")}`,
+    ogImage: `${url}/${getDiscCoverUrl(disc.id).replace(/^([^\/]*\/){2}/, "discs/")}`,
   };
 }

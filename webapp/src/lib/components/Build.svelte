@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { PotentialConfig } from "$lib/buildData.types";
-  import type { Character } from "$lib/database.types";
+  import type { PotentialConfig } from "$lib/types/buildData.types";
+  import type { Character } from "$lib/types/database.types";
   import { sortPotentialPriorities, sortPotentials } from "$lib/util";
   import PotentialButton from "./PotentialButton.svelte";
 

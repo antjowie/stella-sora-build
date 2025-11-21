@@ -1,7 +1,7 @@
 import { it, describe, expect } from "vitest";
 import fs from "fs/promises";
 import { validate } from "./build";
-import type { BuildData } from "./buildData.types";
+import type { BuildData } from "./types/buildData.types";
 
 describe.concurrent("loading builds", async () => {
   // Get all builds json

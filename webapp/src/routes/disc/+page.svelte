@@ -1,9 +1,5 @@
 <script>
-  import { base } from "$app/paths";
-  import { database } from "$lib/database";
+  import DiscSelect from "$lib/components/DiscSelect.svelte";
 </script>
 
-<h2>Page is work in progress</h2>
-{#each database.discs as disc}
-  <div><a href={`${base}/disc/${disc.id}`}>{disc.name}</a></div>
-{/each}
+<DiscSelect />

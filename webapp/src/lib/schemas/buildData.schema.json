@@ -1,69 +1,84 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "BuildData",
-  "type": "object",
-  "$defs": {
+  "definitions": {
     "PotentialConfig": {
       "type": "object",
       "properties": {
-        "level": { "type": "integer" },
-        "priority": { "type": "integer" }
-      }
-    }
-  },
-  "required": ["name", "description", "id", "potentialIds", "editMode"],
-  "properties": {
-    "name": {
-      "type": "string"
+        "level": {
+          "type": "number"
+        },
+        "priority": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": {}
     },
-    "description": {
-      "type": "string"
-    },
-    "id": {
-      "type": "string"
-    },
-    "mainId": {
-      "type": "integer"
-    },
-    "support1Id": {
-      "type": "integer"
-    },
-    "support2Id": {
-      "type": "integer"
-    },
-    "potentialIds": {
-      "type": "array",
-      "items": {
-        "type": "integer"
-      }
-    },
-    "potentialConfigs": {
-      "type": "array",
-      "items": {
-        "type": "array",
-        "items": [
-          { "type": "integer" },
-          {
-            "type": "object",
-            "$ref": "#/$defs/PotentialConfig"
+    "BuildData": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "mainId": {
+          "type": "number"
+        },
+        "support1Id": {
+          "type": "number"
+        },
+        "support2Id": {
+          "type": "number"
+        },
+        "potentialIds": {
+          "type": "array",
+          "items": {
+            "type": "number"
           }
-        ],
-        "minItems": 2,
-        "maxItems": 2
-      }
-    },
-    "levelMap": {
-      "$comment": "deprecated, will keep to not lose custom builds, use potentialConfig object map in favor",
-      "type": "array",
-      "items": {
-        "type": "array",
-        "items": [{ "type": "integer" }, { "type": "integer" }],
-        "minItems": 2,
-        "maxItems": 2
-      }
-    },
-    "editMode": {
-      "type": "boolean"
+        },
+        "potentialConfigs": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "items": [
+              {
+                "type": "number"
+              },
+              {
+                "$ref": "#/definitions/PotentialConfig"
+              }
+            ],
+            "maxItems": 2
+          }
+        },
+        "levelMap": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "editMode": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "description",
+        "id",
+        "potentialIds",
+        "editMode"
+      ],
+      "additionalProperties": {}
     }
   }
 }

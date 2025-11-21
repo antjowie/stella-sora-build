@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { PotentialRarity, type Character } from "$lib/database";
+  import { PotentialRarity, type Character } from "$lib/types/database.types";
   import { fly } from "svelte/transition";
   import Build from "./Build.svelte";
-  import type { PotentialConfig } from "$lib/buildData.types";
+  import type { PotentialConfig } from "$lib/types/buildData.types";
 
   interface Props {
     character: Character;

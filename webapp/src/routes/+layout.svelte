@@ -31,9 +31,10 @@
 
   try {
     if (browser) {
-      global.darkMode = loadPreferenceBool("darkMode", false);
       document.documentElement.classList.toggle("dark", global.darkMode);
       document.documentElement.classList.remove("not-mounted");
+      document.body.classList.remove("not-mounted");
+      document.body.classList.add("ready");
       localStorage.setItem("darkMode", String(global.darkMode));
     }
   } catch (error) {}
@@ -280,15 +281,21 @@
     src: url("$lib/assets/fonts/noto-sans-v42-latin-900.woff2") format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
   }
 
+  /* Hide content until app is ready to prevent flash */
+  :global(.not-mounted) {
+    visibility: hidden;
+  }
+
+  /* Ensure page is visible once ready class is added */
+  :global(body.ready) {
+    visibility: visible;
+  }
+
   :global(*, *::before, *::after) {
     font-family: inherit;
     box-sizing: inherit;
     padding: 0;
     margin: 0;
-    transition:
-      background-color 0.2s,
-      border-color 0.2s,
-      color 0.2s;
   }
 
   :global(html, body) {

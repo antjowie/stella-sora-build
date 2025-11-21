@@ -5,7 +5,7 @@ import databaseSchema from "$lib/schemas/database.schema.json";
 import fs from "fs";
 import ky from "ky";
 import Ajv from "ajv";
-import type { Database } from "./database.types";
+import type { Database } from "./types/database.types";
 const ajv = new Ajv();
 
 async function generateDatabase(): Promise<Database> {
@@ -26,19 +26,37 @@ async function generateDatabase(): Promise<Database> {
   return database;
 }
 
-async function fetchPortraits(characters: string[]): Promise<void> {
+async function fetchImages(): Promise<void> {
+  const characters: string[] = db.characters.map((character) => character.name);
+  // In case you want to poll directly but quickly runs into rate limits
+  // const getUrl = (folder: string, name: string) =>
+  //   `https://raw.githubusercontent.com/antjowie/StellaSoraData/main/${folder}/${name}.webp`;
+  const getUrl = (folder: string, name: string) =>
+    `https://stellabuildsdata.pages.dev/${folder}/${name}.webp`;
+
   fs.mkdirSync("static/portraits", { recursive: true });
-  const promises = characters.map(async (character) => {
-    const url = `https://stellabuildsdata.pages.dev/portraits/${character}.webp`;
+  let promises = characters.map(async (character) => {
+    const url = getUrl("portraits", character);
     const path = `static/portraits/${character}.webp`;
     const buffer = await ky(url).arrayBuffer();
     fs.writeFileSync(path, Buffer.from(buffer));
   });
 
+  const discs = db.discs.map((disc) => disc.id);
+  fs.mkdirSync("static/discs", { recursive: true });
+  promises = promises.concat(
+    discs.map(async (disc) => {
+      const url = getUrl("discs", String(disc));
+      const path = `static/discs/${disc}.webp`;
+      const buffer = await ky(url).arrayBuffer();
+      fs.writeFileSync(path, Buffer.from(buffer));
+    }),
+  );
+
   await Promise.all(promises).then(() => {
-    console.log("Portraits fetched successfully!");
+    console.log("Images fetched successfully!");
   });
 }
 
 const db = await generateDatabase();
-await fetchPortraits(db.characters.map((character) => character.name));
+await fetchImages();

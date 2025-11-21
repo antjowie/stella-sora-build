@@ -7,16 +7,13 @@
     getLocalStoredBuilds,
     validate,
   } from "$lib/build";
-  import type { BuildData, PotentialConfig } from "$lib/buildData.types";
+  import type { BuildData, PotentialConfig } from "$lib/types/buildData.types";
   import Build from "$lib/components/Build.svelte";
   import BuildCollection from "$lib/components/BuildCollection.svelte";
-  import CharacterSelectModal from "$lib/components/CharacterSelectModal.svelte";
-  import {
-    database,
-    getCharacterPortraitUrl,
-    type Character,
-    type Potential,
-  } from "$lib/database";
+  import BuildItemSelectModal from "$lib/components/BuildItemSelectModal.svelte";
+  import type { Character, Potential } from "$lib/types/database.types";
+  import { global } from "$lib/global.svelte";
+  import { getCharacterPortraitUrl } from "$lib/util";
   import { loadPreferenceBool } from "$lib/util";
   import { fly } from "svelte/transition";
   import { replaceState } from "$app/navigation";
@@ -29,7 +26,7 @@
   marked.use({
     renderer: { html: () => "" },
   });
-  import Portrait from "$lib/components/Portrait.svelte";
+  import CharacterButton from "$lib/components/CharacterButton.svelte";
   import * as htmlToImage from "html-to-image";
 
   let showCharacterModal = $state(false);
@@ -275,7 +272,7 @@
         const build: BuildData = decodeJson(buildBase64);
         validate(build);
         const getChar = (id?: number): Character | undefined =>
-          database.characters.find((c) => c.id === id);
+          global.database.characters.find((c) => c.id === id);
         name = build.name;
         description = build.description;
         id = build.id;
@@ -430,7 +427,7 @@
             <h2>{data.title}</h2>
             {#if editMode === false && data.character}
               <div class="character-selector-size">
-                <Portrait character={data.character} />
+                <CharacterButton character={data.character} />
               </div>
             {:else}
               <button
@@ -548,10 +545,10 @@
 </div>
 
 {#if showCharacterModal}
-  <CharacterSelectModal
+  <BuildItemSelectModal
     onSelect={handleCharacterSelect}
     onClose={() => (showCharacterModal = false)}
-    excludedCharacters={[mainCharacter, supportCharacter1, supportCharacter2]
+    excludedIds={[mainCharacter, supportCharacter1, supportCharacter2]
       .filter((x) => x !== undefined)
       .map((x) => x.id)}
   />

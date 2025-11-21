@@ -1,6 +1,7 @@
 import { browser } from "$app/environment";
-import type { PotentialConfig } from "./buildData.types";
-import type { Potential } from "./database.types";
+import { base } from "$app/paths";
+import type { PotentialConfig } from "./types/buildData.types";
+import { type Potential, Element } from "./types/database.types";
 
 export function loadPreferenceBool(
   key: string,
@@ -25,14 +26,14 @@ export function loadPreferenceNum(key: string, defaultValue: number): number {
 
 // Sort potentials by ID and rarity, multiply so we can "categorize" them
 // This seems to match the game quite well
-export function sortPotentials(a: Potential, b: Potential) {
-  a.id + (3 - a.rarity) * 1000 - (b.id + (3 - b.rarity) * 1000);
+export function sortPotentials(a: Potential, b: Potential): number {
+  return a.id + (3 - a.rarity) * 1000 - (b.id + (3 - b.rarity) * 1000);
 }
 
 export function sortPotentialPriorities(
   potentialConfigs: [number, PotentialConfig][],
-) {
-  (a: Potential, b: Potential) => {
+): (a: Potential, b: Potential) => number {
+  return (a: Potential, b: Potential) => {
     {
       const aPrio =
         potentialConfigs.find(
@@ -71,4 +72,24 @@ export function patchDescription(text: string, inParams: any[], level: number) {
   }
 
   return text;
+}
+
+export function getCharacterPortraitUrl(characterName: string): string {
+  return encodeURI(`${base}/portraits/${characterName}.webp`);
+}
+
+export function getDiscCoverUrl(discId: number): string {
+  return encodeURI(`${base}/discs/${discId}.webp`);
+}
+
+export function getElementIconUrl(element: Element): string {
+  const name = Element[element];
+  return `${base}/elements/${name}.webp`;
+}
+
+export function getNoteIconUrl(noteId: number): string {
+  if (noteId < 90011 && noteId > 90023) {
+    return `${base}/notes/invalid.webp`;
+  }
+  return `${base}/notes/${noteId}.webp`;
 }

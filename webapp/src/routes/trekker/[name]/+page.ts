@@ -1,18 +1,21 @@
-import { database, getCharacterPortraitUrl } from "$lib/database";
-import { title, url } from "$lib/global.svelte";
+import { getCharacterPortraitUrl } from "$lib/util";
+import { global, title, url } from "$lib/global.svelte";
 import type { EntryGenerator } from "./$types";
 
 export const prerender = true;
 
 export const entries: EntryGenerator = async () => {
   // Generate a route for each character in the database
-  return database.characters.map((character) => ({
+  return global.database.characters.map((character) => ({
     name: character.name,
   }));
 };
 
 export async function load({ params }) {
-  const character = database.characters.find((c) => c.name === params.name);
+  console.log("Loading trekker page");
+  const character = global.database.characters.find(
+    (c) => c.name === params.name,
+  );
   if (character === undefined) {
     return {};
   }
