@@ -1,10 +1,10 @@
 <script lang="ts">
   import { noteIds } from "$lib/global.svelte";
-  import type { NotesPair } from "$lib/types/database.types";
+  import type { DiscSkill } from "$lib/types/database.types";
   import { getNoteIconUrl } from "$lib/util";
 
   interface Props {
-    notes: NotesPair[];
+    notes: [number, number][];
     onNoteChanged?: (id: number, value: number) => void;
     effectiveNoteIds?: number[];
   }
@@ -14,7 +14,7 @@
     onNoteChanged,
     effectiveNoteIds: effectiveNotes = [],
   }: Props = $props();
-  const editNotes: NotesPair[] = $derived(
+  const editNotes: [number, number][] = $derived(
     noteIds.map((id) => [id, notes.find((note) => note[0] === id)?.[1] || 0]),
   );
 </script>
@@ -27,12 +27,27 @@
         {#if onNoteChanged}
           <input
             type="number"
+            min="0"
+            max="99"
             value={note[1]}
             oninput={(e) => {
               let target = e.target as HTMLInputElement;
               const value = Number(target.value);
+              console.log(value);
+              // If value is out of range, don't update the input
+              if (value < 0 || value > 99 || isNaN(value)) {
+                target.value = note[1].toString();
+                return;
+              }
+
               target.value = value.toString();
-              onNoteChanged(note[0], Math.max(0, Math.min(value, 99)));
+              onNoteChanged(note[0], value);
+            }}
+            onkeydown={(e) => {
+              // Prevent negative numbers
+              if (e.key === "-" || e.key === "e") {
+                e.preventDefault();
+              }
             }}
           />
         {:else}

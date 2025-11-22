@@ -1,7 +1,6 @@
 <script lang="ts">
   import { global } from "$lib/global.svelte";
-  import FilteredItemSelect from "./FilteredItemSelect.svelte";
-  import type { Disc } from "$lib/types/database.types";
+  import ItemSelect from "./ItemSelect.svelte";
   import DiscButton from "./DiscButton.svelte";
 
   interface Props {
@@ -18,11 +17,11 @@
   }));
 </script>
 
-<FilteredItemSelect {excludedIds} {items}>
+<ItemSelect {excludedIds} {items}>
   {#snippet item(id)}
     <DiscButton
       disc={global.database.discs.find((d) => d.id === id)!}
       {clickOverride}
     />
   {/snippet}
-</FilteredItemSelect>
+</ItemSelect>

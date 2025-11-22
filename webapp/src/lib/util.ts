@@ -1,7 +1,12 @@
 import { browser } from "$app/environment";
 import { base } from "$app/paths";
 import type { PotentialConfig } from "./types/buildData.types";
-import { type Disc, type Potential, Element } from "./types/database.types";
+import {
+  type Disc,
+  type DiscSkill,
+  type Potential,
+  Element,
+} from "./types/database.types";
 
 export function loadPreferenceBool(
   key: string,
@@ -98,8 +103,30 @@ export function getEffectiveNoteIdsFromDisc(disc: Disc): number[] {
   const effectiveNoteIds = [];
   for (const skill of disc.skills) {
     for (const note of skill.notes) {
-      effectiveNoteIds.push(note[0][0]);
+      effectiveNoteIds.push(note.id);
     }
   }
   return [...new Set(effectiveNoteIds)];
+}
+
+export function getDiscSkillLevelFromNotes(
+  skill: DiscSkill,
+  notes: [number, number][],
+): number {
+  let level = 99;
+  for (const noteLvl of skill.notes) {
+    const idx = notes.findIndex(([id]) => id === noteLvl.id);
+    if (idx < 0) return 1;
+
+    const ownedNotes = notes[idx][1];
+    let newLevel = 0;
+    while (
+      newLevel < noteLvl.values.length &&
+      ownedNotes >= noteLvl.values[newLevel]
+    ) {
+      newLevel++;
+    }
+    level = Math.min(level, newLevel);
+  }
+  return level + 1;
 }

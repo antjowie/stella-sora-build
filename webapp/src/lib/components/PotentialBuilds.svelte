@@ -1,7 +1,7 @@
 <script lang="ts">
   import { PotentialRarity, type Character } from "$lib/types/database.types";
   import { fly } from "svelte/transition";
-  import Build from "./Build.svelte";
+  import PotentialList from "./PotentialList.svelte";
   import type { PotentialConfig } from "$lib/types/buildData.types";
 
   interface Props {
@@ -56,21 +56,22 @@
     out:fly={{ duration: 150, x: 100 }}
   >
     {#if props.showMain}
-      <h1 class="title">{props.title ?? "Main builds"}</h1>
-      <Build {...build1} />
-      <Build {...build2} />
-      <Build {...build3} />
+      {#if props.title === undefined || props.title.length > 0}
+        <h1 class="title">{props.title ?? "Main builds"}</h1>
+      {/if}
+      <PotentialList {...build1} />
+      <PotentialList {...build2} />
+      <PotentialList {...build3} />
     {:else}
-      <h1 class="title">{props.title ?? "Support builds"}</h1>
-      <Build {...build4} />
-      <Build {...build5} />
-      <Build {...build6} />
+      {#if props.title === undefined || props.title.length > 0}
+        <h1 class="title">{props.title ?? "Support builds"}</h1>
+      {/if}
+      <PotentialList {...build4} />
+      <PotentialList {...build5} />
+      <PotentialList {...build6} />
     {/if}
   </div>
 {/key}
 
 <style>
-  .title {
-    padding-top: 1rem;
-  }
 </style>

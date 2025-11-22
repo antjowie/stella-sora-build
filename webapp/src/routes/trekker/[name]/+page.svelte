@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from "$app/state";
-  import BuildCollection from "$lib/components/BuildCollection.svelte";
+  import PotentialBuilds from "$lib/components/PotentialBuilds.svelte";
   import { browser } from "$app/environment";
   import {
     getCharacterPortraitUrl,
@@ -101,7 +101,7 @@
     </label>
   </div>
   <Slider bind:value={potentialLevel} max={maxLevel ?? 1} text="Lvl. "></Slider>
-  <BuildCollection
+  <PotentialBuilds
     {character}
     {showDesc}
     {showBrief}

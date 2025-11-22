@@ -1,4 +1,4 @@
-import type { Database } from "./types/database.types";
+import { type Database, Element } from "./types/database.types";
 import databaseJson from "./database.json";
 
 export const global = $state({
@@ -40,4 +40,12 @@ export const characterClassColor = ["", "#db6893", "#7d81e3", "#41cbaf"];
 export const noteIds = [
   90011, 90012, 90013, 90014, 90015, 90016, 90017, 90018, 90019, 90020, 90021,
   90022, 90023,
+];
+export const noteIdsToElement = [
+  [90018, Element.Aqua],
+  [90019, Element.Ignis],
+  [90020, Element.Ventus],
+  [90021, Element.Terra],
+  [90022, Element.Lux],
+  [90023, Element.Umbra],
 ];

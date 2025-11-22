@@ -1,5 +1,4 @@
 <script lang="ts">
-  import CharacterSelect from "$lib/components/CharacterSelect.svelte";
   import type { Snippet } from "svelte";
   import Modal from "./Modal.svelte";
 
