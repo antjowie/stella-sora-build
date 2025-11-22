@@ -367,7 +367,7 @@
   /* For the param values */
   :global(.outline) {
     /*-webkit-text-stroke: 3px var(--secondary);*/
-    -webkit-text-stroke: 3px rgba(255, 255, 255, 0.75);
+    -webkit-text-stroke: 3px rgba(255, 255, 255, 1);
     paint-order: stroke fill;
     /*font-weight: 900;*/
     /*font-weight: ;*/

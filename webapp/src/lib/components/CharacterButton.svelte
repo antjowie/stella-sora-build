@@ -12,7 +12,7 @@
 
   interface Props {
     character: Character;
-    clickOverride?: (character: Character) => void;
+    clickOverride?: (id: number) => void;
   }
 
   const { character, clickOverride }: Props = $props();
@@ -28,7 +28,7 @@
       {character.rarity == 1 ? 'rarity-1' : 'rarity-2'}
       "
       onclick={() => {
-        if (clickOverride) clickOverride(character);
+        if (clickOverride) clickOverride(character.id);
       }}
       style:background-image="url({getCharacterPortraitUrl(character.name)})"
     >
@@ -50,7 +50,7 @@
       src={getElementIconUrl(character.element)}
       alt={Element[character.element]}
       onclick={() => {
-        if (clickOverride) clickOverride(character);
+        if (clickOverride) clickOverride(character.id);
       }}
     />
   </div>

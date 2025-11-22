@@ -1,23 +1,25 @@
 <script lang="ts">
   import CharacterSelect from "$lib/components/CharacterSelect.svelte";
-  import type { Character } from "$lib/types/database.types";
+  import type { Snippet } from "svelte";
   import Modal from "./Modal.svelte";
 
   interface Props {
-    onSelect: (character: Character) => void;
+    title: string;
+    button: Snippet<[number[], (id: number) => void]>;
+    onSelect: (id: number) => void;
     onClose: () => void;
     excludedIds: number[];
   }
 
-  const { onSelect, onClose, excludedIds }: Props = $props();
+  const { title, button, onSelect, onClose, excludedIds }: Props = $props();
 
-  function handleSelect(character: Character) {
-    onSelect(character);
+  function handleSelect(id: number) {
+    onSelect(id);
   }
 </script>
 
-<Modal title="Select Character" {onClose}>
+<Modal {title} {onClose}>
   {#snippet content()}
-    <CharacterSelect {excludedIds} clickOverride={handleSelect} />
+    {@render button(excludedIds, handleSelect)}
   {/snippet}
 </Modal>

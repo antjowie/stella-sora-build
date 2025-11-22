@@ -6,7 +6,7 @@
 
   interface Props {
     excludedIds?: number[];
-    clickOverride?: (disc: Disc) => void;
+    clickOverride?: (id: number) => void;
   }
 
   const { excludedIds = [], clickOverride }: Props = $props();

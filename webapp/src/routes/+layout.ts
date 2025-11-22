@@ -7,7 +7,6 @@ import { loadPreferenceBool } from "$lib/util";
 export const prerender = true;
 
 export async function load() {
-  console.log("Loading layout");
   global.database = databaseJson as Database;
   if (browser) {
     global.darkMode = loadPreferenceBool("darkMode", false);

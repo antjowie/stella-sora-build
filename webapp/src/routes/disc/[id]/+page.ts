@@ -13,7 +13,6 @@ export const entries: EntryGenerator = async () => {
 };
 
 export async function load({ params }) {
-  console.log("Loading disc page");
   const disc = global.database.discs.find((c) => c.id === parseInt(params.id));
   if (disc === undefined) {
     return {};

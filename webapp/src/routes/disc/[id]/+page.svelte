@@ -12,6 +12,7 @@
   import { Element } from "$lib/types/database.types";
   import { browser } from "$app/environment";
   import { onMount } from "svelte";
+  import Notes from "$lib/components/Notes.svelte";
 
   const disc = global.database.discs.find(
     (d) => d.id === parseInt(page.params.id ?? "-1"),
@@ -62,14 +63,9 @@
     {/if}
     <h3>{skill.name}</h3>
     <p>{@html patchDescription(skill.desc, skill.params, discLevel)}</p>
-    <div class="notes-container">
-      {#each skill.notes[Math.min(discLevel - 1, skill.notes.length - 1)] as note}
-        <div class="note">
-          <img src={getNoteIconUrl(note[0])} alt="Note" />
-          <p>{note[1]}</p>
-        </div>
-      {/each}
-    </div>
+    <Notes
+      notes={skill.notes[Math.min(discLevel - 1, skill.notes.length - 1)]}
+    />
   {/each}
 {/if}
 
@@ -117,22 +113,6 @@
     padding: 0.5rem;
     border-radius: 4px;
     /*box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);*/
-  }
-
-  .notes-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .note {
-    padding-top: 0.5rem;
-    text-align: center;
-
-    & img {
-      width: 2em;
-      transform: scale(1.5);
-    }
   }
 
   p {
