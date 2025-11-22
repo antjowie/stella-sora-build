@@ -28,6 +28,7 @@
   import { loadPreferenceBool } from "$lib/util";
   import { fade, fly } from "svelte/transition";
   import { replaceState } from "$app/navigation";
+  import Icon from "@iconify/svelte";
   import { onMount, tick } from "svelte";
   import { addToast } from "$lib/toastStore";
   import { localStorageBuildsKey } from "$lib/global.svelte";
@@ -221,6 +222,29 @@
       availableIds.includes(id),
     );
     showModal = false;
+  }
+
+  function clearSelection(role: number) {
+    switch (role) {
+      case 0:
+        mainCharacter = undefined;
+        break;
+      case 1:
+        supportCharacter1 = undefined;
+        break;
+      case 2:
+        supportCharacter2 = undefined;
+        break;
+      case 3:
+        disc = undefined;
+        break;
+      case 4:
+        disc1 = undefined;
+        break;
+      case 5:
+        disc2 = undefined;
+        break;
+    }
   }
 
   function createClickListener(list: number[]): (id: number) => void {
@@ -503,41 +527,52 @@
                 {/if}
               </div>
             {:else}
-              <button
-                class="character-selector-size character-selector
-                    {editMode === false && data.item === undefined
-                  ? 'disabled'
-                  : ''}
-                    "
-                onclick={() => {
-                  if (editMode) {
-                    selectedRole = data.role;
-                    showModal = true;
-                  }
-                }}
-              >
-                {#if data.item}
-                  {#if editMode}
-                    <img
-                      src={idx <= 2
-                        ? getCharacterPortraitUrl(data.item.name)
-                        : getDiscCoverUrl(data.item.id)}
-                      alt={data.item.name}
-                    />
+              <div class="character-selector-wrapper">
+                <button
+                  class="character-selector-size character-selector
+                      {editMode === false && data.item === undefined
+                    ? 'disabled'
+                    : ''}
+                      "
+                  onclick={() => {
+                    if (editMode) {
+                      selectedRole = data.role;
+                      showModal = true;
+                    }
+                  }}
+                >
+                  {#if data.item}
+                    {#if editMode}
+                      <img
+                        src={idx <= 2
+                          ? getCharacterPortraitUrl(data.item.name)
+                          : getDiscCoverUrl(data.item.id)}
+                        alt={data.item.name}
+                      />
 
-                    <div class="character-overlay">
-                      <p class="character-name">{data.item.name}</p>
-                      <p class="change-text">Click to change</p>
+                      <div class="character-overlay">
+                        <p class="character-name">{data.item.name}</p>
+                        <p class="change-text">Click to change</p>
+                      </div>
+                    {/if}
+                  {:else}
+                    <div class="placeholder">
+                      <p>
+                        {editMode ? "Click to select" : "Nothing selected"}
+                      </p>
                     </div>
                   {/if}
-                {:else}
-                  <div class="placeholder">
-                    <p>
-                      {editMode ? "Click to select" : "Nothing selected"}
-                    </p>
-                  </div>
+                </button>
+                {#if editMode && data.item}
+                  <button
+                    class="clear-button"
+                    onclick={() => clearSelection(data.role)}
+                    title="Clear selection"
+                  >
+                    <Icon icon="mdi:close-circle" />
+                  </button>
                 {/if}
-              </button>
+              </div>
             {/if}
           </div>
         {/each}
@@ -808,6 +843,12 @@
     }
   }
 
+  .character-selector-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
   .character-selector {
     position: relative;
     /*border: 3px solid #f3efe7;*/
@@ -859,6 +900,33 @@
     );
     padding: 1rem;
     text-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .clear-button {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    border: none;
+    border-radius: 50%;
+    padding: 0;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-bg-darker);
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    /*transition: background-color 0.2s;*/
+
+    &:hover {
+      color: var(--red);
+      transform: scale(1.15);
+    }
+
+    & :global(svg) {
+      width: 2.2rem;
+      height: 2.2rem;
+    }
   }
 
   .character-name {

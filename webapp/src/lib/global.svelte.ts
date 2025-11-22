@@ -1,10 +1,3 @@
-import Ajv from "ajv";
-export const ajv = new Ajv({
-  strict: true,
-  strictTypes: true,
-  strictTuples: true,
-  allowUnionTypes: true,
-});
 import { type Database, Element } from "./types/database.types";
 import databaseJson from "./database.json";
 
