@@ -7,19 +7,28 @@
     getLocalStoredBuilds,
     validate,
   } from "$lib/build";
-  import type { BuildData, PotentialConfig } from "$lib/buildData.types";
-  import Build from "$lib/components/Build.svelte";
-  import BuildCollection from "$lib/components/BuildCollection.svelte";
-  import CharacterSelectModal from "$lib/components/CharacterSelectModal.svelte";
+  import type { BuildData, PotentialConfig } from "$lib/types/buildData.types";
+  import PotentialList from "$lib/components/PotentialList.svelte";
+  import PotentialBuilds from "$lib/components/PotentialBuilds.svelte";
+  import ItemSelectModal from "$lib/components/ItemSelectModal.svelte";
+  import type {
+    Character,
+    Disc,
+    DiscSkill,
+    NotesCollection,
+    Potential,
+  } from "$lib/types/database.types";
+  import { global, noteIds, noteIdsToElement } from "$lib/global.svelte";
   import {
-    database,
     getCharacterPortraitUrl,
-    type Character,
-    type Potential,
-  } from "$lib/database";
+    getDiscCoverUrl,
+    getDiscSkillLevelFromNotes,
+    getEffectiveNoteIdsFromDisc,
+  } from "$lib/util";
   import { loadPreferenceBool } from "$lib/util";
-  import { fly } from "svelte/transition";
+  import { fade, fly } from "svelte/transition";
   import { replaceState } from "$app/navigation";
+  import Icon from "@iconify/svelte";
   import { onMount, tick } from "svelte";
   import { addToast } from "$lib/toastStore";
   import { localStorageBuildsKey } from "$lib/global.svelte";
@@ -29,42 +38,36 @@
   marked.use({
     renderer: { html: () => "" },
   });
-  import Portrait from "$lib/components/Portrait.svelte";
+  import CharacterButton from "$lib/components/CharacterButton.svelte";
   import * as htmlToImage from "html-to-image";
+  import Notes from "$lib/components/Notes.svelte";
+  import DiscButton from "$lib/components/DiscButton.svelte";
+  import CharacterSelect from "$lib/components/CharacterSelect.svelte";
+  import DiscSelect from "$lib/components/DiscSelect.svelte";
+  import DiscSkills from "$lib/components/DiscSkills.svelte";
 
-  let showCharacterModal = $state(false);
-  // 1 is main, 2 is support 1, 3 is support 2
-  let selectedRole = 0;
-  // svelte-ignore state_referenced_locally
-  const defaultBuildData: BuildData = {
-    name: "My Build",
-    description: "My description",
-    id: crypto.randomUUID(),
-    mainId: undefined,
-    support1Id: undefined,
-    support2Id: undefined,
-    potentialIds: [],
-    editMode: false,
-  };
-  let name = $state(defaultBuildData.name);
-  let description = $state(defaultBuildData.description);
+  let showModal = $state(false);
+
+  const getChar = (id?: number): Character | undefined =>
+    global.database.characters.find((c) => c.id === id);
+  const getDisc = (id?: number): Disc | undefined =>
+    global.database.discs.find((d) => d.id === id);
+
+  let name = $state("My Build");
+  let description = $state("My description");
+  let id: string = $state(crypto.randomUUID());
   let mainCharacter = $state<Character | undefined>(undefined);
   let supportCharacter1 = $state<Character | undefined>(undefined);
   let supportCharacter2 = $state<Character | undefined>(undefined);
-  let selectedPotentials = $state<number[]>(defaultBuildData.potentialIds);
-  let selectedPotentialsViewMode = $state<number[]>(
-    defaultBuildData.potentialIds,
-  );
-  let editMode = $state(false);
-  let showDesc = $state(true);
-  let showBrief = $state(true);
-  let id: string = $state(crypto.randomUUID());
-  // Each entry is a pair of [id, level]
+  let disc = $state<Disc | undefined>(undefined);
+  let disc1 = $state<Disc | undefined>(undefined);
+  let disc2 = $state<Disc | undefined>(undefined);
   let potentialConfigs: [number, PotentialConfig][] = $state([]);
-  let localBuilds = $state(getLocalStoredBuilds());
-  const isNewBuild = $derived(
-    localBuilds.find((build) => build.id === id) === undefined,
-  );
+  let notes = $state<[number, number][]>([]);
+
+  let selectedPotentials = $state<number[]>([]);
+  let selectedPotentialsViewMode = $state<number[]>([]);
+  let editMode = $state(false);
   let buildData: BuildData = $derived({
     name,
     description,
@@ -72,10 +75,90 @@
     mainId: mainCharacter?.id,
     support1Id: supportCharacter1?.id,
     support2Id: supportCharacter2?.id,
+    discId: disc?.id,
+    disc1Id: disc1?.id,
+    disc2Id: disc2?.id,
     potentialIds: selectedPotentials,
     potentialConfigs,
+    notes: notes.toSorted((a, b) => a[0] - b[0]),
     editMode,
   });
+
+  function applyBuild(build: BuildData) {
+    name = build.name;
+    description = build.description;
+    id = build.id;
+    mainCharacter = getChar(build.mainId);
+    supportCharacter1 = getChar(build.support1Id);
+    supportCharacter2 = getChar(build.support2Id);
+    disc = getDisc(build.discId);
+    disc1 = getDisc(build.disc1Id);
+    disc2 = getDisc(build.disc2Id);
+
+    selectedPotentials = build.potentialIds;
+    const levelMap = build.levelMap ?? [];
+    potentialConfigs = build.potentialConfigs ?? [];
+    // Import levelMap into potentialConfigs
+    for (let i = 0; i < levelMap.length; i++) {
+      const levelKv = levelMap[i];
+      const idx = potentialConfigs.findIndex((kv) => kv[0] === levelKv[0]);
+      if (idx >= 0) {
+        potentialConfigs[idx][1].level = levelKv[1];
+      } else {
+        potentialConfigs.push([
+          levelKv[0],
+          {
+            level: levelKv[1],
+          },
+        ]);
+      }
+    }
+    notes = build.notes ?? [];
+
+    editMode = build.editMode;
+  }
+  function resetBuild() {
+    if (
+      hasUnsavedChanges === false ||
+      confirm("This will clear your unsaved changes. Are you sure?")
+    ) {
+      // Reset build
+      name = "My Build";
+      description = "My description";
+      id = crypto.randomUUID();
+      mainCharacter = undefined;
+      supportCharacter1 = undefined;
+      supportCharacter2 = undefined;
+      disc = undefined;
+      disc1 = undefined;
+      disc2 = undefined;
+      potentialConfigs = [];
+      notes = [];
+
+      // Reset some vars
+      selectedPotentials = [];
+      selectedPotentialsViewMode = [];
+    }
+  }
+
+  let showDesc = $state(true);
+  let showBrief = $state(true);
+  let showDiscDetails = $state(true);
+
+  const handleDisc = (disc: Disc | undefined) =>
+    disc ? getEffectiveNoteIdsFromDisc(disc) : [];
+  const effectiveNoteIds = $derived([
+    ...new Set([
+      ...handleDisc(disc),
+      ...handleDisc(disc1),
+      ...handleDisc(disc2),
+    ]),
+  ]);
+  let localBuilds = $state<BuildData[]>([]);
+  const isNewBuild = $derived(
+    localBuilds.find((build) => build.id === id) === undefined,
+  );
+
   const hasUnsavedChanges = $derived(
     JSON.stringify(
       localBuilds
@@ -88,16 +171,28 @@
     ) !== JSON.stringify(buildData),
   );
 
-  function handleCharacterSelect(character: Character) {
+  // 1 is main, 2 is support 1, 3 is support 2
+  // svelte-ignore non_reactive_update
+  let selectedRole = 0;
+  function handleItemSelect(id: number) {
     switch (selectedRole) {
       case 0:
-        mainCharacter = character;
+        mainCharacter = getChar(id);
         break;
       case 1:
-        supportCharacter1 = character;
+        supportCharacter1 = getChar(id);
         break;
       case 2:
-        supportCharacter2 = character;
+        supportCharacter2 = getChar(id);
+        break;
+      case 3:
+        disc = getDisc(id);
+        break;
+      case 4:
+        disc1 = getDisc(id);
+        break;
+      case 5:
+        disc2 = getDisc(id);
         break;
     }
 
@@ -126,7 +221,30 @@
     potentialConfigs = potentialConfigs.filter(([id, obj]) =>
       availableIds.includes(id),
     );
-    showCharacterModal = false;
+    showModal = false;
+  }
+
+  function clearSelection(role: number) {
+    switch (role) {
+      case 0:
+        mainCharacter = undefined;
+        break;
+      case 1:
+        supportCharacter1 = undefined;
+        break;
+      case 2:
+        supportCharacter2 = undefined;
+        break;
+      case 3:
+        disc = undefined;
+        break;
+      case 4:
+        disc1 = undefined;
+        break;
+      case 5:
+        disc2 = undefined;
+        break;
+    }
   }
 
   function createClickListener(list: number[]): (id: number) => void {
@@ -138,22 +256,6 @@
         list.push(id);
       }
     };
-  }
-
-  function resetBuild() {
-    if (
-      hasUnsavedChanges === false ||
-      confirm("This will clear your unsaved changes. Are you sure?")
-    ) {
-      name = defaultBuildData.name;
-      description = defaultBuildData.description;
-      id = crypto.randomUUID();
-      mainCharacter = undefined;
-      supportCharacter1 = undefined;
-      supportCharacter2 = undefined;
-      selectedPotentials = [];
-      potentialConfigs = [];
-    }
   }
 
   function copyBuildURLToClipboard() {
@@ -189,6 +291,15 @@
       potentialConfigs[idx] = [id, config];
     } else {
       potentialConfigs.push([id, config]);
+    }
+  }
+
+  function onNoteChanged(id: number, value: number) {
+    let idx = notes.findIndex(([id2, v]) => id === id2);
+    if (idx >= 0) {
+      notes[idx] = [id, value];
+    } else {
+      notes.push([id, value]);
     }
   }
 
@@ -232,6 +343,10 @@
     }
     buildContainer.style.padding = "32px";
     exportAsPNGButton.disabled = true;
+    const oldData = [
+      togglesContainer.style.display,
+      collectedPotentialsContainer.style.display,
+    ];
     togglesContainer.style.display = "none";
     collectedPotentialsContainer.style.display = "none";
     watermarkElement.innerText = "Generated by stellabuilds.pages.dev";
@@ -251,17 +366,17 @@
       });
     buildContainer.style.padding = "0";
     exportAsPNGButton.disabled = false;
-    togglesContainer.style.display = "block";
-    collectedPotentialsContainer.style.display = "block";
+    togglesContainer.style.display = oldData[0];
+    collectedPotentialsContainer.style.display = oldData[1];
     watermarkElement.innerText = "";
   }
 
   onMount(async () => {
-    editMode = defaultBuildData.editMode;
+    localBuilds = getLocalStoredBuilds();
     showDesc = loadPreferenceBool("showDesc", showDesc);
     showBrief = loadPreferenceBool("showBrief", showBrief);
+    showDiscDetails = loadPreferenceBool("showDiscDetails", showDiscDetails);
 
-    // Prevent error in console as navigation handler might not be ready yet
     try {
       let buildBase64 = page.url.searchParams.get("build");
       // If we navigate back, the searchParams even though updated with updateState, they always return 0
@@ -274,34 +389,7 @@
       if (buildBase64 !== null) {
         const build: BuildData = decodeJson(buildBase64);
         validate(build);
-        const getChar = (id?: number): Character | undefined =>
-          database.characters.find((c) => c.id === id);
-        name = build.name;
-        description = build.description;
-        id = build.id;
-        mainCharacter = getChar(build.mainId);
-        supportCharacter1 = getChar(build.support1Id);
-        supportCharacter2 = getChar(build.support2Id);
-        selectedPotentials = build.potentialIds;
-        const levelMap = build.levelMap ?? [];
-        potentialConfigs = build.potentialConfigs ?? [];
-        // Import levelMap into potentialConfigs
-        for (let i = 0; i < levelMap.length; i++) {
-          const levelKv = levelMap[i];
-          const idx = potentialConfigs.findIndex((kv) => kv[0] === levelKv[0]);
-          if (idx >= 0) {
-            potentialConfigs[idx][1].level = levelKv[1];
-          } else {
-            potentialConfigs.push([
-              levelKv[0],
-              {
-                level: levelKv[1],
-              },
-            ]);
-          }
-        }
-
-        editMode = build.editMode;
+        applyBuild(build);
       }
     } catch (error) {
       addToast({ message: "Error loading build!", type: "error" });
@@ -316,6 +404,7 @@
     ) {
       editMode = true;
     }
+    // Prevent error in console as navigation handler might not be ready yet
     await tick();
     mounted = true;
     updateUrlAndCache(buildData);
@@ -356,6 +445,7 @@
     if (browser) {
       localStorage.setItem("showDesc", String(showDesc));
       localStorage.setItem("showBrief", String(showBrief));
+      localStorage.setItem("showDiscDetails", String(showDiscDetails));
     }
   });
 </script>
@@ -425,52 +515,102 @@
       {/if}
 
       <div class="character-container">
-        {#each [{ title: "Main", character: mainCharacter, role: 0 }, { title: "Support", character: supportCharacter1, role: 1 }, { title: "Support", character: supportCharacter2, role: 2 }] as data}
+        {#each [{ title: "Main", item: mainCharacter, role: 0 }, { title: "Support", item: supportCharacter1, role: 1 }, { title: "Support", item: supportCharacter2, role: 2 }, { title: "Disc", item: disc, role: 3 }, { title: "Disc", item: disc1, role: 4 }, { title: "Disc", item: disc2, role: 5 }] as data, idx}
           <div>
             <h2>{data.title}</h2>
-            {#if editMode === false && data.character}
+            {#if editMode === false && data.item}
               <div class="character-selector-size">
-                <Portrait character={data.character} />
+                {#if idx <= 2}
+                  <CharacterButton character={data.item as Character} />
+                {:else}
+                  <DiscButton disc={data.item as Disc} />
+                {/if}
               </div>
             {:else}
-              <button
-                class="character-selector-size character-selector
-                    {editMode === false && data.character === undefined
-                  ? 'disabled'
-                  : ''}
-                    "
-                onclick={() => {
-                  if (editMode) {
-                    selectedRole = data.role;
-                    showCharacterModal = true;
-                  }
-                }}
-              >
-                {#if data.character}
-                  {#if editMode}
-                    <img
-                      src={getCharacterPortraitUrl(data.character.name)}
-                      alt={data.character.name}
-                    />
-                    <div class="character-overlay">
-                      <p class="character-name">{data.character.name}</p>
-                      <p class="change-text">Click to change</p>
+              <div class="character-selector-wrapper">
+                <button
+                  class="character-selector-size character-selector
+                      {editMode === false && data.item === undefined
+                    ? 'disabled'
+                    : ''}
+                      "
+                  onclick={() => {
+                    if (editMode) {
+                      selectedRole = data.role;
+                      showModal = true;
+                    }
+                  }}
+                >
+                  {#if data.item}
+                    {#if editMode}
+                      <img
+                        src={idx <= 2
+                          ? getCharacterPortraitUrl(data.item.name)
+                          : getDiscCoverUrl(data.item.id)}
+                        alt={data.item.name}
+                      />
+
+                      <div class="character-overlay">
+                        <p class="character-name">{data.item.name}</p>
+                        <p class="change-text">Click to change</p>
+                      </div>
+                    {/if}
+                  {:else}
+                    <div class="placeholder">
+                      <p>
+                        {editMode ? "Click to select" : "Nothing selected"}
+                      </p>
                     </div>
                   {/if}
-                {:else}
-                  <div class="placeholder">
-                    <p>
-                      {editMode
-                        ? "Click to select a character"
-                        : "No character selected"}
-                    </p>
-                  </div>
+                </button>
+                {#if editMode && data.item}
+                  <button
+                    class="clear-button"
+                    onclick={() => clearSelection(data.role)}
+                    title="Clear selection"
+                  >
+                    <Icon icon="mdi:close-circle" />
+                  </button>
                 {/if}
-              </button>
+              </div>
             {/if}
           </div>
         {/each}
       </div>
+
+      {#if editMode}
+        <Notes {notes} {onNoteChanged} {effectiveNoteIds} />
+      {:else}
+        <Notes
+          notes={noteIds
+            .map((noteId) => {
+              // It's not an elemental note
+              const element: number | undefined =
+                noteIdsToElement.find(([id]) => id === noteId)?.[1] ??
+                undefined;
+              const value: number =
+                notes.find((note) => note[0] === noteId)?.[1] ?? 0;
+              if (element === undefined) return [noteId, value];
+
+              const teamElements = [
+                mainCharacter,
+                supportCharacter1,
+                supportCharacter2,
+              ]
+                .filter((c) => c !== undefined)
+                .map((c) => c.element);
+              // To match in game visuals elemental notes are shown using the following criteria:
+              // 1. If our team has a member with the same element as the note
+              // 2. If we have more then 0 of that note
+              if (teamElements.includes(element) || value > 0) {
+                return [noteId, value];
+              }
+              return undefined;
+            })
+            .filter((note) => note !== undefined) as [number, number][]}
+          {effectiveNoteIds}
+        />
+      {/if}
 
       <div class="toggles-container" bind:this={togglesContainer}>
         <label class="toggle">
@@ -481,6 +621,22 @@
           <input type="checkbox" name="showBrief" bind:checked={showBrief} />
           Show Brief
         </label>
+        <label class="toggle">
+          <input
+            type="checkbox"
+            name="showDiscDetails"
+            bind:checked={showDiscDetails}
+          />
+          Show Disc details
+        </label>
+        {#if editMode === false && selectedPotentialsViewMode.length > 0}
+          <button
+            transition:fade
+            onclick={() => (selectedPotentialsViewMode = [])}
+          >
+            Unselect potentials
+          </button>
+        {/if}
       </div>
 
       {#if editMode}
@@ -492,6 +648,28 @@
           Collected Potentials {selectedPotentialsViewMode.length}/{selectedPotentials.length}
         </h2>
       {/if}
+
+      {#if showDiscDetails}
+        <h1>Discs</h1>
+        {#if (disc || disc1 || disc2) === undefined}
+          <div class="select-characters-hint">
+            <p>No discs selected...</p>
+          </div>
+        {:else}
+          {#each [disc, disc1, disc2] as item}
+            {#if item}
+              <DiscSkills
+                skills={item.skills}
+                levels={item.skills.map((skill) =>
+                  getDiscSkillLevelFromNotes(skill, notes),
+                )}
+              />
+            {/if}
+          {/each}
+        {/if}
+        <h1>Potentials</h1>
+      {/if}
+
       {#if (mainCharacter || supportCharacter1 || supportCharacter2) === undefined}
         <div class="select-characters-hint">
           <p>No characters selected...</p>
@@ -503,13 +681,14 @@
           {#key `${mainCharacter?.id ?? ""}-${supportCharacter1?.id ?? ""}-${supportCharacter2?.id ?? ""}`}
             {#each [mainCharacter, supportCharacter1, supportCharacter2] as character}
               {#if character}
-                <BuildCollection
+                <h1 class="title">{character.name}</h1>
+                <PotentialBuilds
                   {showDesc}
                   {showBrief}
                   {editMode}
                   {onPotentialConfigChanged}
                   {potentialConfigs}
-                  title={character.name}
+                  title=""
                   {character}
                   showPriority={true}
                   showMain={mainCharacter !== undefined &&
@@ -524,7 +703,7 @@
           {#each [mainCharacter, supportCharacter1, supportCharacter2] as character}
             {#if character}
               <h1 class="title">{character.name}</h1>
-              <Build
+              <PotentialList
                 {showBrief}
                 {showDesc}
                 {editMode}
@@ -547,14 +726,34 @@
   {/key}
 </div>
 
-{#if showCharacterModal}
-  <CharacterSelectModal
-    onSelect={handleCharacterSelect}
-    onClose={() => (showCharacterModal = false)}
-    excludedCharacters={[mainCharacter, supportCharacter1, supportCharacter2]
-      .filter((x) => x !== undefined)
-      .map((x) => x.id)}
-  />
+{#if showModal}
+  {#if selectedRole <= 2}
+    <ItemSelectModal
+      title="Select Character"
+      onSelect={handleItemSelect}
+      onClose={() => (showModal = false)}
+      excludedIds={[mainCharacter, supportCharacter1, supportCharacter2]
+        .filter((x) => x !== undefined)
+        .map((x) => x.id)}
+    >
+      {#snippet button(excludedIds, handleSelect)}
+        <CharacterSelect {excludedIds} clickOverride={handleSelect} />
+      {/snippet}
+    </ItemSelectModal>
+  {:else}
+    <ItemSelectModal
+      title="Select Disc"
+      onSelect={handleItemSelect}
+      onClose={() => (showModal = false)}
+      excludedIds={[disc, disc1, disc2]
+        .filter((x) => x !== undefined)
+        .map((x) => x.id)}
+    >
+      {#snippet button(excludedIds, handleSelect)}
+        <DiscSelect {excludedIds} clickOverride={handleSelect} />
+      {/snippet}
+    </ItemSelectModal>
+  {/if}
 {/if}
 
 <style>
@@ -644,6 +843,12 @@
     }
   }
 
+  .character-selector-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
   .character-selector {
     position: relative;
     /*border: 3px solid #f3efe7;*/
@@ -697,6 +902,33 @@
     text-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
   }
 
+  .clear-button {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    border: none;
+    border-radius: 50%;
+    padding: 0;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-bg-darker);
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    /*transition: background-color 0.2s;*/
+
+    &:hover {
+      color: var(--red);
+      transform: scale(1.15);
+    }
+
+    & :global(svg) {
+      width: 2.2rem;
+      height: 2.2rem;
+    }
+  }
+
   .character-name {
     margin-top: 0.5rem;
     font-weight: 700;
@@ -724,7 +956,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    padding-bottom: 1rem;
+    padding: 0.5rem 0;
   }
 
   .select-characters-hint {

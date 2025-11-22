@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { PotentialConfig } from "$lib/buildData.types";
-  import type { Character } from "$lib/database.types";
+  import type { PotentialConfig } from "$lib/types/buildData.types";
+  import type { Character } from "$lib/types/database.types";
   import { sortPotentialPriorities, sortPotentials } from "$lib/util";
   import PotentialButton from "./PotentialButton.svelte";
 
@@ -128,7 +128,7 @@
 </script>
 
 <h3 class="build-name">{buildName}</h3>
-{#if buildDesc!.length > 0}
+{#if buildDesc.length > 0}
   <p class="build-desc">{buildDesc}</p>
 {/if}
 

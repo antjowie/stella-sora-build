@@ -1,7 +1,7 @@
 <script lang="ts">
   import { global } from "$lib/global.svelte";
-  import CharacterButton from "$lib/components/CharacterButton.svelte";
   import ItemSelect from "./ItemSelect.svelte";
+  import DiscButton from "./DiscButton.svelte";
 
   interface Props {
     excludedIds?: number[];
@@ -9,20 +9,18 @@
   }
 
   const { excludedIds = [], clickOverride }: Props = $props();
-  const items = global.database.characters.map((character) => ({
-    id: character.id,
-    name: character.name,
-    element: character.element,
-    rarity: character.rarity,
+  const items = global.database.discs.map((disc) => ({
+    id: disc.id,
+    name: disc.name,
+    element: disc.element,
+    rarity: disc.rarity,
   }));
 </script>
 
 <ItemSelect {excludedIds} {items}>
   {#snippet item(id)}
-    <CharacterButton
-      character={global.database.characters.find(
-        (character) => character.id === id,
-      )!}
+    <DiscButton
+      disc={global.database.discs.find((d) => d.id === id)!}
       {clickOverride}
     />
   {/snippet}

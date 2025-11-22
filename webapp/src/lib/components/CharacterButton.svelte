@@ -1,35 +1,34 @@
 <script lang="ts">
-  import type { Character } from "$lib/database.types";
   import {
-    CharacterElement,
-    characterClassColor,
     CharacterClass,
-    getElementIconUrl,
-    getCharacterPortraitUrl,
-  } from "$lib/database";
+    Element,
+    type Character,
+  } from "$lib/types/database.types";
+  import { characterClassColor } from "$lib/global.svelte";
+  import { getElementIconUrl, getCharacterPortraitUrl } from "$lib/util";
   import { base } from "$app/paths";
   import { global } from "$lib/global.svelte";
   import { darkModeBrightness } from "$lib/global.svelte";
 
   interface Props {
     character: Character;
-    clickOverride?: (character: Character) => void;
+    clickOverride?: (id: number) => void;
   }
 
   const { character, clickOverride }: Props = $props();
 </script>
 
-{#snippet portrait()}
+{#snippet button()}
   <div
     class="button-wrapper"
     style="--brightness: {global.darkMode ? darkModeBrightness : 1}"
   >
     <button
       class="button
-      {character.grade == 1 ? 'grade-1' : 'grade-2'}
+      {character.rarity == 1 ? 'rarity-1' : 'rarity-2'}
       "
       onclick={() => {
-        if (clickOverride) clickOverride(character);
+        if (clickOverride) clickOverride(character.id);
       }}
       style:background-image="url({getCharacterPortraitUrl(character.name)})"
     >
@@ -49,17 +48,20 @@
     <img
       class="element-icon"
       src={getElementIconUrl(character.element)}
-      alt={CharacterElement[character.element]}
+      alt={Element[character.element]}
+      onclick={() => {
+        if (clickOverride) clickOverride(character.id);
+      }}
     />
   </div>
 {/snippet}
 
 {#if clickOverride === undefined}
   <a href={`${base}/trekker/${character.name}`}>
-    {@render portrait()}
+    {@render button()}
   </a>
 {:else}
-  {@render portrait()}
+  {@render button()}
 {/if}
 
 <style>
@@ -148,53 +150,29 @@
     }
   }
 
-  .button.grade-1::before {
-    background-image:
-      linear-gradient(
-        90deg,
-        rgba(219, 131, 239, 1) 0%,
-        rgba(134, 167, 251, 1) 50%,
-        rgba(126, 243, 247, 1) 100%
-      ),
-      linear-gradient(
-        90deg,
-        rgba(219, 131, 239, 1) 0%,
-        rgba(134, 167, 251, 1) 50%,
-        rgba(126, 243, 247, 1) 100%
-      );
+  .button::before {
+    background-image: var(--gradient), var(--gradient);
   }
 
-  .button.grade-1::after {
-    background-image: linear-gradient(
+  .button::after {
+    background-image: var(--gradient);
+  }
+
+  .button.rarity-1 {
+    --gradient: linear-gradient(
       90deg,
-      rgba(219, 131, 239, 1) 0%,
-      rgba(134, 167, 251, 1) 50%,
-      rgba(126, 243, 247, 1) 100%
+      rgb(219, 131, 239) 0%,
+      rgb(134, 167, 251) 50%,
+      rgb(126, 243, 247) 100%
     );
   }
 
-  .button.grade-2::before {
-    background-image:
-      linear-gradient(
-        90deg,
-        rgba(245, 213, 92, 1) 0%,
-        rgba(245, 243, 117, 1) 50%,
-        rgba(241, 245, 203, 1) 100%
-      ),
-      linear-gradient(
-        90deg,
-        rgba(245, 213, 92, 1) 0%,
-        rgba(245, 243, 117, 1) 50%,
-        rgba(241, 245, 203, 1) 100%
-      );
-  }
-
-  .button.grade-2::after {
-    background-image: linear-gradient(
+  .button.rarity-2 {
+    --gradient: linear-gradient(
       90deg,
-      rgba(245, 213, 92, 1) 0%,
-      rgba(245, 243, 117, 1) 50%,
-      rgba(241, 245, 203, 1) 100%
+      rgb(245, 213, 92) 0%,
+      rgb(245, 243, 117) 50%,
+      rgb(241, 245, 203) 100%
     );
   }
 

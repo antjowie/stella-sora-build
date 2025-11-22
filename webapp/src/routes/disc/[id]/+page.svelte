@@ -1,69 +1,100 @@
 <script>
   import { page } from "$app/state";
-  import { database, getElementIconUrl } from "$lib/database";
-  import { patchDescription } from "$lib/util";
+  import Slider from "$lib/components/Slider.svelte";
+  import { elementColor, global } from "$lib/global.svelte";
+  import {
+    getDiscCoverUrl,
+    getElementIconUrl,
+    loadPreferenceNum,
+  } from "$lib/util";
+  import { Element } from "$lib/types/database.types";
+  import { browser } from "$app/environment";
+  import { onMount } from "svelte";
+  import DiscSkills from "$lib/components/DiscSkills.svelte";
 
-  const disc = database.discs.find(
-    (d) => d.id === parseInt(page.params.id ?? ""),
+  const disc = global.database.discs.find(
+    (d) => d.id === parseInt(page.params.id ?? "-1"),
   );
-  let level = $state(1);
-  // svelte-ignore non_reactive_update
-  let maxLevel = 0;
-  if (disc) {
-    maxLevel = disc.skills[0].params[0].values.length;
-  }
+  const maxLevel = disc?.skills[0].params[0].values.length ?? 1;
+  let discLevel = $state(1);
+
+  onMount(() => {
+    discLevel = Math.min(loadPreferenceNum("discLevel", 6), maxLevel);
+  });
+
+  $effect(() => {
+    if (browser) {
+      localStorage.setItem("discLevel", String(discLevel));
+    }
+  });
 </script>
 
-<h2>Page is work in progress</h2>
 {#if disc === undefined}
-  <div>Disc not found</div>
+  <div>Can't find Disc</div>
 {:else}
-  <h2>
-    <img src={getElementIconUrl(disc.element)} alt={disc.name} />{disc.name}
-  </h2>
-  <p>{disc.desc}</p>
-  <div class="slider interact-background">
-    <label for="slider">Lvl. {level}</label>
-    <input
-      id="slider"
-      type="range"
-      min="1"
-      max={maxLevel}
-      bind:value={level}
-      step="1"
-    />
+  <div class="disc-container">
+    <img src={getDiscCoverUrl(disc.id)} alt={disc.name} />
+    <div>
+      <h2>{disc.name}</h2>
+      <div class="disc-info">
+        <li class="element-item" style:color={elementColor[disc.element]}>
+          <img
+            class="element-icon"
+            src={getElementIconUrl(disc.element)}
+            alt={Element[disc.element]}
+          />
+          {Element[disc.element]}
+        </li>
+      </div>
+    </div>
   </div>
-  {#each disc.skills as skill, idx}
-    <h3>{skill.name}</h3>
-    <p>{@html patchDescription(skill.desc, skill.params, level)}</p>
-    <p>cost {skill.notes[Math.min(level - 1, skill.notes.length - 1)]}</p>
-  {/each}
+  <Slider bind:value={discLevel} max={maxLevel} text="Lvl." />
+  <DiscSkills skills={disc.skills} levels={[discLevel]} />
 {/if}
 
 <style>
-  /*.toggles-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }*/
-
-  p {
-    white-space: pre-wrap;
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 0rem;
   }
 
-  .slider {
-    position: sticky;
-    top: 5rem;
+  .disc-container {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    align-items: end;
     gap: 0.5rem;
-    margin: 0.5rem 0;
-    max-width: 250px;
-    z-index: 10;
+  }
 
-    & > input {
-      padding: 0;
-    }
+  .disc-container > img {
+    height: 12rem;
+    filter: brightness(var(--brightness));
+  }
+
+  .disc-info {
+    display: flex;
+    list-style-type: none;
+    gap: 0.5rem;
+  }
+
+  .disc-info li.element-item {
+    position: relative;
+    padding-left: 4.25rem;
+    background-color: var(--primary-bg-dark);
+  }
+
+  .element-icon {
+    position: absolute;
+    top: 50%;
+    left: 2rem;
+    max-width: 3rem;
+    transform: translate(-50%, -50%);
+  }
+
+  .disc-info li {
+    color: var(--secondary);
+    font-weight: 600;
+    margin-right: 0.2rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    /*box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);*/
   }
 </style>

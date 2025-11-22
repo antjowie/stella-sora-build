@@ -1,16 +1,14 @@
 <script lang="ts">
-  import {
-    PotentialRarity,
-    potentialRarityColorDesaturated,
-  } from "$lib/database";
-  import type { Potential } from "$lib/database.types";
+  import { PotentialRarity } from "$lib/types/database.types";
+  import { potentialRarityColorDesaturated } from "$lib/global.svelte";
+  import type { Potential } from "$lib/types/database.types";
   import { addToast } from "$lib/toastStore";
   import potentialBorder from "$lib/assets/borders/potential-border.webp";
   import potentialBorderActive from "$lib/assets/borders/potential-border-active.webp";
   import potentialBorderEdged from "$lib/assets/borders/potential-border-edged.webp";
   import potentialBorderEdgedActive from "$lib/assets/borders/potential-border-edged-active.webp";
   import Icon from "@iconify/svelte";
-  import type { PotentialConfig } from "$lib/buildData.types";
+  import type { PotentialConfig } from "$lib/types/buildData.types";
   import { patchDescription } from "$lib/util";
 
   function clampLevel(inLevel: number): number {

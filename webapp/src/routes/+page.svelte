@@ -1,15 +1,11 @@
 <script lang="ts">
   import { browser } from "$app/environment";
-  import { base, resolve } from "$app/paths";
+  import { resolve } from "$app/paths";
   import landing from "$lib/assets/landing.webp";
   import { decodeJson, encodeJson, validate } from "$lib/build";
-  import type { BuildData } from "$lib/buildData.types";
-  import { database, getCharacterPortraitUrl } from "$lib/database";
-  import {
-    darkModeBrightness,
-    localStorageBuildsKey,
-    title,
-  } from "$lib/global.svelte";
+  import type { BuildData } from "$lib/types/buildData.types";
+  import { getCharacterPortraitUrl } from "$lib/util";
+  import { localStorageBuildsKey, title } from "$lib/global.svelte";
   import { addToast } from "$lib/toastStore";
   import { getLocalStoredBuilds } from "$lib/build";
   import { flip } from "svelte/animate";
@@ -208,7 +204,7 @@
                 style:grid-area="main"
                 class="build-image"
                 style:background-image="url({getCharacterPortraitUrl(
-                  database.characters.find((c) => c.id === build.mainId)
+                  global.database.characters.find((c) => c.id === build.mainId)
                     ?.name || '',
                 )})"
               ></div>
@@ -216,16 +212,18 @@
                 style:grid-area="sup1"
                 class="build-image"
                 style:background-image="url({getCharacterPortraitUrl(
-                  database.characters.find((c) => c.id === build.support1Id)
-                    ?.name || '',
+                  global.database.characters.find(
+                    (c) => c.id === build.support1Id,
+                  )?.name || '',
                 )})"
               ></div>
               <div
                 style:grid-area="sup2"
                 class="build-image"
                 style:background-image="url({getCharacterPortraitUrl(
-                  database.characters.find((c) => c.id === build.support2Id)
-                    ?.name || '',
+                  global.database.characters.find(
+                    (c) => c.id === build.support2Id,
+                  )?.name || '',
                 )})"
               ></div>
               <div style:grid-area="buttons" class="build-buttons-container">

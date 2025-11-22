@@ -1,61 +1,149 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Database",
-  "type": "object",
-  "required": ["characters", "discs"],
-  "additionalProperties": false,
-  "properties": {
-    "characters": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/Character"
-      }
-    },
-    "discs": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/Disc"
-      }
-    }
-  },
-  "$defs": {
-    "Character": {
+  "definitions": {
+    "NotesCollection": {
       "type": "object",
-      "required": [
-        "id",
-        "name",
-        "class",
-        "element",
-        "grade",
-        "mainBuild1Name",
-        "mainBuild1Desc",
-        "mainBuild2Name",
-        "mainBuild2Desc",
-        "supportBuild1Name",
-        "supportBuild1Desc",
-        "supportBuild2Name",
-        "supportBuild2Desc",
-        "potentials"
-      ],
-      "additionalProperties": false,
       "properties": {
         "id": {
-          "type": "integer"
+          "type": "number"
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "values"
+      ],
+      "additionalProperties": false
+    },
+    "ParamCollection": {
+      "type": "object",
+      "properties": {
+        "idx": {
+          "type": "number"
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "idx",
+        "values"
+      ],
+      "additionalProperties": false
+    },
+    "DiscSkill": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "desc": {
+          "type": "string"
+        },
+        "params": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ParamCollection"
+          }
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/NotesCollection"
+          }
+        }
+      },
+      "required": [
+        "name",
+        "desc",
+        "params",
+        "notes"
+      ],
+      "additionalProperties": false
+    },
+    "Rarity": {
+      "type": "number",
+      "enum": [
+        1,
+        2,
+        3
+      ]
+    },
+    "CharacterClass": {
+      "type": "number",
+      "enum": [
+        1,
+        2,
+        3
+      ]
+    },
+    "Element": {
+      "type": "number",
+      "enum": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    "PotentialRarity": {
+      "type": "number",
+      "enum": [
+        1,
+        2,
+        3
+      ]
+    },
+    "Database": {
+      "type": "object",
+      "properties": {
+        "characters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Character"
+          }
+        },
+        "discs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Disc"
+          }
+        }
+      },
+      "required": [
+        "characters",
+        "discs"
+      ],
+      "additionalProperties": false
+    },
+    "Character": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
         },
         "name": {
           "type": "string"
         },
         "class": {
-          "$comment": "one of 3 classes",
-          "type": "integer"
+          "$ref": "#/definitions/CharacterClass"
         },
         "element": {
-          "$comment": "one of 6 elemental types, 7 is none",
-          "type": "integer"
+          "$ref": "#/definitions/Element"
         },
-        "grade": {
-          "$comment": "SR or R (1,2)",
-          "type": "integer"
+        "rarity": {
+          "$ref": "#/definitions/Rarity"
         },
         "mainBuild1Name": {
           "type": "string"
@@ -84,27 +172,33 @@
         "potentials": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/Potential"
+            "$ref": "#/definitions/Potential"
           }
         }
-      }
-    },
-    "Potential": {
-      "type": "object",
+      },
       "required": [
         "id",
         "name",
-        "descShort",
-        "descLong",
+        "class",
+        "element",
         "rarity",
-        "build",
-        "type",
-        "params"
+        "mainBuild1Name",
+        "mainBuild1Desc",
+        "mainBuild2Name",
+        "mainBuild2Desc",
+        "supportBuild1Name",
+        "supportBuild1Desc",
+        "supportBuild2Name",
+        "supportBuild2Desc",
+        "potentials"
       ],
-      "additionalProperties": false,
+      "additionalProperties": false
+    },
+    "Potential": {
+      "type": "object",
       "properties": {
         "id": {
-          "type": "integer"
+          "type": "number"
         },
         "name": {
           "type": "string"
@@ -116,43 +210,38 @@
           "type": "string"
         },
         "rarity": {
-          "type": "integer"
+          "$ref": "#/definitions/PotentialRarity"
         },
         "build": {
-          "$comment": "which of the 3 standard builds",
-          "type": "integer"
+          "type": "number"
         },
         "type": {
-          "$comment": "1 is main, 2 is support, 3 is both",
-          "type": "integer"
+          "type": "number"
         },
         "params": {
           "type": "array",
           "items": {
-            "type": "object",
-            "properties": {
-              "idx": {
-                "type": "number"
-              },
-              "values": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              }
-            },
-            "required": ["idx", "values"]
+            "$ref": "#/definitions/ParamCollection"
           }
         }
-      }
+      },
+      "required": [
+        "id",
+        "name",
+        "descShort",
+        "descLong",
+        "rarity",
+        "build",
+        "type",
+        "params"
+      ],
+      "additionalProperties": false
     },
     "Disc": {
       "type": "object",
-      "required": ["id", "name", "desc", "element", "rarity", "skills"],
-      "additionalProperties": false,
       "properties": {
         "id": {
-          "type": "integer"
+          "type": "number"
         },
         "name": {
           "type": "string"
@@ -161,60 +250,27 @@
           "type": "string"
         },
         "element": {
-          "$comment": "one of 6 elemental types, 7 is none",
-          "type": "integer"
+          "type": "number"
         },
         "rarity": {
-          "type": "integer"
+          "type": "number"
         },
         "skills": {
           "type": "array",
           "items": {
-            "type": "object",
-            "required": ["name", "desc", "params", "notes"],
-            "additionalProperties": false,
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "desc": {
-                "type": "string"
-              },
-              "params": {
-                "type": "array",
-                "items": {
-                  "required": ["idx", "values"],
-                  "additionalProperties": false,
-                  "type": "object",
-                  "properties": {
-                    "idx": {
-                      "type": "integer"
-                    },
-                    "values": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                }
-              },
-              "notes": {
-                "type": "array",
-                "items": {
-                  "type": "array",
-                  "items": {
-                    "type": "array",
-                    "items": [{ "type": "integer" }, { "type": "integer" }],
-                    "minItems": 2,
-                    "maxItems": 2
-                  }
-                }
-              }
-            }
+            "$ref": "#/definitions/DiscSkill"
           }
         }
-      }
+      },
+      "required": [
+        "id",
+        "name",
+        "desc",
+        "element",
+        "rarity",
+        "skills"
+      ],
+      "additionalProperties": false
     }
   }
 }

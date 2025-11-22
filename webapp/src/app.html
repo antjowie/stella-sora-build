@@ -1,9 +1,31 @@
 <!doctype html>
-<html lang="en" class="">
+<html lang="en" class="not-mounted">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     %sveltekit.head%
+
+    <!-- Prevent flash of incorrect theme by applying dark mode immediately -->
+    <script>
+      (function () {
+        // Set the theme before any content renders
+        var theme = localStorage.getItem("darkMode");
+        if (theme === "true") {
+          document.documentElement.classList.add("dark");
+        }
+
+        // Disable all transitions during initial load
+        var style = document.createElement("style");
+        style.innerHTML =
+          "html, html *, html *::before, html *::after { transition: none !important; }";
+        document.head.appendChild(style);
+
+        // Add a small delay to ensure theme is applied, then re-enable transitions
+        setTimeout(function () {
+          style.parentNode.removeChild(style);
+        }, 100);
+      })();
+    </script>
   </head>
 
   <!-- Google tag (gtag.js) -->

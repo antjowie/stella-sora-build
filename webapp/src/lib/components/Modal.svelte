@@ -10,6 +10,15 @@
 
   const { title, onClose, content }: Props = $props();
 
+  let modalElement: HTMLElement;
+
+  // Focus the modal when it mounts to support escape key
+  $effect(() => {
+    if (modalElement) {
+      modalElement.focus();
+    }
+  });
+
   function handleBackdropClick(event: MouseEvent) {
     if (event.target === event.currentTarget) {
       onClose();
@@ -18,6 +27,7 @@
 </script>
 
 <div
+  bind:this={modalElement}
   tabindex="0"
   class="modal-backdrop"
   role="dialog"
