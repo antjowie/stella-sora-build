@@ -26,7 +26,7 @@
     getEffectiveNoteIdsFromDisc,
   } from "$lib/util";
   import { loadPreferenceBool } from "$lib/util";
-  import { fly } from "svelte/transition";
+  import { fade, fly } from "svelte/transition";
   import { replaceState } from "$app/navigation";
   import { onMount, tick } from "svelte";
   import { addToast } from "$lib/toastStore";
@@ -594,6 +594,14 @@
           />
           Show Disc details
         </label>
+        {#if editMode === false && selectedPotentialsViewMode.length > 0}
+          <button
+            transition:fade
+            onclick={() => (selectedPotentialsViewMode = [])}
+          >
+            Unselect potentials
+          </button>
+        {/if}
       </div>
 
       {#if editMode}
