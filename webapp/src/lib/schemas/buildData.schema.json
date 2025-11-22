@@ -34,6 +34,15 @@
         "support2Id": {
           "type": "number"
         },
+        "discId": {
+          "type": "number"
+        },
+        "disc1Id": {
+          "type": "number"
+        },
+        "disc2Id": {
+          "type": "number"
+        },
         "potentialIds": {
           "type": "array",
           "items": {
@@ -70,7 +79,12 @@
         "notes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/NotesPair"
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
           }
         },
         "editMode": {
@@ -85,14 +99,6 @@
         "editMode"
       ],
       "additionalProperties": {}
-    },
-    "NotesPair": {
-      "type": "array",
-      "items": {
-        "type": "number"
-      },
-      "minItems": 2,
-      "maxItems": 2
     }
   }
 }

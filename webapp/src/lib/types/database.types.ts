@@ -1,8 +1,16 @@
-export type Skill = [number, number];
-export type NotesPair = [number, number];
+export type NotesCollection = {
+  id: number;
+  values: number[];
+};
 export type ParamCollection = {
   idx: number;
   values: string[];
+};
+export type DiscSkill = {
+  name: string;
+  desc: string;
+  params: ParamCollection[];
+  notes: NotesCollection[];
 };
 
 export enum Rarity {
@@ -68,10 +76,5 @@ export interface Disc {
   desc: string;
   element: number;
   rarity: number;
-  skills: {
-    name: string;
-    desc: string;
-    params: ParamCollection[];
-    notes: NotesPair[][];
-  }[];
+  skills: DiscSkill[];
 }

@@ -128,7 +128,7 @@
 </script>
 
 <h3 class="build-name">{buildName}</h3>
-{#if buildDesc!.length > 0}
+{#if buildDesc.length > 0}
   <p class="build-desc">{buildDesc}</p>
 {/if}
 

@@ -1,5 +1,3 @@
-import type { NotesPair } from "./database.types";
-
 export type PotentialConfig = {
   level?: number;
   priority?: number;
@@ -20,7 +18,7 @@ export interface BuildData {
   potentialConfigs?: [number, PotentialConfig][];
   // Deprecated, use potentialConfigs instead
   levelMap?: [number, number][];
-  notes?: NotesPair[];
+  notes?: [number, number][];
   editMode: boolean;
   [k: string]: unknown;
 }

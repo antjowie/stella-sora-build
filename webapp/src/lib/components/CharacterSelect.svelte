@@ -1,7 +1,7 @@
 <script lang="ts">
   import { global } from "$lib/global.svelte";
   import CharacterButton from "$lib/components/CharacterButton.svelte";
-  import FilteredItemSelect from "./FilteredItemSelect.svelte";
+  import ItemSelect from "./ItemSelect.svelte";
 
   interface Props {
     excludedIds?: number[];
@@ -17,7 +17,7 @@
   }));
 </script>
 
-<FilteredItemSelect {excludedIds} {items}>
+<ItemSelect {excludedIds} {items}>
   {#snippet item(id)}
     <CharacterButton
       character={global.database.characters.find(
@@ -26,4 +26,4 @@
       {clickOverride}
     />
   {/snippet}
-</FilteredItemSelect>
+</ItemSelect>

@@ -5,24 +5,18 @@
   import {
     getDiscCoverUrl,
     getElementIconUrl,
-    getNoteIconUrl,
     loadPreferenceNum,
-    patchDescription,
   } from "$lib/util";
   import { Element } from "$lib/types/database.types";
   import { browser } from "$app/environment";
   import { onMount } from "svelte";
-  import Notes from "$lib/components/Notes.svelte";
+  import DiscSkills from "$lib/components/DiscSkills.svelte";
 
   const disc = global.database.discs.find(
     (d) => d.id === parseInt(page.params.id ?? "-1"),
   );
+  const maxLevel = disc?.skills[0].params[0].values.length ?? 1;
   let discLevel = $state(1);
-  // svelte-ignore non_reactive_update
-  let maxLevel = 0;
-  if (disc) {
-    maxLevel = disc.skills[0].params[0].values.length;
-  }
 
   onMount(() => {
     discLevel = Math.min(loadPreferenceNum("discLevel", 6), maxLevel);
@@ -55,18 +49,7 @@
     </div>
   </div>
   <Slider bind:value={discLevel} max={maxLevel} text="Lvl." />
-  {#each disc.skills as skill, idx}
-    {#if idx === 0}
-      <h1>Melody</h1>
-    {:else if idx === 1}
-      <h1>Harmony</h1>
-    {/if}
-    <h3>{skill.name}</h3>
-    <p>{@html patchDescription(skill.desc, skill.params, discLevel)}</p>
-    <Notes
-      notes={skill.notes[Math.min(discLevel - 1, skill.notes.length - 1)]}
-    />
-  {/each}
+  <DiscSkills skills={disc.skills} levels={[discLevel]} />
 {/if}
 
 <style>
@@ -113,9 +96,5 @@
     padding: 0.5rem;
     border-radius: 4px;
     /*box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);*/
-  }
-
-  p {
-    white-space: pre-wrap;
   }
 </style>

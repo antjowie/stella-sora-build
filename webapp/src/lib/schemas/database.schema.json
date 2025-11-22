@@ -1,21 +1,24 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
-    "Skill": {
-      "type": "array",
-      "items": {
-        "type": "number"
+    "NotesCollection": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        }
       },
-      "minItems": 2,
-      "maxItems": 2
-    },
-    "NotesPair": {
-      "type": "array",
-      "items": {
-        "type": "number"
-      },
-      "minItems": 2,
-      "maxItems": 2
+      "required": [
+        "id",
+        "values"
+      ],
+      "additionalProperties": false
     },
     "ParamCollection": {
       "type": "object",
@@ -33,6 +36,36 @@
       "required": [
         "idx",
         "values"
+      ],
+      "additionalProperties": false
+    },
+    "DiscSkill": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "desc": {
+          "type": "string"
+        },
+        "params": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ParamCollection"
+          }
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/NotesCollection"
+          }
+        }
+      },
+      "required": [
+        "name",
+        "desc",
+        "params",
+        "notes"
       ],
       "additionalProperties": false
     },
@@ -225,37 +258,7 @@
         "skills": {
           "type": "array",
           "items": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "desc": {
-                "type": "string"
-              },
-              "params": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/ParamCollection"
-                }
-              },
-              "notes": {
-                "type": "array",
-                "items": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/NotesPair"
-                  }
-                }
-              }
-            },
-            "required": [
-              "name",
-              "desc",
-              "params",
-              "notes"
-            ],
-            "additionalProperties": false
+            "$ref": "#/definitions/DiscSkill"
           }
         }
       },
