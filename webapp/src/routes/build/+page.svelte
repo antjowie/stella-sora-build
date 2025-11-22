@@ -634,7 +634,7 @@
             transition:fade
             onclick={() => (selectedPotentialsViewMode = [])}
           >
-            Unselect potentials
+            Unselect Potentials
           </button>
         {/if}
       </div>
