@@ -4,9 +4,8 @@
 import databaseSchema from "$lib/schemas/database.schema.json";
 import fs from "fs";
 import ky from "ky";
-import Ajv from "ajv";
+import { ajv } from "./ajv";
 import type { Database } from "./types/database.types";
-const ajv = new Ajv();
 
 async function generateDatabase(): Promise<Database> {
   console.log("Fetching and parsing external data...");
