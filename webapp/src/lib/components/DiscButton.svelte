@@ -6,7 +6,7 @@
 
   interface Props {
     disc: Disc;
-    clickOverride?: (disc: Disc) => void;
+    clickOverride?: (id: number) => void;
   }
 
   const { disc, clickOverride }: Props = $props();
@@ -20,7 +20,7 @@
     <button
       class="button {'rarity-' + disc.rarity}"
       onclick={() => {
-        if (clickOverride) clickOverride(disc);
+        if (clickOverride) clickOverride(disc.id);
       }}
       style:background-image="url({getDiscCoverUrl(disc.id)})"
     >
@@ -30,6 +30,9 @@
       class="element-icon"
       src={getElementIconUrl(disc.element)}
       alt={Element[disc.element]}
+      onclick={() => {
+        if (clickOverride) clickOverride(disc.id);
+      }}
     />
   </div>
 {/snippet}

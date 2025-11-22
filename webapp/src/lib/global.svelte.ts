@@ -36,3 +36,8 @@ export const elementColor = [
 
 export const characterGradeColor = ["", "#d1abf3", "#fff38b"];
 export const characterClassColor = ["", "#db6893", "#7d81e3", "#41cbaf"];
+// If we want to expose the info, extract it in the Data repo
+export const noteIds = [
+  90011, 90012, 90013, 90014, 90015, 90016, 90017, 90018, 90019, 90020, 90021,
+  90022, 90023,
+];

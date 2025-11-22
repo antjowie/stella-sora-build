@@ -11,9 +11,18 @@
   import Build from "$lib/components/Build.svelte";
   import BuildCollection from "$lib/components/BuildCollection.svelte";
   import BuildItemSelectModal from "$lib/components/BuildItemSelectModal.svelte";
-  import type { Character, Potential } from "$lib/types/database.types";
+  import type {
+    Character,
+    Disc,
+    NotesPair,
+    Potential,
+  } from "$lib/types/database.types";
   import { global } from "$lib/global.svelte";
-  import { getCharacterPortraitUrl } from "$lib/util";
+  import {
+    getCharacterPortraitUrl,
+    getDiscCoverUrl,
+    getEffectiveNoteIdsFromDisc,
+  } from "$lib/util";
   import { loadPreferenceBool } from "$lib/util";
   import { fly } from "svelte/transition";
   import { replaceState } from "$app/navigation";
@@ -28,40 +37,33 @@
   });
   import CharacterButton from "$lib/components/CharacterButton.svelte";
   import * as htmlToImage from "html-to-image";
+  import Notes from "$lib/components/Notes.svelte";
+  import DiscButton from "$lib/components/DiscButton.svelte";
+  import CharacterSelect from "$lib/components/CharacterSelect.svelte";
+  import DiscSelect from "$lib/components/DiscSelect.svelte";
 
-  let showCharacterModal = $state(false);
-  // 1 is main, 2 is support 1, 3 is support 2
-  let selectedRole = 0;
-  // svelte-ignore state_referenced_locally
-  const defaultBuildData: BuildData = {
-    name: "My Build",
-    description: "My description",
-    id: crypto.randomUUID(),
-    mainId: undefined,
-    support1Id: undefined,
-    support2Id: undefined,
-    potentialIds: [],
-    editMode: false,
-  };
-  let name = $state(defaultBuildData.name);
-  let description = $state(defaultBuildData.description);
+  let showModal = $state(false);
+
+  const getChar = (id?: number): Character | undefined =>
+    global.database.characters.find((c) => c.id === id);
+  const getDisc = (id?: number): Disc | undefined =>
+    global.database.discs.find((d) => d.id === id);
+
+  let name = $state("My Build");
+  let description = $state("My description");
+  let id: string = $state(crypto.randomUUID());
   let mainCharacter = $state<Character | undefined>(undefined);
   let supportCharacter1 = $state<Character | undefined>(undefined);
   let supportCharacter2 = $state<Character | undefined>(undefined);
-  let selectedPotentials = $state<number[]>(defaultBuildData.potentialIds);
-  let selectedPotentialsViewMode = $state<number[]>(
-    defaultBuildData.potentialIds,
-  );
-  let editMode = $state(false);
-  let showDesc = $state(true);
-  let showBrief = $state(true);
-  let id: string = $state(crypto.randomUUID());
-  // Each entry is a pair of [id, level]
+  let disc = $state<Disc | undefined>(undefined);
+  let disc1 = $state<Disc | undefined>(undefined);
+  let disc2 = $state<Disc | undefined>(undefined);
   let potentialConfigs: [number, PotentialConfig][] = $state([]);
-  let localBuilds = $state(getLocalStoredBuilds());
-  const isNewBuild = $derived(
-    localBuilds.find((build) => build.id === id) === undefined,
-  );
+  let notes = $state<NotesPair[]>([]);
+
+  let selectedPotentials = $state<number[]>([]);
+  let selectedPotentialsViewMode = $state<number[]>([]);
+  let editMode = $state(false);
   let buildData: BuildData = $derived({
     name,
     description,
@@ -69,10 +71,89 @@
     mainId: mainCharacter?.id,
     support1Id: supportCharacter1?.id,
     support2Id: supportCharacter2?.id,
+    discId: disc?.id,
+    disc1Id: disc1?.id,
+    disc2Id: disc2?.id,
     potentialIds: selectedPotentials,
     potentialConfigs,
+    notes,
     editMode,
   });
+
+  function applyBuild(build: BuildData) {
+    name = build.name;
+    description = build.description;
+    id = build.id;
+    mainCharacter = getChar(build.mainId);
+    supportCharacter1 = getChar(build.support1Id);
+    supportCharacter2 = getChar(build.support2Id);
+    disc = getDisc(build.discId);
+    disc1 = getDisc(build.disc1Id);
+    disc2 = getDisc(build.disc2Id);
+
+    selectedPotentials = build.potentialIds;
+    const levelMap = build.levelMap ?? [];
+    potentialConfigs = build.potentialConfigs ?? [];
+    // Import levelMap into potentialConfigs
+    for (let i = 0; i < levelMap.length; i++) {
+      const levelKv = levelMap[i];
+      const idx = potentialConfigs.findIndex((kv) => kv[0] === levelKv[0]);
+      if (idx >= 0) {
+        potentialConfigs[idx][1].level = levelKv[1];
+      } else {
+        potentialConfigs.push([
+          levelKv[0],
+          {
+            level: levelKv[1],
+          },
+        ]);
+      }
+    }
+    notes = build.notes ?? [];
+
+    editMode = build.editMode;
+  }
+  function resetBuild() {
+    if (
+      hasUnsavedChanges === false ||
+      confirm("This will clear your unsaved changes. Are you sure?")
+    ) {
+      // Reset build
+      name = "My Build";
+      description = "My description";
+      id = crypto.randomUUID();
+      mainCharacter = undefined;
+      supportCharacter1 = undefined;
+      supportCharacter2 = undefined;
+      disc = undefined;
+      disc1 = undefined;
+      disc2 = undefined;
+      potentialConfigs = [];
+      notes = [];
+
+      // Reset some vars
+      selectedPotentials = [];
+      selectedPotentialsViewMode = [];
+    }
+  }
+
+  let showDesc = $state(true);
+  let showBrief = $state(true);
+
+  const handleDisc = (disc: Disc | undefined) =>
+    disc ? getEffectiveNoteIdsFromDisc(disc) : [];
+  const effectiveNoteIds = $derived([
+    ...new Set([
+      ...handleDisc(disc),
+      ...handleDisc(disc1),
+      ...handleDisc(disc2),
+    ]),
+  ]);
+  let localBuilds = $state<BuildData[]>([]);
+  const isNewBuild = $derived(
+    localBuilds.find((build) => build.id === id) === undefined,
+  );
+
   const hasUnsavedChanges = $derived(
     JSON.stringify(
       localBuilds
@@ -85,16 +166,28 @@
     ) !== JSON.stringify(buildData),
   );
 
-  function handleCharacterSelect(character: Character) {
+  // 1 is main, 2 is support 1, 3 is support 2
+  // svelte-ignore non_reactive_update
+  let selectedRole = 0;
+  function handleItemSelect(id: number) {
     switch (selectedRole) {
       case 0:
-        mainCharacter = character;
+        mainCharacter = getChar(id);
         break;
       case 1:
-        supportCharacter1 = character;
+        supportCharacter1 = getChar(id);
         break;
       case 2:
-        supportCharacter2 = character;
+        supportCharacter2 = getChar(id);
+        break;
+      case 3:
+        disc = getDisc(id);
+        break;
+      case 4:
+        disc1 = getDisc(id);
+        break;
+      case 5:
+        disc2 = getDisc(id);
         break;
     }
 
@@ -123,7 +216,7 @@
     potentialConfigs = potentialConfigs.filter(([id, obj]) =>
       availableIds.includes(id),
     );
-    showCharacterModal = false;
+    showModal = false;
   }
 
   function createClickListener(list: number[]): (id: number) => void {
@@ -135,22 +228,6 @@
         list.push(id);
       }
     };
-  }
-
-  function resetBuild() {
-    if (
-      hasUnsavedChanges === false ||
-      confirm("This will clear your unsaved changes. Are you sure?")
-    ) {
-      name = defaultBuildData.name;
-      description = defaultBuildData.description;
-      id = crypto.randomUUID();
-      mainCharacter = undefined;
-      supportCharacter1 = undefined;
-      supportCharacter2 = undefined;
-      selectedPotentials = [];
-      potentialConfigs = [];
-    }
   }
 
   function copyBuildURLToClipboard() {
@@ -186,6 +263,15 @@
       potentialConfigs[idx] = [id, config];
     } else {
       potentialConfigs.push([id, config]);
+    }
+  }
+
+  function onNoteChanged(id: number, value: number) {
+    let idx = notes.findIndex(([id2, v]) => id === id2);
+    if (idx >= 0) {
+      notes[idx] = [id, value];
+    } else {
+      notes.push([id, value]);
     }
   }
 
@@ -254,11 +340,10 @@
   }
 
   onMount(async () => {
-    editMode = defaultBuildData.editMode;
+    localBuilds = getLocalStoredBuilds();
     showDesc = loadPreferenceBool("showDesc", showDesc);
     showBrief = loadPreferenceBool("showBrief", showBrief);
 
-    // Prevent error in console as navigation handler might not be ready yet
     try {
       let buildBase64 = page.url.searchParams.get("build");
       // If we navigate back, the searchParams even though updated with updateState, they always return 0
@@ -271,34 +356,7 @@
       if (buildBase64 !== null) {
         const build: BuildData = decodeJson(buildBase64);
         validate(build);
-        const getChar = (id?: number): Character | undefined =>
-          global.database.characters.find((c) => c.id === id);
-        name = build.name;
-        description = build.description;
-        id = build.id;
-        mainCharacter = getChar(build.mainId);
-        supportCharacter1 = getChar(build.support1Id);
-        supportCharacter2 = getChar(build.support2Id);
-        selectedPotentials = build.potentialIds;
-        const levelMap = build.levelMap ?? [];
-        potentialConfigs = build.potentialConfigs ?? [];
-        // Import levelMap into potentialConfigs
-        for (let i = 0; i < levelMap.length; i++) {
-          const levelKv = levelMap[i];
-          const idx = potentialConfigs.findIndex((kv) => kv[0] === levelKv[0]);
-          if (idx >= 0) {
-            potentialConfigs[idx][1].level = levelKv[1];
-          } else {
-            potentialConfigs.push([
-              levelKv[0],
-              {
-                level: levelKv[1],
-              },
-            ]);
-          }
-        }
-
-        editMode = build.editMode;
+        applyBuild(build);
       }
     } catch (error) {
       addToast({ message: "Error loading build!", type: "error" });
@@ -313,6 +371,7 @@
     ) {
       editMode = true;
     }
+    // Prevent error in console as navigation handler might not be ready yet
     await tick();
     mounted = true;
     updateUrlAndCache(buildData);
@@ -422,44 +481,49 @@
       {/if}
 
       <div class="character-container">
-        {#each [{ title: "Main", character: mainCharacter, role: 0 }, { title: "Support", character: supportCharacter1, role: 1 }, { title: "Support", character: supportCharacter2, role: 2 }] as data}
+        {#each [{ title: "Main", item: mainCharacter, role: 0 }, { title: "Support", item: supportCharacter1, role: 1 }, { title: "Support", item: supportCharacter2, role: 2 }, { title: "Disc", item: disc, role: 3 }, { title: "Disc", item: disc1, role: 4 }, { title: "Disc", item: disc2, role: 5 }] as data, idx}
           <div>
             <h2>{data.title}</h2>
-            {#if editMode === false && data.character}
+            {#if editMode === false && data.item}
               <div class="character-selector-size">
-                <CharacterButton character={data.character} />
+                {#if idx <= 2}
+                  <CharacterButton character={data.item as Character} />
+                {:else}
+                  <DiscButton disc={data.item as Disc} />
+                {/if}
               </div>
             {:else}
               <button
                 class="character-selector-size character-selector
-                    {editMode === false && data.character === undefined
+                    {editMode === false && data.item === undefined
                   ? 'disabled'
                   : ''}
                     "
                 onclick={() => {
                   if (editMode) {
                     selectedRole = data.role;
-                    showCharacterModal = true;
+                    showModal = true;
                   }
                 }}
               >
-                {#if data.character}
+                {#if data.item}
                   {#if editMode}
                     <img
-                      src={getCharacterPortraitUrl(data.character.name)}
-                      alt={data.character.name}
+                      src={idx <= 2
+                        ? getCharacterPortraitUrl(data.item.name)
+                        : getDiscCoverUrl(data.item.id)}
+                      alt={data.item.name}
                     />
+
                     <div class="character-overlay">
-                      <p class="character-name">{data.character.name}</p>
+                      <p class="character-name">{data.item.name}</p>
                       <p class="change-text">Click to change</p>
                     </div>
                   {/if}
                 {:else}
                   <div class="placeholder">
                     <p>
-                      {editMode
-                        ? "Click to select a character"
-                        : "No character selected"}
+                      {editMode ? "Click to select" : "Nothing selected"}
                     </p>
                   </div>
                 {/if}
@@ -468,6 +532,12 @@
           </div>
         {/each}
       </div>
+
+      {#if editMode}
+        <Notes {notes} {onNoteChanged} {effectiveNoteIds} />
+      {:else}
+        <Notes {notes} {effectiveNoteIds} />
+      {/if}
 
       <div class="toggles-container" bind:this={togglesContainer}>
         <label class="toggle">
@@ -544,14 +614,34 @@
   {/key}
 </div>
 
-{#if showCharacterModal}
-  <BuildItemSelectModal
-    onSelect={handleCharacterSelect}
-    onClose={() => (showCharacterModal = false)}
-    excludedIds={[mainCharacter, supportCharacter1, supportCharacter2]
-      .filter((x) => x !== undefined)
-      .map((x) => x.id)}
-  />
+{#if showModal}
+  {#if selectedRole <= 2}
+    <BuildItemSelectModal
+      title="Select Character"
+      onSelect={handleItemSelect}
+      onClose={() => (showModal = false)}
+      excludedIds={[mainCharacter, supportCharacter1, supportCharacter2]
+        .filter((x) => x !== undefined)
+        .map((x) => x.id)}
+    >
+      {#snippet button(excludedIds, handleSelect)}
+        <CharacterSelect {excludedIds} clickOverride={handleSelect} />
+      {/snippet}
+    </BuildItemSelectModal>
+  {:else}
+    <BuildItemSelectModal
+      title="Select Disc"
+      onSelect={handleItemSelect}
+      onClose={() => (showModal = false)}
+      excludedIds={[disc, disc1, disc2]
+        .filter((x) => x !== undefined)
+        .map((x) => x.id)}
+    >
+      {#snippet button(excludedIds, handleSelect)}
+        <DiscSelect {excludedIds} clickOverride={handleSelect} />
+      {/snippet}
+    </BuildItemSelectModal>
+  {/if}
 {/if}
 
 <style>
@@ -721,7 +811,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    padding-bottom: 1rem;
+    padding: 0.5rem 0;
   }
 
   .select-characters-hint {

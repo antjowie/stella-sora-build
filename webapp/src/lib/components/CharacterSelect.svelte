@@ -2,11 +2,10 @@
   import { global } from "$lib/global.svelte";
   import CharacterButton from "$lib/components/CharacterButton.svelte";
   import FilteredItemSelect from "./FilteredItemSelect.svelte";
-  import type { Character } from "$lib/types/database.types";
 
   interface Props {
     excludedIds?: number[];
-    clickOverride?: (character: Character) => void;
+    clickOverride?: (id: number) => void;
   }
 
   const { excludedIds = [], clickOverride }: Props = $props();

@@ -1,7 +1,7 @@
 import { browser } from "$app/environment";
 import { base } from "$app/paths";
 import type { PotentialConfig } from "./types/buildData.types";
-import { type Potential, Element } from "./types/database.types";
+import { type Disc, type Potential, Element } from "./types/database.types";
 
 export function loadPreferenceBool(
   key: string,
@@ -92,4 +92,14 @@ export function getNoteIconUrl(noteId: number): string {
     return `${base}/notes/invalid.webp`;
   }
   return `${base}/notes/${noteId}.webp`;
+}
+
+export function getEffectiveNoteIdsFromDisc(disc: Disc): number[] {
+  const effectiveNoteIds = [];
+  for (const skill of disc.skills) {
+    for (const note of skill.notes) {
+      effectiveNoteIds.push(note[0][0]);
+    }
+  }
+  return [...new Set(effectiveNoteIds)];
 }

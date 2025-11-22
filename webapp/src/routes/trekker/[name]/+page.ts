@@ -12,7 +12,6 @@ export const entries: EntryGenerator = async () => {
 };
 
 export async function load({ params }) {
-  console.log("Loading trekker page");
   const character = global.database.characters.find(
     (c) => c.name === params.name,
   );
