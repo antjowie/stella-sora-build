@@ -1,5 +1,8 @@
 <script lang="ts">
-  import type { DiscSkill } from "$lib/types/database.types";
+  import {
+    type DiscSkill,
+    type NotesCollection,
+  } from "$lib/types/database.types";
   import { patchDescription } from "$lib/util";
   import Notes from "./Notes.svelte";
 
@@ -9,12 +12,12 @@
   }
 
   const { skills, levels }: Props = $props();
-  const clampedLevel = (level: number, skill: DiscSkill) =>
+  const clampedLevelIdx = (level: number, skill: DiscSkill) =>
     Math.min(level, skill.params[0].values.length - 1);
   const getNotes = (skill: DiscSkill, level: number): [number, number][] =>
-    skill.notes.map((note) => [
+    skill.notes.map((note: NotesCollection) => [
       note.id,
-      note.values[clampedLevel(level - 1, skill)],
+      note.values[clampedLevelIdx(level - 1, skill)],
     ]);
 </script>
 
@@ -24,7 +27,10 @@
   {:else if idx === 1}
     <h1>Harmony</h1>
   {/if}
-  <h3>{skill.name} Lvl.{clampedLevel(levels[idx % levels.length], skill)}</h3>
+  <h3>
+    {skill.name} Lvl.{clampedLevelIdx(levels[idx % levels.length] - 1, skill) +
+      1}
+  </h3>
   <p>
     {@html patchDescription(
       skill.desc,
