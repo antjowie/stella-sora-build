@@ -3,7 +3,8 @@ import type { BuildData } from "./types/buildData.types";
 import buildDataSchema from "$lib/schemas/buildData.schema.json";
 import { browser } from "$app/environment";
 import { localStorageBuildsKey } from "$lib/global.svelte";
-const ajv = new Ajv();
+import { ajv } from "./ajv";
+
 const ajvValidate = ajv.compile(buildDataSchema);
 
 export function validate(buildData: BuildData) {

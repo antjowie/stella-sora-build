@@ -12,13 +12,15 @@ describe.concurrent("loading builds", async () => {
       );
 
       const isBad = fileName.search("bad") >= 0;
-      let error = undefined;
+      let errors = [];
       for (const build of builds) {
         if (isBad) {
           try {
             validate(build);
+            // If validation succeeds, this is unexpected for a bad file
+            expect.fail(`Expected validation to fail for build: ${build.name}`);
           } catch (e) {
-            error = e;
+            errors.push(e);
           }
         } else {
           expect(() => validate(build)).not.toThrow();
@@ -26,7 +28,7 @@ describe.concurrent("loading builds", async () => {
       }
 
       if (isBad) {
-        expect(error).toBeDefined();
+        expect(errors.length).toBeGreaterThan(0);
       }
     });
   }
