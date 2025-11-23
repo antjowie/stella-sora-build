@@ -79,24 +79,28 @@ export function patchDescription(text: string, inParams: any[], level: number) {
   return text;
 }
 
+export function getImageUrl(name: string, path: string): string {
+  return `${encodeURI(base + "/" + path + "/" + name + ".webp")}`;
+}
+
 export function getCharacterPortraitUrl(characterName: string): string {
-  return encodeURI(`${base}/portraits/${characterName}.webp`);
+  return getImageUrl(characterName, "portraits");
 }
 
 export function getDiscCoverUrl(discId: number): string {
-  return encodeURI(`${base}/discs/${discId}.webp`);
+  return getImageUrl(String(discId), "discs");
 }
 
 export function getElementIconUrl(element: Element): string {
   const name = Element[element];
-  return `${base}/elements/${name}.webp`;
+  return getImageUrl(name, "elements");
 }
 
 export function getNoteIconUrl(noteId: number): string {
   if (noteId < 90011 && noteId > 90023) {
-    return `${base}/notes/invalid.webp`;
+    return getImageUrl("Note", "fallback");
   }
-  return `${base}/notes/${noteId}.webp`;
+  return getImageUrl(String(noteId), "notes");
 }
 
 export function getEffectiveNoteIdsFromDisc(disc: Disc): number[] {

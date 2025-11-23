@@ -5,6 +5,7 @@
   import {
     getCharacterPortraitUrl,
     getElementIconUrl,
+    getImageUrl,
     loadPreferenceBool,
     loadPreferenceNum,
   } from "$lib/util";
@@ -67,7 +68,13 @@
 {:else}
   <div class="character-container">
     <div class="character-portrait">
-      <img src={getCharacterPortraitUrl(character.name)} alt={character.name} />
+      <img
+        src={getCharacterPortraitUrl(character.name)}
+        alt={character.name}
+        onerror={(e: any) => {
+          e.target.src = getImageUrl("Portrait", "fallback");
+        }}
+      />
     </div>
     <div>
       <h2>{character.name}</h2>
@@ -76,6 +83,9 @@
           <img
             class="element-icon"
             src={getElementIconUrl(character.element)}
+            onerror={(e: any) => {
+              e.target.src = getImageUrl("Element", "fallback");
+            }}
             alt={Element[character.element]}
           />
           {Element[character.element]}

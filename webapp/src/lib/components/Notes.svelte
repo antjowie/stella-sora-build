@@ -1,7 +1,6 @@
 <script lang="ts">
   import { noteIds } from "$lib/global.svelte";
-  import type { DiscSkill } from "$lib/types/database.types";
-  import { getNoteIconUrl } from "$lib/util";
+  import { getImageUrl, getNoteIconUrl } from "$lib/util";
 
   interface Props {
     notes: [number, number][];
@@ -24,6 +23,10 @@
     {#each onNoteChanged ? editNotes : notes as note}
       <div class="note {effectiveNotes.includes(note[0]) ? 'highlight' : ''}">
         <img src={getNoteIconUrl(note[0])} alt="Note" />
+        onerror={(e: any) => {
+          e.target.src = getImageUrl("Note", "fallback");
+        }}
+        />
         {#if onNoteChanged}
           <input
             type="number"

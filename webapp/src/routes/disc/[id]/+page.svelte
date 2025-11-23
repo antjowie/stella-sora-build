@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { page } from "$app/state";
   import Slider from "$lib/components/Slider.svelte";
   import { elementColor, global } from "$lib/global.svelte";
@@ -6,6 +6,7 @@
     getDiscCoverUrl,
     getElementIconUrl,
     loadPreferenceNum,
+    getImageUrl,
   } from "$lib/util";
   import { Element } from "$lib/types/database.types";
   import { browser } from "$app/environment";
@@ -41,6 +42,8 @@
           <img
             class="element-icon"
             src={getElementIconUrl(disc.element)}
+            onerror={(e: any) =>
+              (e.target.src = getImageUrl("Element", "fallback"))}
             alt={Element[disc.element]}
           />
           {Element[disc.element]}
