@@ -137,6 +137,7 @@
 
   let showDesc = $state(true);
   let showBrief = $state(true);
+  let showIcons = $state(true);
   let showDiscDetails = $state(true);
 
   const handleDisc = (disc: Disc | undefined) =>
@@ -369,6 +370,7 @@
     localBuilds = getLocalStoredBuilds();
     showDesc = loadPreferenceBool("showDesc", showDesc);
     showBrief = loadPreferenceBool("showBrief", showBrief);
+    showIcons = loadPreferenceBool("showIcons", showIcons);
     showDiscDetails = loadPreferenceBool("showDiscDetails", showDiscDetails);
 
     try {
@@ -439,6 +441,7 @@
     if (browser) {
       localStorage.setItem("showDesc", String(showDesc));
       localStorage.setItem("showBrief", String(showBrief));
+      localStorage.setItem("showIcons", String(showIcons));
       localStorage.setItem("showDiscDetails", String(showDiscDetails));
     }
   });
@@ -622,6 +625,10 @@
           Show Brief
         </label>
         <label class="toggle">
+          <input type="checkbox" name="showIcons" bind:checked={showIcons} />
+          Show Icons
+        </label>
+        <label class="toggle">
           <input
             type="checkbox"
             name="showDiscDetails"
@@ -683,9 +690,12 @@
               {#if character}
                 <h1 class="title">{character.name}</h1>
                 <PotentialBuilds
-                  {showDesc}
-                  {showBrief}
-                  {editMode}
+                  config={{
+                    showDesc,
+                    showBrief,
+                    showIcon: showIcons,
+                    editMode,
+                  }}
                   {onPotentialConfigChanged}
                   {potentialConfigs}
                   title=""
@@ -704,9 +714,12 @@
             {#if character}
               <h1 class="title">{character.name}</h1>
               <PotentialList
-                {showBrief}
-                {showDesc}
-                {editMode}
+                config={{
+                  showDesc,
+                  showBrief,
+                  showIcon: showIcons,
+                  editMode,
+                }}
                 {potentialConfigs}
                 {character}
                 showPriority={true}

@@ -61,44 +61,44 @@
   <link rel="manifest" href={`${base}/favicon/site.webmanifest`} />
 
   <!-- Fonts -->
-  <link
+  <!-- <link
     rel="preload"
-    href="$lib/assets/fonts/MiSans-Bold.woff2"
+    href={`${base}/fonts/MiSans-Bold.woff2`}
     as="font"
     type="font/woff2"
     crossorigin="anonymous"
   />
   <link
     rel="preload"
-    href="$lib/assets/fonts/MiSans-Demibold.woff2"
+    href={`${base}/fonts/MiSans-Demibold.woff2`}
     as="font"
     type="font/woff2"
     crossorigin="anonymous"
   />
   <link
     rel="preload"
-    href="$lib/assets/fonts/MiSans-SemiBold.woff2"
+    href={`${base}/fonts/MiSans-Semibold.woff2`}
     as="font"
     type="font/woff2"
     crossorigin="anonymous"
   />
   <link
     rel="preload"
-    href="$lib/assets/fonts/MiSans-Medium.woff2"
+    href={`${base}/fonts/MiSans-Medium.woff2`}
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  /> -->
+  <link
+    rel="preload"
+    href={`${base}/fonts/MiSans-Normal.woff2`}
     as="font"
     type="font/woff2"
     crossorigin="anonymous"
   />
   <link
     rel="preload"
-    href="$lib/assets/fonts/MiSans-Normal.woff2"
-    as="font"
-    type="font/woff2"
-    crossorigin="anonymous"
-  />
-  <link
-    rel="preload"
-    href="$lib/assets/fonts/MiSans-Regular.woff2"
+    href={`${base}/fonts/MiSans-Regular.woff2`}
     as="font"
     type="font/woff2"
     crossorigin="anonymous"
@@ -273,7 +273,7 @@
     font-family: "MiSans";
     font-style: normal;
     font-weight: 400;
-    src: url("$lib/assets/fonts/MiSans-Regular.woff2") format("woff2");
+    src: url("/fonts/MiSans-Regular.woff2") format("woff2");
   }
 
   @font-face {
@@ -281,7 +281,7 @@
     font-family: "MiSans";
     font-style: normal;
     font-weight: 500;
-    src: url("$lib/assets/fonts/MiSans-Medium.woff2") format("woff2");
+    src: url("/fonts/MiSans-Medium.woff2") format("woff2");
   }
 
   @font-face {
@@ -289,7 +289,7 @@
     font-family: "MiSans";
     font-style: normal;
     font-weight: 600;
-    src: url("$lib/assets/fonts/MiSans-Demibold.woff2") format("woff2");
+    src: url("/fonts/MiSans-Demibold.woff2") format("woff2");
   }
 
   @font-face {
@@ -297,7 +297,7 @@
     font-family: "MiSans";
     font-style: normal;
     font-weight: 700;
-    src: url("$lib/assets/fonts/MiSans-SemiBold.woff2") format("woff2");
+    src: url("/fonts/MiSans-Semibold.woff2") format("woff2");
   }
 
   @font-face {
@@ -305,7 +305,7 @@
     font-family: "MiSans";
     font-style: normal;
     font-weight: 800;
-    src: url("$lib/assets/fonts/MiSans-Bold.woff2") format("woff2");
+    src: url("/fonts/MiSans-Bold.woff2") format("woff2");
   }
 
   /* Hide content until app is ready to prevent flash */
