@@ -2,19 +2,19 @@
   import type { PotentialConfig } from "$lib/types/buildData.types";
   import type { Character } from "$lib/types/database.types";
   import { sortPotentialPriorities, sortPotentials } from "$lib/util";
-  import PotentialButton from "./PotentialButton.svelte";
+  import PotentialButton, {
+    type PotentialButtonConfig,
+  } from "./PotentialButton.svelte";
 
   interface Props {
     buildIndex?: number;
     isMain?: boolean;
     overrideTitle?: string;
-    showDesc: boolean;
-    showBrief: boolean;
     character: Character;
+    config: PotentialButtonConfig;
     overridePotentialIds?: number[];
     activePotentialIds?: number[];
     onClicked?: (id: number) => void;
-    editMode: boolean;
     onPotentialConfigChanged?: (id: number, config: PotentialConfig) => void;
     potentialConfigs?: [number, PotentialConfig][];
     levelOverride?: number;
@@ -27,13 +27,11 @@
     buildIndex,
     isMain,
     overrideTitle,
-    showDesc,
-    showBrief,
     character,
+    config,
     overridePotentialIds = [],
     activePotentialIds = [],
     onClicked,
-    editMode,
     onPotentialConfigChanged,
     potentialConfigs = [],
     levelOverride,
@@ -99,7 +97,7 @@
           )
   ).sort(sortPotentials);
 
-  if (editMode === false) {
+  if (config.editMode === false) {
     potentials = potentials.sort(sortPotentialPriorities(potentialConfigs));
   }
 
@@ -136,11 +134,9 @@
   {#each potentials as potential}
     <PotentialButton
       {potential}
-      {showBrief}
-      {showDesc}
+      {config}
       {activePotentialIds}
       {onClicked}
-      {editMode}
       {onPotentialConfigChanged}
       potentialConfig={getPotentialConfig(potential.id)}
       blockClick={blockedPotentialIds.includes(potential.id)
@@ -166,13 +162,12 @@
 
   .build-name {
     font-size: 1.5rem;
-    font-weight: 700;
+    font-weight: 600;
     padding: 0.5rem 0;
   }
 
   .build-desc {
     font-size: 1rem;
-    font-weight: normal;
     margin-bottom: 1rem;
   }
 </style>

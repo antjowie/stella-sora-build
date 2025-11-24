@@ -63,6 +63,7 @@ export interface Potential {
   name: string;
   descShort: string;
   descLong: string;
+  icons: string[];
   rarity: PotentialRarity;
   // Indicates which of the 3 standard builds this potential belongs to
   build: number;

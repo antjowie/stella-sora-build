@@ -21,6 +21,14 @@ const config = {
     paths: {
       base: process.env.BASE_PATH !== undefined ? process.env.BASE_PATH : "",
     },
+    prerender: {
+      handleHttpError: ({ status, path }) => {
+        // It often happens that images are updated before binary data. This shouldn't block building. Missing images are handled with fallbacks.
+        if (status === 404 && path.endsWith(".webp")) {
+          return "warn";
+        }
+      },
+    },
     // TODO: Look into CSP to prevent XSS attacks
     // csp: {
     //   mode: "hash",

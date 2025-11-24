@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Element, type Disc } from "$lib/types/database.types";
-  import { getDiscCoverUrl, getElementIconUrl } from "$lib/util";
+  import { getElementIconUrl, getDiscCoverUrl } from "$lib/util";
   import { base } from "$app/paths";
   import { global, darkModeBrightness } from "$lib/global.svelte";
 
@@ -22,13 +22,16 @@
       onclick={() => {
         if (clickOverride) clickOverride(disc.id);
       }}
-      style:background-image="url({getDiscCoverUrl(disc.id)})"
+      style:background-image="url({getDiscCoverUrl(disc.id)}), url({getDiscCoverUrl()})"
     >
     </button>
     <div class="disc-name">{disc.name}</div>
     <img
       class="element-icon"
       src={getElementIconUrl(disc.element)}
+      onerror={(e: any) => {
+        e.target.src = getElementIconUrl();
+      }}
       alt={Element[disc.element]}
       onclick={() => {
         if (clickOverride) clickOverride(disc.id);
@@ -85,6 +88,7 @@
     position: relative;
     border-radius: var(--border-radius);
     background-size: cover;
+    background-position: center;
     width: 100%;
     height: 100%;
     z-index: 1;
@@ -135,6 +139,7 @@
 
   a {
     text-decoration: none;
+    font-weight: 500;
   }
 
   .disc-name {

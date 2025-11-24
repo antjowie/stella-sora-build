@@ -30,7 +30,8 @@
       onclick={() => {
         if (clickOverride) clickOverride(character.id);
       }}
-      style:background-image="url({getCharacterPortraitUrl(character.name)})"
+      style:background-image="url({getCharacterPortraitUrl(character.name)}),
+      url({getCharacterPortraitUrl()})"
     >
       <div class="button-content">
         <div class="halftone-color">
@@ -48,6 +49,9 @@
     <img
       class="element-icon"
       src={getElementIconUrl(character.element)}
+      onerror={(e: any) => {
+        e.target.src = getElementIconUrl();
+      }}
       alt={Element[character.element]}
       onclick={() => {
         if (clickOverride) clickOverride(character.id);

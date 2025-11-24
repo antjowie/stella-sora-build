@@ -2,8 +2,6 @@ import { getCharacterPortraitUrl } from "$lib/util";
 import { global, title, url } from "$lib/global.svelte";
 import type { EntryGenerator } from "./$types";
 
-export const prerender = true;
-
 export const entries: EntryGenerator = async () => {
   // Generate a route for each character in the database
   return global.database.characters.map((character) => ({

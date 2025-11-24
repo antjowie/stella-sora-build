@@ -3,16 +3,15 @@
   import { fly } from "svelte/transition";
   import PotentialList from "./PotentialList.svelte";
   import type { PotentialConfig } from "$lib/types/buildData.types";
+  import type { PotentialButtonConfig } from "./PotentialButton.svelte";
 
   interface Props {
     character: Character;
-    showDesc: boolean;
-    showBrief: boolean;
+    config: PotentialButtonConfig;
     showMain: boolean;
     title?: string;
     activePotentialIds?: number[];
     onClicked?: (id: number) => void;
-    editMode: boolean;
     onPotentialConfigChanged?: (id: number, config: PotentialConfig) => void;
     potentialConfigs?: [number, PotentialConfig][];
     levelOverride?: number;

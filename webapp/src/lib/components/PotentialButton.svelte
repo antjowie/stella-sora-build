@@ -9,7 +9,7 @@
   import potentialBorderEdgedActive from "$lib/assets/borders/potential-border-edged-active.webp";
   import Icon from "@iconify/svelte";
   import type { PotentialConfig } from "$lib/types/buildData.types";
-  import { patchDescription } from "$lib/util";
+  import { getPotentialIconUrl, patchDescription } from "$lib/util";
 
   function clampLevel(inLevel: number): number {
     if (inLevel < 1) inLevel = 1;
@@ -17,26 +17,29 @@
     return inLevel;
   }
 
+  export type PotentialButtonConfig = {
+    showDesc: boolean;
+    showBrief: boolean;
+    showIcon: boolean;
+    editMode: boolean;
+  };
+
   interface Props {
     potential: Potential;
-    showBrief: boolean;
-    showDesc: boolean;
+    config: PotentialButtonConfig;
     activePotentialIds?: number[];
     blockClick?: string;
     onClicked?: (id: number) => void;
-    editMode: boolean;
     onPotentialConfigChanged?: (id: number, level: PotentialConfig) => void;
     potentialConfig: PotentialConfig;
   }
 
   const {
     potential,
-    showBrief,
-    showDesc,
+    config,
     activePotentialIds = [],
     blockClick = undefined,
     onClicked,
-    editMode,
     onPotentialConfigChanged,
     potentialConfig,
   }: Props = $props();
@@ -106,11 +109,11 @@
 
   const scale = 0.4;
   const borderImage = $derived(
-    showDesc || editMode
+    config.showDesc || config.editMode
       ? `url("${active ? potentialBorderActive : potentialBorder}") 80 fill / ${scale * 80}px`
       : `url("${active ? potentialBorderEdgedActive : potentialBorderEdged}") 80 80 80 205 fill / ${scale * 80}px ${scale * 80}px ${scale * 80}px ${scale * 205}px`,
   );
-  const showDescLayout = $derived(showDesc || editMode);
+  const showDescLayout = $derived(config.showDesc || config.editMode);
 </script>
 
 {#snippet priorityComponent(visualPriority: number, canEdit: boolean)}
@@ -163,7 +166,7 @@
   <div class="name">
     <span>{potential.name}</span>
     <div class="priority-container">
-      {#if editMode}
+      {#if config.editMode}
         {@render priorityComponent(3, true)}
         {@render priorityComponent(2, true)}
         {@render priorityComponent(1, true)}
@@ -185,7 +188,7 @@
 {#snippet lvlComponent()}
   <div class="level {showDescLayout ? 'showDesc' : 'notShowDesc'}">
     Lv. {level}
-    {#if editMode}
+    {#if config.editMode}
       <div class="edit clampedLevel">
         <div
           class="button {level == 1 ? 'disabled' : ''}"
@@ -228,6 +231,27 @@
     handleOnClick();
   }}
 >
+  {#if config.showIcon}
+    <div class="icon-container">
+      {#each potential.icons as icon, idx}
+        {#if idx === 1}
+          <div
+            style:z-index={idx}
+            style:background-image="url({getPotentialIconUrl(icon)})})"
+            style:--src="url({getPotentialIconUrl(icon)})"
+          ></div>
+        {:else}
+          <img
+            src={getPotentialIconUrl(icon)}
+            onerror={(e: any) => (e.target.src = getPotentialIconUrl())}
+            alt={icon}
+            style:z-index={idx}
+          />
+        {/if}
+      {/each}
+    </div>
+  {/if}
+
   <!-- Put name first or after level based on layout for proper text select logic -->
   {#if showDescLayout}
     {@render nameComponent()}
@@ -236,10 +260,10 @@
     {@render lvlComponent()}
     {@render nameComponent()}
   {/if}
-  {#if showDesc}
+  {#if config.showDesc}
     <p class="description">
       {@html patchDescription(
-        showBrief ? potential.descShort : potential.descLong,
+        config.showBrief ? potential.descShort : potential.descLong,
         potential.params,
         level,
       )}
@@ -294,6 +318,37 @@
     -webkit-mask-composite: destination-in;
     color: var(--primary-content);
     filter: grayscale(0) brightness(var(--brightness));
+  }
+
+  .potential .icon-container {
+    display: grid;
+    grid-template-columns: 1;
+    grid-template-rows: 1;
+    --height: 200px;
+    --padding-decrease: 40px;
+    height: calc(var(--height) - var(--padding-decrease));
+    transform: translateY(calc(var(--padding-decrease) * -0.75));
+    place-items: center;
+
+    & > * {
+      grid-column: 1 / 2;
+      grid-row: 1 / 2;
+      background-size: cover;
+      height: var(--height);
+      aspect-ratio: 1;
+    }
+
+    & > *:nth-child(2) {
+      height: var(--height);
+      aspect-ratio: 1;
+      background-image: none !important;
+      background-color: var(--color);
+      mask: var(--src);
+      mask-size: cover;
+      mask-repeat: no-repeat;
+      mask-position: center;
+      filter: brightness(calc(var(--brightness) - 0.2)) saturate(2);
+    }
   }
 
   .potential .name {
@@ -396,15 +451,6 @@
     .potential .description {
       font-size: 1rem;
     }
-  }
-
-  /* For the param values */
-  :global(.outline) {
-    /*-webkit-text-stroke: 3px var(--secondary);*/
-    -webkit-text-stroke: 3px rgba(255, 255, 255, 0.75);
-    paint-order: stroke fill;
-    /*font-weight: 900;*/
-    /*font-weight: ;*/
   }
 
   .button {

@@ -59,6 +59,9 @@
         />
         <img
           src={getElementIconUrl(Element[elemString as keyof typeof Element])}
+          onerror={(e: any) => {
+            e.target.src = getElementIconUrl();
+          }}
           alt={elemString}
         />
       </label>

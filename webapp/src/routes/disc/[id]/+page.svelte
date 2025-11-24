@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { page } from "$app/state";
   import Slider from "$lib/components/Slider.svelte";
   import { elementColor, global } from "$lib/global.svelte";
@@ -33,7 +33,13 @@
   <div>Can't find Disc</div>
 {:else}
   <div class="disc-container">
-    <img src={getDiscCoverUrl(disc.id)} alt={disc.name} />
+    <img
+      src={getDiscCoverUrl(disc.id)}
+      onerror={(e: any) => {
+        e.target.src = getDiscCoverUrl();
+      }}
+      alt={disc.name}
+    />
     <div>
       <h2>{disc.name}</h2>
       <div class="disc-info">
@@ -41,6 +47,7 @@
           <img
             class="element-icon"
             src={getElementIconUrl(disc.element)}
+            onerror={(e: any) => (e.target.src = getElementIconUrl())}
             alt={Element[disc.element]}
           />
           {Element[disc.element]}

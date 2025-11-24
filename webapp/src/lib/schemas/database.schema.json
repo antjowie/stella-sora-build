@@ -209,6 +209,12 @@
         "descLong": {
           "type": "string"
         },
+        "icons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "rarity": {
           "$ref": "#/definitions/PotentialRarity"
         },
@@ -230,6 +236,7 @@
         "name",
         "descShort",
         "descLong",
+        "icons",
         "rarity",
         "build",
         "type",

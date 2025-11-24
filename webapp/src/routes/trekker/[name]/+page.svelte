@@ -27,6 +27,7 @@
 
   let showDesc = $state(true);
   let showBrief = $state(true);
+  let showIcons = $state(true);
   let showMain = $state(true);
   let maxLevel = $derived(
     Math.max(
@@ -48,8 +49,9 @@
   let potentialLevel = $state(maxLevel);
 
   onMount(() => {
-    showDesc = loadPreferenceBool("showDesc", true);
-    showBrief = loadPreferenceBool("showBrief", true);
+    showDesc = loadPreferenceBool("showDesc", showDesc);
+    showBrief = loadPreferenceBool("showBrief", showBrief);
+    showIcons = loadPreferenceBool("showIcons", showIcons);
     potentialLevel = Math.min(loadPreferenceNum("potentialLevel", 6), maxLevel);
   });
 
@@ -57,6 +59,7 @@
     if (browser) {
       localStorage.setItem("showDesc", String(showDesc));
       localStorage.setItem("showBrief", String(showBrief));
+      localStorage.setItem("showIcons", String(showIcons));
       localStorage.setItem("potentialLevel", String(potentialLevel));
     }
   });
@@ -67,7 +70,13 @@
 {:else}
   <div class="character-container">
     <div class="character-portrait">
-      <img src={getCharacterPortraitUrl(character.name)} alt={character.name} />
+      <img
+        src={getCharacterPortraitUrl(character.name)}
+        onerror={(e: any) => {
+          e.target.src = getCharacterPortraitUrl();
+        }}
+        alt={character.name}
+      />
     </div>
     <div>
       <h2>{character.name}</h2>
@@ -76,6 +85,9 @@
           <img
             class="element-icon"
             src={getElementIconUrl(character.element)}
+            onerror={(e: any) => {
+              e.target.src = getElementIconUrl();
+            }}
             alt={Element[character.element]}
           />
           {Element[character.element]}
@@ -99,16 +111,23 @@
       <input type="checkbox" name="showBrief" bind:checked={showBrief} />
       Show Brief
     </label>
+    <label class="toggle">
+      <input type="checkbox" name="showIcons" bind:checked={showIcons} />
+      Show Icons
+    </label>
   </div>
   <Slider bind:value={potentialLevel} max={maxLevel ?? 1} text="Lvl. "></Slider>
   <PotentialBuilds
     {character}
-    {showDesc}
-    {showBrief}
+    config={{
+      showDesc,
+      showBrief,
+      showIcon: showIcons,
+      editMode: false,
+    }}
     {showMain}
     showPriority={false}
     levelOverride={potentialLevel}
-    editMode={false}
   />
 {/if}
 

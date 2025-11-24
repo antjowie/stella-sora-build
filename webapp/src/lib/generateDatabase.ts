@@ -26,16 +26,16 @@ async function generateDatabase(): Promise<Database> {
 }
 
 async function fetchImages(): Promise<void> {
-  const characters: string[] = db.characters.map((character) => character.name);
   // In case you want to poll directly but quickly runs into rate limits
   // const getUrl = (folder: string, name: string) =>
   //   `https://raw.githubusercontent.com/antjowie/StellaSoraData/main/${folder}/${name}.webp`;
   const getUrl = (folder: string, name: string) =>
-    `https://stellabuildsdata.pages.dev/${folder}/${name}.webp`;
+    `https://stellabuildsdata.pages.dev/${folder}/${name}`;
 
+  const characters: string[] = db.characters.map((character) => character.name);
   fs.mkdirSync("static/portraits", { recursive: true });
   let promises = characters.map(async (character) => {
-    const url = getUrl("portraits", character);
+    const url = getUrl("portraits", character + ".webp");
     const path = `static/portraits/${character}.webp`;
     const buffer = await ky(url).arrayBuffer();
     fs.writeFileSync(path, Buffer.from(buffer));
@@ -45,8 +45,20 @@ async function fetchImages(): Promise<void> {
   fs.mkdirSync("static/discs", { recursive: true });
   promises = promises.concat(
     discs.map(async (disc) => {
-      const url = getUrl("discs", String(disc));
+      const url = getUrl("discs", String(disc) + ".webp");
       const path = `static/discs/${disc}.webp`;
+      const buffer = await ky(url).arrayBuffer();
+      fs.writeFileSync(path, Buffer.from(buffer));
+    }),
+  );
+
+  let potentialIcons = getUrl("potential-icons", "index.json");
+  potentialIcons = await ky(potentialIcons).json();
+  fs.mkdirSync("static/potential-icons", { recursive: true });
+  promises = promises.concat(
+    Object.values(potentialIcons).map(async (icon) => {
+      const url = getUrl("potential-icons", icon);
+      const path = `static/potential-icons/${icon}`;
       const buffer = await ky(url).arrayBuffer();
       fs.writeFileSync(path, Buffer.from(buffer));
     }),
