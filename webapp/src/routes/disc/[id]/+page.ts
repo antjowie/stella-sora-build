@@ -3,8 +3,6 @@ import { title } from "$lib/global.svelte";
 import { getDiscCoverUrl } from "$lib/util";
 import type { EntryGenerator } from "./$types";
 
-export const prerender = true;
-
 export const entries: EntryGenerator = async () => {
   // Generate a route for each character in the database
   return global.database.discs.map((disc) => ({

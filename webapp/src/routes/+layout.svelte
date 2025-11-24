@@ -496,7 +496,6 @@
     display: grid;
     grid-template-rows: auto 1fr auto;
     min-height: 100dvh;
-    min-width: 100vw;
   }
 
   .theme-toggle {
