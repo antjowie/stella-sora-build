@@ -353,7 +353,9 @@
     --secondary-bg: #49568b;
     --secondary-bg-dark: #264278;
     --bg-stripe: #f9ebb3;
-    --green: #89b486;
+    --green: #a4cfa0;
+    /*--green: #8ab486;*/
+
     --red: #d14825;
     --red-light: #e55833;
   }

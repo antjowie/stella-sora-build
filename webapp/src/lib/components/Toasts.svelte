@@ -36,6 +36,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    font-weight: 600;
+    --overlay: rgba(0, 0, 0, calc(0.15 + (1 - var(--brightness))));
   }
 
   .toast {
@@ -43,23 +45,31 @@
     margin-bottom: 0.5rem;
     padding: 1rem;
     border-radius: 6px;
-    color: var(--secondary);
+    color: white;
+    filter: none;
     overflow: hidden;
   }
   .info {
-    background-color: #2196f3;
+    background-image:
+      linear-gradient(var(--overlay), var(--overlay)),
+      linear-gradient(#2196f3, #2196f3);
   }
   .success {
-    background-color: var(--green);
+    --overlay: rgba(0, 0, 0, calc(0.15 + (1 - var(--brightness))));
+    background-image:
+      linear-gradient(var(--overlay), var(--overlay)),
+      linear-gradient(var(--green), var(--green));
   }
   .error {
-    background-color: var(--red);
+    background-image:
+      linear-gradient(var(--overlay), var(--overlay)),
+      linear-gradient(var(--red), var(--red));
   }
 
   .close {
     background: none;
     border: none;
-    color: var(--secondary);
+    color: white;
     cursor: pointer;
     padding: 0.5rem;
   }

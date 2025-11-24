@@ -4,12 +4,13 @@
   import type { Potential } from "$lib/types/database.types";
   import { addToast } from "$lib/toastStore";
   import potentialBorder from "$lib/assets/borders/potential-border.webp";
-  import potentialBorderActive from "$lib/assets/borders/potential-border-active.webp";
+  import potentialBorderFill from "$lib/assets/borders/potential-border-fill.webp";
   import potentialBorderEdged from "$lib/assets/borders/potential-border-edged.webp";
-  import potentialBorderEdgedActive from "$lib/assets/borders/potential-border-edged-active.webp";
+  import potentialBorderEdgedFill from "$lib/assets/borders/potential-border-edged-fill.webp";
   import Icon from "@iconify/svelte";
   import type { PotentialConfig } from "$lib/types/buildData.types";
   import { getPotentialIconUrl, patchDescription } from "$lib/util";
+  import NineSlice from "./NineSlice.svelte";
 
   function clampLevel(inLevel: number): number {
     if (inLevel < 1) inLevel = 1;
@@ -108,11 +109,6 @@
   }
 
   const scale = 0.4;
-  const borderImage = $derived(
-    config.showDesc || config.editMode
-      ? `url("${active ? potentialBorderActive : potentialBorder}") 80 fill / ${scale * 80}px`
-      : `url("${active ? potentialBorderEdgedActive : potentialBorderEdged}") 80 80 80 205 fill / ${scale * 80}px ${scale * 80}px ${scale * 80}px ${scale * 205}px`,
-  );
   const showDescLayout = $derived(config.showDesc || config.editMode);
 </script>
 
@@ -225,12 +221,40 @@
     {onClicked && blockClick ? 'disabled' : ''}
     {onClicked ? (active ? 'active' : 'inactive') : 'default'}"
   style:--color={potentialRarityColorDesaturated[potential.rarity]}
-  style:border-image={borderImage}
   style:padding="28px"
   onclick={() => {
     handleOnClick();
   }}
 >
+  <div class="border border-fill">
+    <NineSlice
+      imageUrl={showDescLayout ? potentialBorderFill : potentialBorderEdgedFill}
+      imageWidth={512}
+      imageHeight={512}
+      {scale}
+      top={80}
+      right={80}
+      bottom={80}
+      left={showDescLayout ? 80 : 205}
+      mode="mask"
+      borderColor="var(--green)"
+      borderRadius={active ? 80 : 0}
+    />
+  </div>
+  <div class="border">
+    <NineSlice
+      imageUrl={showDescLayout ? potentialBorder : potentialBorderEdged}
+      imageWidth={512}
+      imageHeight={512}
+      {scale}
+      top={80}
+      right={80}
+      bottom={80}
+      left={showDescLayout ? 80 : 205}
+      mode="mask"
+    />
+  </div>
+
   {#if config.showIcon}
     <div class="icon-container">
       {#each potential.icons as icon, idx}
@@ -285,7 +309,7 @@
   }
 
   .potential {
-    --radius: 5px;
+    --radius: 0px;
     --padding: 20px;
     --border-size: 32px;
     position: relative;
@@ -293,37 +317,42 @@
     flex-direction: column;
     align-content: start;
     user-select: text;
+    color: var(--primary-content);
     transition: transform 0.2s;
     padding: var(--padding);
-    background-image:
-            /*radial-gradient(rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.35)),*/
-            /*radial-gradient(ellipse at top, rgba(255, 255, 255, 0), transparent),
-              radial-gradient(ellipse at bottom, rgb(var(--color-rgb) / 0.9), transparent),*/
-          /*linear-gradient(rgba(200, 200, 200, 0.25), rgba(200, 200, 200, 0.25)),*/
-          /*linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),*/ linear-gradient(
-      var(--color),
-      var(--color)
-    );
-    /*background-color: var(--color);*/
+    background-color: var(--color);
 
-    /* To add radius the border-image */
+    /*
+    * This mask ensures our NineSlice border-image doesn't overflow at the corners
+    * It might be worth moving this into that component
+    */
     mask-image: radial-gradient(circle at center, black 99%, transparent 100%);
-    mask-composite: intersect;
-    border-radius: 5px;
-    -webkit-mask-image: radial-gradient(
-      circle at center,
-      black 99%,
-      transparent 100%
-    );
-    -webkit-mask-composite: destination-in;
-    color: var(--primary-content);
     filter: grayscale(0) brightness(var(--brightness));
+  }
+
+  .potential .border {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    &:not(.border-fill) {
+      color: var(--color);
+      /*color: white;*/
+      filter: brightness(calc(var(--brightness) - 0.15)) saturate(2);
+    }
+
+    &.border-fill {
+      color: transparent;
+    }
   }
 
   .potential .icon-container {
     display: grid;
     grid-template-columns: 1;
     grid-template-rows: 1;
+    user-select: none;
     --height: 200px;
     --padding-decrease: 40px;
     height: calc(var(--height) - var(--padding-decrease));
@@ -347,7 +376,7 @@
       mask-size: cover;
       mask-repeat: no-repeat;
       mask-position: center;
-      filter: brightness(calc(var(--brightness) - 0.2)) saturate(2);
+      filter: brightness(calc(var(--brightness) - 0.15)) saturate(2);
     }
   }
 
@@ -364,6 +393,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 100;
   }
 
   .priority {
@@ -416,7 +446,7 @@
 
   .potential .level.notShowDesc {
     position: absolute;
-    top: 5px;
+    top: 3px;
     left: 2px;
     width: 64px;
     height: calc(var(--padding));
@@ -474,7 +504,6 @@
   }
 
   .inactive {
-    --border-color: white;
     filter: grayscale(0.25) brightness(var(--brightness));
   }
 
@@ -485,6 +514,6 @@
 
   .active:hover,
   .inactive:hover {
-    transform: scale(1.01);
+    transform: scale(1.05);
   }
 </style>
