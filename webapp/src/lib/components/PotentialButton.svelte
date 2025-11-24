@@ -398,15 +398,6 @@
     }
   }
 
-  /* For the param values */
-  :global(.outline) {
-    /*-webkit-text-stroke: 3px var(--secondary);*/
-    -webkit-text-stroke: 3px rgba(255, 255, 255, 0.75);
-    paint-order: stroke fill;
-    /*font-weight: 900;*/
-    /*font-weight: ;*/
-  }
-
   .button {
     background-color: var(--primary-bg-dark-content);
 

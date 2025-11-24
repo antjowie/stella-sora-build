@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Element } from "$lib/types/database.types";
   import { getElementIconUrl } from "$lib/util";
-  import { getImageUrl } from "$lib/util";
   import type { Snippet } from "svelte";
 
   export interface Item {
@@ -60,10 +59,10 @@
         />
         <img
           src={getElementIconUrl(Element[elemString as keyof typeof Element])}
-          alt={elemString}
           onerror={(e: any) => {
-            e.target.src = getImageUrl("Element", "fallback");
+            e.target.src = getElementIconUrl();
           }}
+          alt={elemString}
         />
       </label>
     {/each}

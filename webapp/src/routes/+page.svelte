@@ -4,7 +4,7 @@
   import landing from "$lib/assets/landing.webp";
   import { decodeJson, encodeJson, validate } from "$lib/build";
   import type { BuildData } from "$lib/types/buildData.types";
-  import { getCharacterPortraitUrl, getImageUrl } from "$lib/util";
+  import { getCharacterPortraitUrl } from "$lib/util";
   import { localStorageBuildsKey, title } from "$lib/global.svelte";
   import { addToast } from "$lib/toastStore";
   import { getLocalStoredBuilds } from "$lib/build";
@@ -206,7 +206,7 @@
                 style:background-image="url({getCharacterPortraitUrl(
                   global.database.characters.find((c) => c.id === build.mainId)
                     ?.name || '',
-                )}), url({getImageUrl('Portrait', 'fallback')})"
+                )}), url({getCharacterPortraitUrl()})"
               ></div>
               <div
                 style:grid-area="sup1"
@@ -215,7 +215,7 @@
                   global.database.characters.find(
                     (c) => c.id === build.support1Id,
                   )?.name || '',
-                )}), url({getImageUrl('Portrait', 'fallback')})"
+                )}), url({getCharacterPortraitUrl()})"
               ></div>
               <div
                 style:grid-area="sup2"
@@ -224,7 +224,7 @@
                   global.database.characters.find(
                     (c) => c.id === build.support2Id,
                   )?.name || '',
-                )}), url({getImageUrl('Portrait', 'fallback')})"
+                )}), url({getCharacterPortraitUrl()})"
               ></div>
               <div style:grid-area="buttons" class="build-buttons-container">
                 <a

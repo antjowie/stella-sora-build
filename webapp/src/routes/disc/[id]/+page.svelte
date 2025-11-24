@@ -6,7 +6,6 @@
     getDiscCoverUrl,
     getElementIconUrl,
     loadPreferenceNum,
-    getImageUrl,
   } from "$lib/util";
   import { Element } from "$lib/types/database.types";
   import { browser } from "$app/environment";
@@ -34,7 +33,13 @@
   <div>Can't find Disc</div>
 {:else}
   <div class="disc-container">
-    <img src={getDiscCoverUrl(disc.id)} alt={disc.name} />
+    <img
+      src={getDiscCoverUrl(disc.id)}
+      onerror={(e: any) => {
+        e.target.src = getDiscCoverUrl();
+      }}
+      alt={disc.name}
+    />
     <div>
       <h2>{disc.name}</h2>
       <div class="disc-info">
@@ -42,8 +47,7 @@
           <img
             class="element-icon"
             src={getElementIconUrl(disc.element)}
-            onerror={(e: any) =>
-              (e.target.src = getImageUrl("Element", "fallback"))}
+            onerror={(e: any) => (e.target.src = getElementIconUrl())}
             alt={Element[disc.element]}
           />
           {Element[disc.element]}

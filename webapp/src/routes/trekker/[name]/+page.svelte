@@ -5,7 +5,6 @@
   import {
     getCharacterPortraitUrl,
     getElementIconUrl,
-    getImageUrl,
     loadPreferenceBool,
     loadPreferenceNum,
   } from "$lib/util";
@@ -70,10 +69,10 @@
     <div class="character-portrait">
       <img
         src={getCharacterPortraitUrl(character.name)}
-        alt={character.name}
         onerror={(e: any) => {
-          e.target.src = getImageUrl("Portrait", "fallback");
+          e.target.src = getCharacterPortraitUrl();
         }}
+        alt={character.name}
       />
     </div>
     <div>
@@ -84,7 +83,7 @@
             class="element-icon"
             src={getElementIconUrl(character.element)}
             onerror={(e: any) => {
-              e.target.src = getImageUrl("Element", "fallback");
+              e.target.src = getElementIconUrl();
             }}
             alt={Element[character.element]}
           />

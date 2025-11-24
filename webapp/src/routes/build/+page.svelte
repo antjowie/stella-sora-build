@@ -11,13 +11,7 @@
   import PotentialList from "$lib/components/PotentialList.svelte";
   import PotentialBuilds from "$lib/components/PotentialBuilds.svelte";
   import ItemSelectModal from "$lib/components/ItemSelectModal.svelte";
-  import type {
-    Character,
-    Disc,
-    DiscSkill,
-    NotesCollection,
-    Potential,
-  } from "$lib/types/database.types";
+  import type { Character, Disc, Potential } from "$lib/types/database.types";
   import { global, noteIds, noteIdsToElement } from "$lib/global.svelte";
   import {
     getCharacterPortraitUrl,
@@ -548,6 +542,12 @@
                           ? getCharacterPortraitUrl(data.item.name)
                           : getDiscCoverUrl(data.item.id)}
                         alt={data.item.name}
+                        onerror={(e: any) => {
+                          e.target.src =
+                            idx <= 2
+                              ? getCharacterPortraitUrl()
+                              : getDiscCoverUrl();
+                        }}
                       />
 
                       <div class="character-overlay">
@@ -795,22 +795,22 @@
 
   .text-container {
     margin-bottom: 1rem;
-  }
 
-  .text-container label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-  }
+    & label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
 
-  .text-container input {
-    width: 100%;
-    max-width: 400px;
-  }
+    & input {
+      width: 100%;
+      max-width: 400px;
+    }
 
-  .text-container input:focus {
-    outline: none;
-    border-color: var(--secondary-bg);
+    & input:focus {
+      outline: none;
+      border-color: var(--secondary-bg);
+    }
   }
 
   .input {
@@ -931,7 +931,7 @@
 
   .character-name {
     margin-top: 0.5rem;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 1.1rem;
   }
 

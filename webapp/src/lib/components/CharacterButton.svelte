@@ -5,11 +5,7 @@
     type Character,
   } from "$lib/types/database.types";
   import { characterClassColor } from "$lib/global.svelte";
-  import {
-    getElementIconUrl,
-    getCharacterPortraitUrl,
-    getImageUrl,
-  } from "$lib/util";
+  import { getElementIconUrl, getCharacterPortraitUrl } from "$lib/util";
   import { base } from "$app/paths";
   import { global } from "$lib/global.svelte";
   import { darkModeBrightness } from "$lib/global.svelte";
@@ -35,7 +31,7 @@
         if (clickOverride) clickOverride(character.id);
       }}
       style:background-image="url({getCharacterPortraitUrl(character.name)}),
-      url({getImageUrl('Portrait', 'fallback')})"
+      url({getCharacterPortraitUrl()})"
     >
       <div class="button-content">
         <div class="halftone-color">
@@ -54,7 +50,7 @@
       class="element-icon"
       src={getElementIconUrl(character.element)}
       onerror={(e: any) => {
-        e.target.src = getImageUrl("Element", "fallback");
+        e.target.src = getElementIconUrl();
       }}
       alt={Element[character.element]}
       onclick={() => {

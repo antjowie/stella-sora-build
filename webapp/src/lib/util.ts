@@ -83,27 +83,45 @@ export function getImageUrl(name: string, path: string): string {
   return `${encodeURI(base + "/" + path + "/" + name + ".webp")}`;
 }
 
-export function getCharacterPortraitUrl(characterName: string): string {
+export function getCharacterPortraitUrl(
+  characterName: string | undefined = undefined,
+): string {
+  if (characterName === undefined) return getImageUrl("Portrait", "fallback");
   return getImageUrl(characterName, "portraits");
 }
 
-export function getDiscCoverUrl(discId: number): string {
+export function getDiscCoverUrl(
+  discId: number | undefined = undefined,
+): string {
+  if (discId === undefined) return getImageUrl("Disc", "fallback");
   return getImageUrl(String(discId), "discs");
 }
 
-export function getElementIconUrl(element: Element): string {
+export function getPotentialIconUrl(
+  potentialIcon: string | undefined = undefined,
+): string {
+  if (potentialIcon === undefined)
+    return getImageUrl("PotentialIcon", "fallback");
+  return getImageUrl(String(potentialIcon), "potential-icons");
+}
+
+export function getElementIconUrl(
+  element: Element | undefined = undefined,
+): string {
+  if (element === undefined) return getImageUrl("Element", "fallback");
   const name = Element[element];
   return getImageUrl(name, "elements");
 }
 
-export function getNoteIconUrl(noteId: number): string {
+export function getNoteIconUrl(noteId: number | undefined = undefined): string {
+  if (noteId === undefined) return getImageUrl("Note", "fallback");
   if (noteId < 90011 && noteId > 90023) {
     return getImageUrl("Note", "fallback");
   }
   return getImageUrl(String(noteId), "notes");
 }
 
-export function getEffectiveNoteIdsFromDisc(disc: Disc): number[] {
+export function getEffectiveNoteIdsFromDisc(disc: Disc = undefined): number[] {
   const effectiveNoteIds = [];
   for (const skill of disc.skills) {
     for (const note of skill.notes) {

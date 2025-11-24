@@ -166,13 +166,12 @@
 
   .build-name {
     font-size: 1.5rem;
-    font-weight: 700;
+    font-weight: 600;
     padding: 0.5rem 0;
   }
 
   .build-desc {
     font-size: 1rem;
-    font-weight: normal;
     margin-bottom: 1rem;
   }
 </style>

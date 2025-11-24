@@ -6,8 +6,6 @@
   import { afterNavigate } from "$app/navigation";
   import { encodeJson, getLocalStoredBuilds } from "$lib/build";
   import { fade } from "svelte/transition";
-  import { loadPreferenceBool } from "$lib/util";
-  import { onMount } from "svelte";
   import { darkModeBrightness, global } from "$lib/global.svelte";
   import { browser } from "$app/environment";
 
@@ -61,6 +59,50 @@
   />
   <meta name="apple-mobile-web-app-title" content="Stella Sora Builds" />
   <link rel="manifest" href={`${base}/favicon/site.webmanifest`} />
+
+  <!-- Fonts -->
+  <link
+    rel="preload"
+    href="$lib/assets/fonts/MiSans-Bold.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  />
+  <link
+    rel="preload"
+    href="$lib/assets/fonts/MiSans-Demibold.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  />
+  <link
+    rel="preload"
+    href="$lib/assets/fonts/MiSans-SemiBold.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  />
+  <link
+    rel="preload"
+    href="$lib/assets/fonts/MiSans-Medium.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  />
+  <link
+    rel="preload"
+    href="$lib/assets/fonts/MiSans-Normal.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  />
+  <link
+    rel="preload"
+    href="$lib/assets/fonts/MiSans-Regular.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  />
 
   <!-- Meta data -->
   <title>{page.data.title}</title>
@@ -225,60 +267,45 @@
 </div>
 
 <style>
-  /* Generated with https://gwfh.mranftl.com/fonts/noto-sans?subsets=latin */
-  /* noto-sans-regular - latin */
+  /* Generated with https://transfonter.org/ */
   @font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: "Noto Sans";
+    font-display: swap;
+    font-family: "MiSans";
     font-style: normal;
     font-weight: 400;
-    src: url("$lib/assets/fonts/noto-sans-v42-latin-regular.woff2")
-      format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    src: url("$lib/assets/fonts/MiSans-Regular.woff2") format("woff2");
   }
 
-  /* noto-sans-500 - latin */
   @font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: "Noto Sans";
+    font-display: swap;
+    font-family: "MiSans";
     font-style: normal;
     font-weight: 500;
-    src: url("$lib/assets/fonts/noto-sans-v42-latin-500.woff2") format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    src: url("$lib/assets/fonts/MiSans-Medium.woff2") format("woff2");
   }
 
-  /* noto-sans-600 - latin */
   @font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: "Noto Sans";
+    font-display: swap;
+    font-family: "MiSans";
     font-style: normal;
     font-weight: 600;
-    src: url("$lib/assets/fonts/noto-sans-v42-latin-600.woff2") format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    src: url("$lib/assets/fonts/MiSans-Demibold.woff2") format("woff2");
   }
 
-  /* noto-sans-700 - latin */
   @font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: "Noto Sans";
+    font-display: swap;
+    font-family: "MiSans";
     font-style: normal;
     font-weight: 700;
-    src: url("$lib/assets/fonts/noto-sans-v42-latin-700.woff2") format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    src: url("$lib/assets/fonts/MiSans-SemiBold.woff2") format("woff2");
   }
 
-  /* noto-sans-800 - latin */
   @font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: "Noto Sans";
+    font-display: swap;
+    font-family: "MiSans";
     font-style: normal;
     font-weight: 800;
-    src: url("$lib/assets/fonts/noto-sans-v42-latin-800.woff2") format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-  }
-
-  /* noto-sans-900 - latin */
-  @font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: "Noto Sans";
-    font-style: normal;
-    font-weight: 900;
-    src: url("$lib/assets/fonts/noto-sans-v42-latin-900.woff2") format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    src: url("$lib/assets/fonts/MiSans-Bold.woff2") format("woff2");
   }
 
   /* Hide content until app is ready to prevent flash */
@@ -296,6 +323,7 @@
     box-sizing: inherit;
     padding: 0;
     margin: 0;
+    transition: background-color 0.2s;
   }
 
   :global(html, body) {
@@ -303,10 +331,13 @@
     background-color: var(--primary-bg);
     scrollbar-color: var(--secondary-bg) rgba(0, 0, 0, 0);
     scrollbar-width: thin;
-    font-family: "Noto Sans", sans-serif;
+    font-family: "MiSans", sans-serif;
     font-optical-sizing: auto;
     color: var(--primary);
     box-sizing: border-box;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     --primary-content: #264278;
     --primary-bg-dark-content: #f3efe7;
     --primary-bg-darker-content: #e7e3db;
