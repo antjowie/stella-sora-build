@@ -10,7 +10,9 @@ import type { Database } from "./types/database.types";
 async function generateDatabase(): Promise<Database> {
   console.log("Fetching and parsing external data...");
   // Validate Database
-  const res = await fetch("https://stellabuildsdata.pages.dev/database.json");
+  const res = await fetch(
+    "https://stellabuildsdata.pages.dev/databases/database_en.json",
+  );
 
   const database: Database = await res.json();
   const validate = ajv.compile(databaseSchema);
