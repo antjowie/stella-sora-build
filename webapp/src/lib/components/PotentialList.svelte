@@ -81,9 +81,8 @@
 
   const buildName = getNameAndDesc().name;
   const buildDesc = getNameAndDesc().desc;
-  // svelte-ignore non_reactive_update
-  let potentials = (
-    overridePotentialIds.length > 0
+  let potentials = $derived(
+    (overridePotentialIds.length > 0
       ? overridePotentialIds
           .map((id) => character.potentials.find((p) => p.id === id))
           .filter((p) => p !== undefined)
@@ -95,11 +94,14 @@
               ((isMain ? potential.type === 1 : potential.type === 2) ||
                 potential.type === 3),
           )
-  ).sort(sortPotentials);
-
-  if (config.editMode === false) {
-    potentials = potentials.sort(sortPotentialPriorities(potentialConfigs));
-  }
+    )
+      .toSorted(sortPotentials)
+      .toSorted(
+        config.editMode === false
+          ? sortPotentialPriorities(potentialConfigs)
+          : () => 0,
+      ),
+  );
 
   function getPotentialConfig(id: number): PotentialConfig {
     const orig =

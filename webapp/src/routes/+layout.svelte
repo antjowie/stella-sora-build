@@ -6,14 +6,17 @@
   import { afterNavigate } from "$app/navigation";
   import { encodeJson, getLocalStoredBuilds } from "$lib/build";
   import { fade } from "svelte/transition";
-  import { darkModeBrightness, global } from "$lib/global.svelte";
+  import { darkModeBrightness, global, setLanguage } from "$lib/global.svelte";
   import { browser } from "$app/environment";
+  import { Language } from "$lib/types/lang.types";
 
   let { children } = $props();
   let shouldMigrate = $state(false);
   let showMigrationWarning = $state(false);
   let showMoreMigrationWarningDetails = $state(false);
   let migrationLink = $state("");
+  let showLanguageDropdown = $state(false);
+  let languageDropdownRef: HTMLElement;
   afterNavigate(() => {
     if (page.url.host.includes("github")) {
       // if (base === "") {
@@ -40,6 +43,22 @@
   $effect(() => {
     document.documentElement.classList.toggle("dark", global.darkMode);
     localStorage.setItem("darkMode", String(global.darkMode));
+  });
+
+  $effect(() => {
+    if (showLanguageDropdown) {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (
+          languageDropdownRef &&
+          !languageDropdownRef.contains(event.target as Node)
+        ) {
+          showLanguageDropdown = false;
+        }
+      };
+
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
+    }
   });
 </script>
 
@@ -147,47 +166,145 @@
       </p>
     {/if}
 
-    <svg
-      onclick={() => (global.darkMode = !global.darkMode)}
-      role="button"
-      viewBox="0 0 24 24"
-      class="theme-toggle"
-    >
-      {#if global.darkMode}
-        <!-- Moon -->
-        <path
-          d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"
-          fill="#844a7b"
-          in:fade={{ duration: 300, delay: 150 }}
-          out:fade={{ duration: 150 }}
-        />
-      {:else}
-        <!-- Sun -->
-        <circle
-          cx="12"
-          cy="12"
-          r="5"
-          fill="#f9ebb3"
-          in:fade={{ duration: 300, delay: 150 }}
-          out:fade={{ duration: 150 }}
-        />
-        <g
-          stroke="#f9ebb3"
-          stroke-width="2"
-          in:fade={{ duration: 300, delay: 150 }}
-          out:fade={{ duration: 150 }}
-        >
-          <line x1="12" y1="1" x2="12" y2="3" />
-          <line x1="12" y1="21" x2="12" y2="23" />
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-          <line x1="1" y1="12" x2="3" y2="12" />
-          <line x1="21" y1="12" x2="23" y2="12" />
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-        </g>
-      {/if}
-    </svg>
+    <div class="nav-right">
+      <div
+        bind:this={languageDropdownRef}
+        class="language-dropdown"
+        role="button"
+        tabindex="0"
+        onclick={() => (showLanguageDropdown = !showLanguageDropdown)}
+        onkeydown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            showLanguageDropdown = !showLanguageDropdown;
+          }
+        }}
+      >
+        <p>{global.language.toUpperCase()}</p>
+        {#if showLanguageDropdown}
+          <div class="language-options">
+            <button
+              class="language-option"
+              onclick={() => {
+                setLanguage(Language.EN);
+                showLanguageDropdown = false;
+              }}
+              onkeydown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setLanguage(Language.EN);
+                  showLanguageDropdown = false;
+                }
+              }}>English</button
+            >
+            <button
+              class="language-option"
+              onclick={() => {
+                setLanguage(Language.JP);
+                showLanguageDropdown = false;
+              }}
+              onkeydown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setLanguage(Language.JP);
+                  showLanguageDropdown = false;
+                }
+              }}>日本語</button
+            >
+            <button
+              class="language-option"
+              onclick={() => {
+                setLanguage(Language.KR);
+                showLanguageDropdown = false;
+              }}
+              onkeydown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setLanguage(Language.KR);
+                  showLanguageDropdown = false;
+                }
+              }}>한국어</button
+            >
+            <button
+              class="language-option"
+              onclick={() => {
+                setLanguage(Language.CN);
+                showLanguageDropdown = false;
+              }}
+              onkeydown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setLanguage(Language.CN);
+                  showLanguageDropdown = false;
+                }
+              }}>简体中文</button
+            >
+            <button
+              class="language-option"
+              onclick={() => {
+                setLanguage(Language.TW);
+                showLanguageDropdown = false;
+              }}
+              onkeydown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setLanguage(Language.TW);
+                  showLanguageDropdown = false;
+                }
+              }}>繁體中文</button
+            >
+          </div>
+        {/if}
+      </div>
+      <svg
+        class="theme-toggle"
+        onclick={() => (global.darkMode = !global.darkMode)}
+        onkeydown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            global.darkMode = !global.darkMode;
+          }
+        }}
+        role="button"
+        tabindex="0"
+        viewBox="0 0 24 24"
+      >
+        {#if global.darkMode}
+          <!-- Moon -->
+          <path
+            d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"
+            fill="#844a7b"
+            in:fade={{ duration: 300, delay: 150 }}
+            out:fade={{ duration: 150 }}
+          />
+        {:else}
+          <!-- Sun -->
+          <circle
+            cx="12"
+            cy="12"
+            r="5"
+            fill="#f9ebb3"
+            in:fade={{ duration: 300, delay: 150 }}
+            out:fade={{ duration: 150 }}
+          />
+          <g
+            stroke="#f9ebb3"
+            stroke-width="2"
+            in:fade={{ duration: 300, delay: 150 }}
+            out:fade={{ duration: 150 }}
+          >
+            <line x1="12" y1="1" x2="12" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="23" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+            <line x1="1" y1="12" x2="3" y2="12" />
+            <line x1="21" y1="12" x2="23" y2="12" />
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+          </g>
+        {/if}
+      </svg>
+    </div>
   </nav>
 
   <Toasts />
@@ -500,17 +617,6 @@
     min-height: 100dvh;
   }
 
-  .theme-toggle {
-    position: absolute;
-    top: 50%;
-    right: 1rem;
-    width: 2rem;
-    height: 2rem;
-    cursor: pointer;
-    z-index: 100;
-    transform: translateY(-50%);
-  }
-
   nav {
     position: sticky;
     top: 0;
@@ -520,17 +626,89 @@
     background-color: var(--secondary-bg);
     border-bottom: solid 12px var(--bg-stripe);
     z-index: 100;
-  }
 
-  nav > a {
-    color: var(--white);
-    text-decoration: none;
-  }
+    &,
+    & > a {
+      color: var(--white);
+      text-decoration: none;
+    }
 
-  .migration-warning,
-  .migration-warning a {
-    color: var(--red);
-    font-weight: bold;
+    & .migration-warning,
+    & .migration-warning a {
+      color: var(--red);
+      font-weight: bold;
+    }
+
+    & .nav-right {
+      position: absolute;
+      top: 50%;
+      right: 1rem;
+      transform: translateY(-50%);
+      align-items: center;
+
+      display: flex;
+      gap: 1rem;
+
+      & .theme-toggle {
+        width: 2rem;
+        height: 2rem;
+      }
+
+      & .language-dropdown {
+        position: relative;
+        color: var(--white);
+        cursor: pointer;
+        transition:
+          transform 0.2s,
+          background-color 0.2s;
+
+        &:hover,
+        &:focus {
+          transform: scale(1.05);
+          outline: none;
+        }
+
+        & .language-options {
+          position: absolute;
+          top: 100%;
+          right: 0;
+          margin-top: 0.25rem;
+          background-color: var(--primary-bg-dark);
+          border: 1px solid var(--secondary-bg);
+          border-radius: 0.5rem;
+          z-index: 1000;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+          min-width: 150px;
+          overflow: hidden;
+
+          & .language-option {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 0.5rem 1rem;
+            color: var(--primary);
+            background-color: var(--primary-bg-dark);
+            border: none;
+            border-radius: 0;
+            cursor: pointer;
+            transition:
+              background-color 0.2s,
+              transform 0.2s;
+            font-size: 0.9rem;
+
+            &:first-child {
+              border-top-left-radius: 0.5rem;
+              border-top-right-radius: 0.5rem;
+            }
+
+            &:last-child {
+              border-bottom-left-radius: 0.5rem;
+              border-bottom-right-radius: 0.5rem;
+            }
+          }
+        }
+      }
+    }
   }
 
   main {
@@ -548,9 +726,9 @@
     padding: 1rem;
     background-color: var(--primary-bg-darker);
     z-index: 1;
-  }
 
-  footer a {
-    color: var(--primary);
+    & a {
+      color: var(--primary);
+    }
   }
 </style>

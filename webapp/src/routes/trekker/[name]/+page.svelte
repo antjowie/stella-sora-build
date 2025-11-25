@@ -21,8 +21,8 @@
   } from "$lib/types/database.types";
   import Slider from "$lib/components/Slider.svelte";
 
-  const character: Character | undefined = global.database.characters.find(
-    (c) => c.name === page.params.name,
+  const character: Character | undefined = $derived(
+    global.database.characters.find((c) => c.name === page.params.name),
   );
 
   let showDesc = $state(true);
@@ -71,7 +71,7 @@
   <div class="character-container">
     <div class="character-portrait">
       <img
-        src={getCharacterPortraitUrl(character.name)}
+        src={getCharacterPortraitUrl(character.id)}
         onerror={(e: any) => {
           e.target.src = getCharacterPortraitUrl();
         }}

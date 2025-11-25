@@ -20,6 +20,6 @@ export async function load({ params }) {
   return {
     title: `${title} - ${character.name}`,
     description: `View builds and potentials for ${character.name} in Stella Sora`,
-    ogImage: `${url}/${getCharacterPortraitUrl(character.name).replace(/^([^\/]*\/){2}/, "portraits/")}`,
+    ogImage: `${url}/${getCharacterPortraitUrl(character.id).replace(/^([^\/]*\/){2}/, "portraits/")}`,
   };
 }
