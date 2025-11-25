@@ -30,8 +30,7 @@
       onclick={() => {
         if (clickOverride) clickOverride(character.id);
       }}
-      style:background-image="url({getCharacterPortraitUrl(character.name)}),
-      url({getCharacterPortraitUrl()})"
+      style:background-image="url({getCharacterPortraitUrl(character.id)}), url({getCharacterPortraitUrl()})"
     >
       <div class="button-content">
         <div class="halftone-color">

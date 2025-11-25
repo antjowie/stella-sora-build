@@ -12,8 +12,10 @@
   import { onMount } from "svelte";
   import DiscSkills from "$lib/components/DiscSkills.svelte";
 
-  const disc = global.database.discs.find(
-    (d) => d.id === parseInt(page.params.id ?? "-1"),
+  const disc = $derived(
+    global.database.discs.find(
+      (d) => d.id === parseInt(page.params.id ?? "-1"),
+    ),
   );
   const maxLevel = disc?.skills[0].params[0].values.length ?? 1;
   let discLevel = $state(1);

@@ -205,7 +205,7 @@
                 class="build-image"
                 style:background-image="url({getCharacterPortraitUrl(
                   global.database.characters.find((c) => c.id === build.mainId)
-                    ?.name || '',
+                    ?.id,
                 )}), url({getCharacterPortraitUrl()})"
               ></div>
               <div
@@ -214,7 +214,7 @@
                 style:background-image="url({getCharacterPortraitUrl(
                   global.database.characters.find(
                     (c) => c.id === build.support1Id,
-                  )?.name || '',
+                  )?.id,
                 )}), url({getCharacterPortraitUrl()})"
               ></div>
               <div
@@ -223,7 +223,7 @@
                 style:background-image="url({getCharacterPortraitUrl(
                   global.database.characters.find(
                     (c) => c.id === build.support2Id,
-                  )?.name || '',
+                  )?.id,
                 )}), url({getCharacterPortraitUrl()})"
               ></div>
               <div style:grid-area="buttons" class="build-buttons-container">

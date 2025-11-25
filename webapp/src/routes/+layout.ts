@@ -1,15 +1,14 @@
 import { browser } from "$app/environment";
-import databaseJson from "$lib/database.json";
-import { global, title, url } from "$lib/global.svelte";
-import type { Database } from "$lib/types/database.types";
-import { loadPreferenceBool } from "$lib/util";
+import { global, setLanguage, title, url } from "$lib/global.svelte";
+import { Language } from "$lib/types/lang.types";
+import { loadPreferenceBool, loadPreferenceString } from "$lib/util";
 
 export const prerender = true;
 
 export async function load() {
-  global.database = databaseJson as Database;
   if (browser) {
     global.darkMode = loadPreferenceBool("darkMode", false);
+    setLanguage(loadPreferenceString("language", Language.EN) as Language);
   }
 
   return {

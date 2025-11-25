@@ -50,12 +50,12 @@
   let name = $state("My Build");
   let description = $state("My description");
   let id: string = $state(crypto.randomUUID());
-  let mainCharacter = $state<Character | undefined>(undefined);
-  let supportCharacter1 = $state<Character | undefined>(undefined);
-  let supportCharacter2 = $state<Character | undefined>(undefined);
-  let disc = $state<Disc | undefined>(undefined);
-  let disc1 = $state<Disc | undefined>(undefined);
-  let disc2 = $state<Disc | undefined>(undefined);
+  let mainCharacterId = $state<number | undefined>(undefined);
+  let supportCharacter1Id = $state<number | undefined>(undefined);
+  let supportCharacter2Id = $state<number | undefined>(undefined);
+  let discId = $state<number | undefined>(undefined);
+  let disc1Id = $state<number | undefined>(undefined);
+  let disc2Id = $state<number | undefined>(undefined);
   let potentialConfigs: [number, PotentialConfig][] = $state([]);
   let notes = $state<[number, number][]>([]);
 
@@ -66,12 +66,12 @@
     name,
     description,
     id,
-    mainId: mainCharacter?.id,
-    support1Id: supportCharacter1?.id,
-    support2Id: supportCharacter2?.id,
-    discId: disc?.id,
-    disc1Id: disc1?.id,
-    disc2Id: disc2?.id,
+    mainId: mainCharacterId,
+    support1Id: supportCharacter1Id,
+    support2Id: supportCharacter2Id,
+    discId: discId,
+    disc1Id: disc1Id,
+    disc2Id: disc2Id,
     potentialIds: selectedPotentials,
     potentialConfigs,
     notes: notes.toSorted((a, b) => a[0] - b[0]),
@@ -82,12 +82,12 @@
     name = build.name;
     description = build.description;
     id = build.id;
-    mainCharacter = getChar(build.mainId);
-    supportCharacter1 = getChar(build.support1Id);
-    supportCharacter2 = getChar(build.support2Id);
-    disc = getDisc(build.discId);
-    disc1 = getDisc(build.disc1Id);
-    disc2 = getDisc(build.disc2Id);
+    mainCharacterId = build.mainId;
+    supportCharacter1Id = build.support1Id;
+    supportCharacter2Id = build.support2Id;
+    discId = build.discId;
+    disc1Id = build.disc1Id;
+    disc2Id = build.disc2Id;
 
     selectedPotentials = build.potentialIds;
     const levelMap = build.levelMap ?? [];
@@ -120,12 +120,12 @@
       name = "My Build";
       description = "My description";
       id = crypto.randomUUID();
-      mainCharacter = undefined;
-      supportCharacter1 = undefined;
-      supportCharacter2 = undefined;
-      disc = undefined;
-      disc1 = undefined;
-      disc2 = undefined;
+      mainCharacterId = undefined;
+      supportCharacter1Id = undefined;
+      supportCharacter2Id = undefined;
+      discId = undefined;
+      disc1Id = undefined;
+      disc2Id = undefined;
       potentialConfigs = [];
       notes = [];
 
@@ -144,9 +144,9 @@
     disc ? getEffectiveNoteIdsFromDisc(disc) : [];
   const effectiveNoteIds = $derived([
     ...new Set([
-      ...handleDisc(disc),
-      ...handleDisc(disc1),
-      ...handleDisc(disc2),
+      ...handleDisc(getDisc(discId)),
+      ...handleDisc(getDisc(disc1Id)),
+      ...handleDisc(getDisc(disc2Id)),
     ]),
   ]);
   let localBuilds = $state<BuildData[]>([]);
@@ -172,41 +172,41 @@
   function handleItemSelect(id: number) {
     switch (selectedRole) {
       case 0:
-        mainCharacter = getChar(id);
+        mainCharacterId = id;
         break;
       case 1:
-        supportCharacter1 = getChar(id);
+        supportCharacter1Id = id;
         break;
       case 2:
-        supportCharacter2 = getChar(id);
+        supportCharacter2Id = id;
         break;
       case 3:
-        disc = getDisc(id);
+        discId = id;
         break;
       case 4:
-        disc1 = getDisc(id);
+        disc1Id = id;
         break;
       case 5:
-        disc2 = getDisc(id);
+        disc2Id = id;
         break;
     }
 
     // We swapped characters, purge all ids that are not in the new character's potentials
     let availablePotentials: Potential[] = [];
-    if (mainCharacter)
+    if (mainCharacterId)
       availablePotentials = [
         ...availablePotentials,
-        ...mainCharacter.potentials,
+        ...(getChar(mainCharacterId)?.potentials ?? []),
       ];
-    if (supportCharacter1)
+    if (supportCharacter1Id)
       availablePotentials = [
         ...availablePotentials,
-        ...supportCharacter1.potentials,
+        ...(getChar(supportCharacter1Id)?.potentials ?? []),
       ];
-    if (supportCharacter2)
+    if (supportCharacter2Id)
       availablePotentials = [
         ...availablePotentials,
-        ...supportCharacter2.potentials,
+        ...(getChar(supportCharacter2Id)?.potentials ?? []),
       ];
     let availableIds = availablePotentials.map((potential) => potential.id);
 
@@ -222,22 +222,22 @@
   function clearSelection(role: number) {
     switch (role) {
       case 0:
-        mainCharacter = undefined;
+        mainCharacterId = undefined;
         break;
       case 1:
-        supportCharacter1 = undefined;
+        supportCharacter1Id = undefined;
         break;
       case 2:
-        supportCharacter2 = undefined;
+        supportCharacter2Id = undefined;
         break;
       case 3:
-        disc = undefined;
+        discId = undefined;
         break;
       case 4:
-        disc1 = undefined;
+        disc1Id = undefined;
         break;
       case 5:
-        disc2 = undefined;
+        disc2Id = undefined;
         break;
     }
   }
@@ -394,9 +394,9 @@
 
     if (
       selectedPotentials.length === 0 &&
-      mainCharacter === undefined &&
-      supportCharacter1 === undefined &&
-      supportCharacter2 === undefined
+      mainCharacterId === undefined &&
+      supportCharacter1Id === undefined &&
+      supportCharacter2Id === undefined
     ) {
       editMode = true;
     }
@@ -512,7 +512,7 @@
       {/if}
 
       <div class="character-container">
-        {#each [{ title: "Main", item: mainCharacter, role: 0 }, { title: "Support", item: supportCharacter1, role: 1 }, { title: "Support", item: supportCharacter2, role: 2 }, { title: "Disc", item: disc, role: 3 }, { title: "Disc", item: disc1, role: 4 }, { title: "Disc", item: disc2, role: 5 }] as data, idx}
+        {#each [{ title: "Main", item: getChar(mainCharacterId), role: 0 }, { title: "Support", item: getChar(supportCharacter1Id), role: 1 }, { title: "Support", item: getChar(supportCharacter2Id), role: 2 }, { title: "Disc", item: getDisc(discId), role: 3 }, { title: "Disc", item: getDisc(disc1Id), role: 4 }, { title: "Disc", item: getDisc(disc2Id), role: 5 }] as data, idx}
           <div>
             <h2>{data.title}</h2>
             {#if editMode === false && data.item}
@@ -542,7 +542,7 @@
                     {#if editMode}
                       <img
                         src={idx <= 2
-                          ? getCharacterPortraitUrl(data.item.name)
+                          ? getCharacterPortraitUrl(data.item.id)
                           : getDiscCoverUrl(data.item.id)}
                         alt={data.item.name}
                         onerror={(e: any) => {
@@ -596,9 +596,9 @@
               if (element === undefined) return [noteId, value];
 
               const teamElements = [
-                mainCharacter,
-                supportCharacter1,
-                supportCharacter2,
+                getChar(mainCharacterId),
+                getChar(supportCharacter1Id),
+                getChar(supportCharacter2Id),
               ]
                 .filter((c) => c !== undefined)
                 .map((c) => c.element);
@@ -658,12 +658,12 @@
 
       {#if showDiscDetails}
         <h1>Discs</h1>
-        {#if (disc || disc1 || disc2) === undefined}
+        {#if (discId || disc1Id || disc2Id) === undefined}
           <div class="select-characters-hint">
             <p>No discs selected...</p>
           </div>
         {:else}
-          {#each [disc, disc1, disc2] as item}
+          {#each [getDisc(discId), getDisc(disc1Id), getDisc(disc2Id)] as item}
             {#if item}
               <DiscSkills
                 skills={item.skills}
@@ -677,7 +677,7 @@
         <h1>Potentials</h1>
       {/if}
 
-      {#if (mainCharacter || supportCharacter1 || supportCharacter2) === undefined}
+      {#if (mainCharacterId || supportCharacter1Id || supportCharacter2Id) === undefined}
         <div class="select-characters-hint">
           <p>No characters selected...</p>
         </div>
@@ -685,8 +685,8 @@
       <!-- <div class="potentials-container" in:fade={{ duration: 300, delay: 150 }} out:fade={{ duration: 150 }}> -->
       <div class="potentials-container">
         {#if editMode}
-          {#key `${mainCharacter?.id ?? ""}-${supportCharacter1?.id ?? ""}-${supportCharacter2?.id ?? ""}`}
-            {#each [mainCharacter, supportCharacter1, supportCharacter2] as character}
+          {#key `${mainCharacterId ?? ""}-${supportCharacter1Id ?? ""}-${supportCharacter2Id ?? ""}`}
+            {#each [getChar(mainCharacterId), getChar(supportCharacter1Id), getChar(supportCharacter2Id)] as character}
               {#if character}
                 <h1 class="title">{character.name}</h1>
                 <PotentialBuilds
@@ -701,8 +701,8 @@
                   title=""
                   {character}
                   showPriority={true}
-                  showMain={mainCharacter !== undefined &&
-                    character.id === mainCharacter.id}
+                  showMain={mainCharacterId !== undefined &&
+                    character.id === mainCharacterId}
                   activePotentialIds={selectedPotentials}
                   onClicked={createClickListener(selectedPotentials)}
                 />
@@ -710,9 +710,9 @@
             {/each}
           {/key}
         {:else}
-          {#each [mainCharacter, supportCharacter1, supportCharacter2] as character}
+          {#each [mainCharacterId, supportCharacter1Id, supportCharacter2Id] as character}
             {#if character}
-              <h1 class="title">{character.name}</h1>
+              <h1 class="title">{getChar(character)!.name}</h1>
               <PotentialList
                 config={{
                   showDesc,
@@ -721,7 +721,7 @@
                   editMode,
                 }}
                 {potentialConfigs}
-                {character}
+                character={getChar(character)!}
                 showPriority={true}
                 overrideTitle=""
                 overridePotentialIds={selectedPotentials}
@@ -745,9 +745,9 @@
       title="Select Character"
       onSelect={handleItemSelect}
       onClose={() => (showModal = false)}
-      excludedIds={[mainCharacter, supportCharacter1, supportCharacter2]
+      excludedIds={[mainCharacterId, supportCharacter1Id, supportCharacter2Id]
         .filter((x) => x !== undefined)
-        .map((x) => x.id)}
+        .map((x) => x)}
     >
       {#snippet button(excludedIds, handleSelect)}
         <CharacterSelect {excludedIds} clickOverride={handleSelect} />
@@ -758,9 +758,9 @@
       title="Select Disc"
       onSelect={handleItemSelect}
       onClose={() => (showModal = false)}
-      excludedIds={[disc, disc1, disc2]
+      excludedIds={[discId, disc1Id, disc2Id]
         .filter((x) => x !== undefined)
-        .map((x) => x.id)}
+        .map((x) => x)}
     >
       {#snippet button(excludedIds, handleSelect)}
         <DiscSelect {excludedIds} clickOverride={handleSelect} />

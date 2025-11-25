@@ -29,6 +29,18 @@ export function loadPreferenceNum(key: string, defaultValue: number): number {
   return defaultValue;
 }
 
+export function loadPreferenceString(
+  key: string,
+  defaultValue: string,
+): string {
+  if (browser) {
+    const stored = localStorage.getItem(key);
+    return stored !== null ? stored : defaultValue;
+  }
+  console.error("loadPreferenceString called in non-browser environment");
+  return defaultValue;
+}
+
 // Sort potentials by ID and rarity, multiply so we can "categorize" them
 // This seems to match the game quite well
 export function sortPotentials(a: Potential, b: Potential): number {
@@ -84,10 +96,10 @@ export function getImageUrl(name: string, path: string): string {
 }
 
 export function getCharacterPortraitUrl(
-  characterName: string | undefined = undefined,
+  id: number | undefined = undefined,
 ): string {
-  if (characterName === undefined) return getImageUrl("Portrait", "fallback");
-  return getImageUrl(characterName, "portraits");
+  if (id === undefined) return getImageUrl("Portrait", "fallback");
+  return getImageUrl(String(id), "portraits");
 }
 
 export function getDiscCoverUrl(
@@ -121,7 +133,7 @@ export function getNoteIconUrl(noteId: number | undefined = undefined): string {
   return getImageUrl(String(noteId), "notes");
 }
 
-export function getEffectiveNoteIdsFromDisc(disc: Disc = undefined): number[] {
+export function getEffectiveNoteIdsFromDisc(disc: Disc): number[] {
   const effectiveNoteIds = [];
   for (const skill of disc.skills) {
     for (const note of skill.notes) {

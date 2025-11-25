@@ -336,6 +336,7 @@
     left: 0;
     right: 0;
     bottom: 0;
+    z-index: -1;
 
     &:not(.border-fill) {
       color: var(--color);
@@ -353,6 +354,7 @@
     grid-template-columns: 1;
     grid-template-rows: 1;
     user-select: none;
+    pointer-events: none;
     --height: 200px;
     --padding-decrease: 40px;
     height: calc(var(--height) - var(--padding-decrease));
