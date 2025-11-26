@@ -12,7 +12,12 @@
   import PotentialBuilds from "$lib/components/PotentialBuilds.svelte";
   import ItemSelectModal from "$lib/components/ItemSelectModal.svelte";
   import type { Character, Disc, Potential } from "$lib/types/database.types";
-  import { global, noteIds, noteIdsToElement } from "$lib/global.svelte";
+  import {
+    noteIds,
+    noteIdsToElement,
+    localStorageBuildsKey,
+  } from "$lib/consts";
+  import { global } from "$lib/global.svelte";
   import {
     getCharacterPortraitUrl,
     getDiscCoverUrl,
@@ -25,7 +30,6 @@
   import Icon from "@iconify/svelte";
   import { onMount, tick } from "svelte";
   import { addToast } from "$lib/toastStore";
-  import { localStorageBuildsKey } from "$lib/global.svelte";
   import { marked } from "marked";
   import DOMPurify from "isomorphic-dompurify";
   // Only allow markdown so user can't run arbitrary code

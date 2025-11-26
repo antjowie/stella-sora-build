@@ -1,6 +1,6 @@
 <script lang="ts">
   import { PotentialRarity } from "$lib/types/database.types";
-  import { potentialRarityColorDesaturated } from "$lib/global.svelte";
+  import { potentialRarityColorDesaturated } from "$lib/consts";
   import type { Potential } from "$lib/types/database.types";
   import { addToast } from "$lib/toastStore";
   import potentialBorder from "$lib/assets/borders/potential-border.webp";

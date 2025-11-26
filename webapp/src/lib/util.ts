@@ -1,5 +1,5 @@
 import { browser } from "$app/environment";
-import { base } from "$app/paths";
+import { asset } from "$app/paths";
 import type { PotentialConfig } from "./types/buildData.types";
 import {
   type Disc,
@@ -92,7 +92,7 @@ export function patchDescription(text: string, inParams: any[], level: number) {
 }
 
 export function getImageUrl(name: string, path: string): string {
-  return `${encodeURI(base + "/" + path + "/" + name + ".webp")}`;
+  return asset(`/${path}/${name}.webp`);
 }
 
 export function getCharacterPortraitUrl(
@@ -115,6 +115,11 @@ export function getPotentialIconUrl(
   if (potentialIcon === undefined)
     return getImageUrl("PotentialIcon", "fallback");
   return getImageUrl(String(potentialIcon), "potential-icons");
+}
+
+export function getLoadingUrl(loading: string | undefined = undefined): string {
+  if (loading === undefined) return getImageUrl("loading_comic_01", "fallback");
+  return getImageUrl(loading.replace(".webp", ""), "loading");
 }
 
 export function getElementIconUrl(

@@ -1,8 +1,9 @@
 <script lang="ts">
   import { Element, type Disc } from "$lib/types/database.types";
   import { getElementIconUrl, getDiscCoverUrl } from "$lib/util";
-  import { base } from "$app/paths";
-  import { global, darkModeBrightness } from "$lib/global.svelte";
+  import { resolve } from "$app/paths";
+  import { global } from "$lib/global.svelte";
+  import { darkModeBrightness } from "$lib/consts";
 
   interface Props {
     disc: Disc;
@@ -41,7 +42,7 @@
 {/snippet}
 
 {#if clickOverride === undefined}
-  <a href={`${base}/disc/${disc.id}`}>
+  <a href={resolve("/disc/[id]", { id: String(disc.id) })}>
     {@render button()}
   </a>
 {:else}

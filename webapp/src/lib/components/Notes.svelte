@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { noteIds } from "$lib/global.svelte";
+  import { noteIds } from "$lib/consts";
   import { getNoteIconUrl } from "$lib/util";
 
   interface Props {

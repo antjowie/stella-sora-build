@@ -1,7 +1,8 @@
 <script lang="ts">
   import { page } from "$app/state";
   import Slider from "$lib/components/Slider.svelte";
-  import { elementColor, global } from "$lib/global.svelte";
+  import { elementColor } from "$lib/consts";
+  import { global } from "$lib/global.svelte";
   import {
     getDiscCoverUrl,
     getElementIconUrl,
@@ -17,6 +18,7 @@
       (d) => d.id === parseInt(page.params.id ?? "-1"),
     ),
   );
+  // svelte-ignore state_referenced_locally
   const maxLevel = disc?.skills[0].params[0].values.length ?? 1;
   let discLevel = $state(1);
 

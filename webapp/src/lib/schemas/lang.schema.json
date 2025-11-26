@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/Language",
+  "definitions": {
+    "Language": {
+      "type": "string",
+      "enum": [
+        "en",
+        "jp",
+        "kr",
+        "cn",
+        "tw"
+      ]
+    }
+  }
+}

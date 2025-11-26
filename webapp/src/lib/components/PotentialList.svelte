@@ -79,8 +79,8 @@
     }
   };
 
-  const buildName = getNameAndDesc().name;
-  const buildDesc = getNameAndDesc().desc;
+  const buildName = $derived(getNameAndDesc().name);
+  const buildDesc = $derived(getNameAndDesc().desc);
   let potentials = $derived(
     (overridePotentialIds.length > 0
       ? overridePotentialIds

@@ -41,6 +41,8 @@ export enum PotentialRarity {
 export interface Database {
   characters: Character[];
   discs: Disc[];
+  potentialIcons: string[];
+  loading: string[];
 }
 export interface Character {
   id: number;
