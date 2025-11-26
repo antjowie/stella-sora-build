@@ -1,5 +1,5 @@
-import { global, url } from "$lib/global.svelte";
-import { title } from "$lib/global.svelte";
+import { global } from "$lib/global.svelte";
+import { title, url } from "$lib/consts";
 import { getDiscCoverUrl } from "$lib/util";
 import type { EntryGenerator } from "./$types";
 

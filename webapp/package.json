@@ -11,8 +11,8 @@
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "generate:schemas": "vite-node src/lib/generateSchemas.ts",
-    "generate:data": "vite-node src/lib/generateData.ts",
+    "generate:schemas": "vite-node src/lib/generate/generateSchemas.ts",
+    "generate:data": "vite-node src/lib/generate/generateData.ts",
     "format": "prettier --write .",
     "test:unit": "vitest",
     "test": "npm run test:unit -- --run"

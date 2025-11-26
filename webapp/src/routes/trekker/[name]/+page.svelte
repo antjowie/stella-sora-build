@@ -9,11 +9,8 @@
     loadPreferenceNum,
   } from "$lib/util";
   import { onMount } from "svelte";
-  import {
-    characterClassColor,
-    elementColor,
-    global,
-  } from "$lib/global.svelte";
+  import { characterClassColor, elementColor } from "$lib/consts";
+  import { global } from "$lib/global.svelte";
   import {
     CharacterClass,
     Element,

@@ -1,5 +1,5 @@
 import { browser } from "$app/environment";
-import { base } from "$app/paths";
+import { asset } from "$app/paths";
 import type { PotentialConfig } from "./types/buildData.types";
 import {
   type Disc,
@@ -92,7 +92,7 @@ export function patchDescription(text: string, inParams: any[], level: number) {
 }
 
 export function getImageUrl(name: string, path: string): string {
-  return `${encodeURI(base + "/" + path + "/" + name + ".webp")}`;
+  return asset(`/${path}/${name}.webp`);
 }
 
 export function getCharacterPortraitUrl(

@@ -1,5 +1,5 @@
 import { global } from "$lib/global.svelte";
-import { title, url } from "$lib/global.svelte";
+import { title, url } from "$lib/consts";
 
 export async function load() {
   const structuredData = {

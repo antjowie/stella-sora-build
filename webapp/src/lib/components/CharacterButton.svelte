@@ -4,11 +4,10 @@
     Element,
     type Character,
   } from "$lib/types/database.types";
-  import { characterClassColor } from "$lib/global.svelte";
+  import { characterClassColor, darkModeBrightness } from "$lib/consts";
   import { getElementIconUrl, getCharacterPortraitUrl } from "$lib/util";
-  import { base } from "$app/paths";
+  import { resolve } from "$app/paths";
   import { global } from "$lib/global.svelte";
-  import { darkModeBrightness } from "$lib/global.svelte";
 
   interface Props {
     character: Character;
@@ -60,7 +59,7 @@
 {/snippet}
 
 {#if clickOverride === undefined}
-  <a href={`${base}/trekker/${character.name}`}>
+  <a href={resolve("/trekker/[name]", { name: character.name })}>
     {@render button()}
   </a>
 {:else}

@@ -1,5 +1,6 @@
 import { browser } from "$app/environment";
-import { global, setLanguage, title, url } from "$lib/global.svelte";
+import { global, setLanguage } from "$lib/global.svelte";
+import { title, url } from "$lib/consts";
 import { Language } from "$lib/types/lang.types";
 import { loadPreferenceBool, loadPreferenceString } from "$lib/util";
 

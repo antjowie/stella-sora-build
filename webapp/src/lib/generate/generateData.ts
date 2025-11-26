@@ -4,10 +4,10 @@
 import databaseSchema from "$lib/schemas/database.schema.json";
 import fs from "fs";
 import ky from "ky";
-import { ajv } from "./ajv";
-import type { Database } from "./types/database.types";
-import { Language } from "./types/lang.types";
-import { url } from "./global.svelte";
+import { ajv } from "$lib/ajv";
+import type { Database } from "$lib/types/database.types";
+import { Language } from "$lib/types/lang.types";
+import { url } from "$lib/consts";
 
 // In case you want to poll directly but quickly runs into rate limits
 // const getUrl = (folder: string, name: string) =>
@@ -25,6 +25,9 @@ async function generateDatabases(): Promise<Database[]> {
   };
 
   let databases = [];
+  if (fs.existsSync("static/databases")) {
+    fs.rmSync("static/databases", { recursive: true });
+  }
   fs.mkdirSync("static/databases", { recursive: true });
   for (const lang of Object.values(Language)) {
     const url = `https://stellabuildsdata.pages.dev/databases/database_${lang}.json`;
@@ -59,7 +62,7 @@ async function fetchImages(database: Database): Promise<void> {
     {
       folder: "portraits",
       names: database.characters.map((character) => character.name + ".webp"),
-      outNames: database.characters.map((character) => character.id),
+      outNames: database.characters.map((character) => character.id + ".webp"),
     },
     {
       folder: "discs",
@@ -78,11 +81,16 @@ async function fetchImages(database: Database): Promise<void> {
   let promises = [];
   for (const folder of folders) {
     console.log("Pulling images for " + folder.folder);
+    const dir = `static/${folder.folder}`;
+    if (fs.existsSync(dir)) {
+      fs.rmSync(dir, { recursive: true });
+    }
+
     fs.mkdirSync(`static/${folder.folder}`, { recursive: true });
     const promise = folder.names.map(async (name, i) => {
       const outName = String(folder.outNames?.[i] ?? name);
       const url = getUrl(folder.folder, name);
-      const path = `static/${folder.folder}/${outName}`;
+      const path = `${dir}/${outName}`;
 
       const buffer = await ky(url).arrayBuffer();
       fs.writeFileSync(path, Buffer.from(buffer));

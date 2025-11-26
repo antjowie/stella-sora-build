@@ -1,5 +1,6 @@
 import { getCharacterPortraitUrl } from "$lib/util";
-import { global, title, url } from "$lib/global.svelte";
+import { global } from "$lib/global.svelte";
+import { title, url } from "$lib/consts";
 import type { EntryGenerator } from "./$types";
 
 export const entries: EntryGenerator = async () => {

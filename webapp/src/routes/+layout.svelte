@@ -1,12 +1,13 @@
 <script lang="ts">
   import { page } from "$app/state";
-  import { resolve, base } from "$app/paths";
+  import { resolve, asset } from "$app/paths";
   import Toasts from "$lib/components/Toasts.svelte";
   import Modal from "$lib/components/Modal.svelte";
   import { afterNavigate } from "$app/navigation";
   import { encodeJson, getLocalStoredBuilds } from "$lib/build";
   import { fade } from "svelte/transition";
-  import { darkModeBrightness, global, setLanguage } from "$lib/global.svelte";
+  import { darkModeBrightness } from "$lib/consts";
+  import { global, setLanguage } from "$lib/global.svelte";
   import { browser } from "$app/environment";
   import { Language } from "$lib/types/lang.types";
 
@@ -67,57 +68,57 @@
   <link
     rel="icon"
     type="image/png"
-    href={`${base}/favicon/favicon-96x96.png`}
+    href={asset("/favicon/favicon-96x96.png")}
     sizes="96x96"
   />
-  <link rel="shortcut icon" href={`${base}/favicon/favicon.ico`} />
+  <link rel="shortcut icon" href={asset("/favicon/favicon.ico")} />
   <link
     rel="apple-touch-icon"
     sizes="180x180"
-    href={`${base}/favicon/apple-touch-icon.png`}
+    href={asset("/favicon/apple-touch-icon.png")}
   />
   <meta name="apple-mobile-web-app-title" content="Stella Sora Builds" />
-  <link rel="manifest" href={`${base}/favicon/site.webmanifest`} />
+  <link rel="manifest" href={asset("/favicon/site.webmanifest")} />
 
   <!-- Fonts -->
   <!-- <link
     rel="preload"
-    href={`${base}/fonts/MiSans-Bold.woff2`}
+    href={asset("/fonts/MiSans-Bold.woff2")}
     as="font"
     type="font/woff2"
     crossorigin="anonymous"
   />
   <link
     rel="preload"
-    href={`${base}/fonts/MiSans-Demibold.woff2`}
+    href={asset("/fonts/MiSans-Demibold.woff2")}
     as="font"
     type="font/woff2"
     crossorigin="anonymous"
   />
   <link
     rel="preload"
-    href={`${base}/fonts/MiSans-Semibold.woff2`}
+    href={asset("/fonts/MiSans-Semibold.woff2")}
     as="font"
     type="font/woff2"
     crossorigin="anonymous"
   />
   <link
     rel="preload"
-    href={`${base}/fonts/MiSans-Medium.woff2`}
+    href={asset("/fonts/MiSans-Medium.woff2")}
     as="font"
     type="font/woff2"
     crossorigin="anonymous"
   /> -->
   <link
     rel="preload"
-    href={`${base}/fonts/MiSans-Normal.woff2`}
+    href={asset("/fonts/MiSans-Normal.woff2")}
     as="font"
     type="font/woff2"
     crossorigin="anonymous"
   />
   <link
     rel="preload"
-    href={`${base}/fonts/MiSans-Regular.woff2`}
+    href={asset("/fonts/MiSans-Regular.woff2")}
     as="font"
     type="font/woff2"
     crossorigin="anonymous"
