@@ -1,6 +1,21 @@
 <!doctype html>
 <html lang="en" class="not-mounted">
   <head>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-5K7K71DCG5"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-5K7K71DCG5");
+    </script>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     %sveltekit.head%
@@ -27,21 +42,6 @@
       })();
     </script>
   </head>
-
-  <!-- Google tag (gtag.js) -->
-  <script
-    async
-    src="https://www.googletagmanager.com/gtag/js?id=G-5K7K71DCG5"
-  ></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag("js", new Date());
-
-    gtag("config", "G-5K7K71DCG5");
-  </script>
 
   <body data-sveltekit-preload-data="hover">
     <div style="display: contents">%sveltekit.body%</div>
