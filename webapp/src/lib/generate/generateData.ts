@@ -108,15 +108,13 @@ function generateSitemap(database: Database) {
     `${url}/`,
     `${url}/build`,
     `${url}/trekker`,
-    `${url}/trekker`,
     ...database.characters.map((c) => `${url}/trekker/${c.name}`),
     `${url}/disc`,
     ...database.discs.map((d) => `${url}/disc/${d.id}`),
   ];
 
   const lastmod = new Date().toISOString();
-  const sitemap = `
-<?xml version="1.0" encoding="UTF-8"?>
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${pages
   .map(
@@ -127,8 +125,7 @@ ${pages
   </url>`,
   )
   .join("\n")}
-</urlset>
-`;
+</urlset>`;
 
   fs.writeFileSync("static/sitemap.xml", sitemap);
 }
