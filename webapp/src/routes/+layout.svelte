@@ -126,11 +126,33 @@
   <!-- Meta data -->
   <title>{page.data.title}</title>
   <meta name="description" content={page.data.description} />
+  <link rel="canonical" href={page.url.href} />
+
+  <!-- Enhanced Open Graph tags -->
   <meta property="og:title" content={page.data.title} />
   <meta property="og:description" content={page.data.description} />
   <meta property="og:type" content="website" />
   <meta property="og:url" content={page.url.href} />
-  <meta property="og:image" content={page.data.ogImage} />
+  <meta property="og:image" content={page.data.ogImage.url} />
+  <meta property="og:image:width" content={page.data.ogImage.width} />
+  <meta property="og:image:height" content={page.data.ogImage.height} />
+  <meta property="og:site_name" content="Stella Sora Builds" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="ja_JP" />
+  <meta property="og:locale:alternate" content="ko_KR" />
+  <meta property="og:locale:alternate" content="zh_CN" />
+  <meta property="og:locale:alternate" content="zh_TW" />
+
+  <!-- Twitter Card tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={page.data.title} />
+  <meta name="twitter:description" content={page.data.description} />
+  <meta name="twitter:image" content={page.data.ogImage} />
+
+  <!-- Structured data -->
+  {#if page.data.structuredData}
+    {@html `<script type="application/ld+json">${page.data.structuredData}</script>`}
+  {/if}
 </svelte:head>
 
 <div

@@ -16,9 +16,29 @@ export async function load({ params }) {
     return {};
   }
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: disc.name,
+    description: `${disc.desc}`,
+    image: `${url}/${getDiscCoverUrl(disc.id).replace(/^([^\/]*\/){2}/, "discs/")}`,
+    url: `${url}/disc/${disc.name}`,
+    mainEntityOfPage: `${url}/disc/${disc.name}`,
+    category: "VideoGameItem",
+    isAccessoryOrSparePartFor: {
+      "@type": "VideoGame",
+      name: "Stella Sora",
+      publisher: {
+        "@type": "Organization",
+        name: "Yostar",
+      },
+    },
+  };
+
   return {
     title: `${title} - ${disc.name}`,
-    description: `${disc.desc}`,
+    description: `View harmony and melodies for ${disc.desc} in Stella Sora`,
     ogImage: `${url}/${getDiscCoverUrl(disc.id).replace(/^([^\/]*\/){2}/, "discs/")}`,
+    structuredData: JSON.stringify(structuredData),
   };
 }

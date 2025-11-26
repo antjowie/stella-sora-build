@@ -145,7 +145,7 @@
   <img
     class="background-image"
     src={landing}
-    alt="Landing"
+    alt="Stella Sora characters background"
     fetchpriority="high"
     style:--brightness={global.darkMode ? 0.3 : 0.7}
   />
@@ -203,6 +203,8 @@
               <div
                 style:grid-area="main"
                 class="build-image"
+                role="img"
+                aria-label={`Main character: ${global.database.characters.find((c) => c.id === build.mainId)?.name ?? "Invalid"}`}
                 style:background-image="url({getCharacterPortraitUrl(
                   global.database.characters.find((c) => c.id === build.mainId)
                     ?.id,
@@ -211,6 +213,8 @@
               <div
                 style:grid-area="sup1"
                 class="build-image"
+                role="img"
+                aria-label={`Support character 1: ${global.database.characters.find((c) => c.id === build.support1Id)?.name ?? "Invalid"}`}
                 style:background-image="url({getCharacterPortraitUrl(
                   global.database.characters.find(
                     (c) => c.id === build.support1Id,
@@ -220,6 +224,8 @@
               <div
                 style:grid-area="sup2"
                 class="build-image"
+                role="img"
+                aria-label={`Support character 2: ${global.database.characters.find((c) => c.id === build.support2Id)?.name ?? "Invalid"}`}
                 style:background-image="url({getCharacterPortraitUrl(
                   global.database.characters.find(
                     (c) => c.id === build.support2Id,

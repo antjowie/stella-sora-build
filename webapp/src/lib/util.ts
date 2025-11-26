@@ -117,6 +117,11 @@ export function getPotentialIconUrl(
   return getImageUrl(String(potentialIcon), "potential-icons");
 }
 
+export function getLoadingUrl(loading: string | undefined = undefined): string {
+  if (loading === undefined) return getImageUrl("loading_comic_01", "fallback");
+  return getImageUrl(loading.replace(".webp", ""), "loading");
+}
+
 export function getElementIconUrl(
   element: Element | undefined = undefined,
 ): string {

@@ -119,11 +119,25 @@
           "items": {
             "$ref": "#/definitions/Disc"
           }
+        },
+        "potentialIcons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "loading": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [
         "characters",
-        "discs"
+        "discs",
+        "potentialIcons",
+        "loading"
       ],
       "additionalProperties": false
     },
