@@ -190,7 +190,35 @@
         disc2Id = id;
         break;
     }
+    onCharacterSelectionChanged();
+    showModal = false;
+  }
 
+  function clearSelection(role: number) {
+    switch (role) {
+      case 0:
+        mainCharacterId = undefined;
+        break;
+      case 1:
+        supportCharacter1Id = undefined;
+        break;
+      case 2:
+        supportCharacter2Id = undefined;
+        break;
+      case 3:
+        discId = undefined;
+        break;
+      case 4:
+        disc1Id = undefined;
+        break;
+      case 5:
+        disc2Id = undefined;
+        break;
+    }
+    onCharacterSelectionChanged();
+  }
+
+  function onCharacterSelectionChanged() {
     // We swapped characters, purge all ids that are not in the new character's potentials
     let availablePotentials: Potential[] = [];
     if (mainCharacterId)
@@ -216,30 +244,6 @@
     potentialConfigs = potentialConfigs.filter(([id, obj]) =>
       availableIds.includes(id),
     );
-    showModal = false;
-  }
-
-  function clearSelection(role: number) {
-    switch (role) {
-      case 0:
-        mainCharacterId = undefined;
-        break;
-      case 1:
-        supportCharacter1Id = undefined;
-        break;
-      case 2:
-        supportCharacter2Id = undefined;
-        break;
-      case 3:
-        discId = undefined;
-        break;
-      case 4:
-        disc1Id = undefined;
-        break;
-      case 5:
-        disc2Id = undefined;
-        break;
-    }
   }
 
   function createClickListener(list: number[]): (id: number) => void {
