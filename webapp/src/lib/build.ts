@@ -1,9 +1,8 @@
-import Ajv from "ajv";
 import type { BuildData } from "./types/buildData.types";
 import buildDataSchema from "$lib/schemas/buildData.schema.json";
-import { browser } from "$app/environment";
 import { localStorageBuildsKey } from "$lib/consts";
 import { ajv } from "./ajv";
+import { addToast } from "./toastStore";
 
 const ajvValidate = ajv.compile(buildDataSchema);
 
@@ -50,8 +49,13 @@ export function encodeJson(data: any): string {
 }
 
 export function getLocalStoredBuilds(): BuildData[] {
-  if (browser) {
-    return JSON.parse(localStorage.getItem(localStorageBuildsKey) || "[]");
+  if (typeof window !== undefined) {
+    const storedBuilds = localStorage.getItem(localStorageBuildsKey);
+    if (storedBuilds !== null) {
+      return JSON.parse(storedBuilds);
+    }
+    return [];
   }
+  console.warn("Don't call getLocalStoredBuilds on server");
   return [];
 }

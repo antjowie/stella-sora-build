@@ -4,31 +4,27 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "npm run generate:data && vite dev",
-    "build": "npm run generate:data && vite build",
-    "build:github": "npx cross-env BASE_PATH=/stella-sora-build npm run build",
+    "dev": "bun run generate:data && vite dev",
+    "build": "bun run generate:data && vite build",
+    "build:github": "cross-env BASE_PATH=/stella-sora-build bun run build",
     "preview": "vite preview",
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "generate:schemas": "vite-node src/lib/generate/generateSchemas.ts",
-    "generate:data": "vite-node src/lib/generate/generateData.ts",
+    "generate:schemas": "bunx vite-node src/lib/generate/generateSchemas.ts",
+    "generate:data": "bunx vite-node src/lib/generate/generateData.ts",
     "format": "prettier --write .",
     "test:unit": "vitest",
-    "test": "npm run test:unit -- --run"
+    "test": "bun run test:unit -- --run"
   },
   "devDependencies": {
-    "@sveltejs/adapter-auto": "^7.0.0",
     "@sveltejs/adapter-static": "^3.0.10",
     "@sveltejs/kit": "^2.47.1",
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
-    "@types/node": "^24.10.0",
+    "@types/bun": "^1.1.38",
     "@typescript-eslint/parser": "^8.46.4",
-    "@vitest/browser-playwright": "^4.0.5",
     "cross-env": "^10.1.0",
     "ky": "^1.14.0",
-    "patch-package": "^8.0.1",
-    "playwright": "^1.56.1",
     "prettier": "^3.6.2",
     "prettier-plugin-svelte": "^3.4.0",
     "svelte": "^5.41.0",
@@ -36,14 +32,12 @@
     "ts-json-schema-generator": "^2.4.0",
     "typescript": "^5.9.3",
     "vite": "^7.1.10",
-    "vite-node": "^3.2.4",
-    "vitest": "^4.0.5",
-    "vitest-browser-svelte": "^2.0.1"
+    "vitest": "^4.0.5"
   },
   "dependencies": {
     "@iconify/svelte": "^5.1.0",
     "ajv": "^8.17.1",
-    "html-to-image": "^1.11.11",
+    "html-to-image": "1.11.11",
     "isomorphic-dompurify": "^2.32.0",
     "marked": "^17.0.0"
   }

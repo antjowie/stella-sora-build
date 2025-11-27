@@ -17,11 +17,16 @@ const getUrl = (folder: string, name: string) =>
 
 async function generateDatabases(): Promise<Database[]> {
   // Some values we want to insert in dbs
+  const potentialIcons: string[] = Object.values(
+    await ky(getUrl("potential-icons", "index.json")).json(),
+  );
+  const loading: string[] = Object.values(
+    await ky(getUrl("loading", "index.json")).json(),
+  );
+
   const databaseExtensions = {
-    potentialIcons: Object.values(
-      await ky(getUrl("potential-icons", "index.json")).json(),
-    ),
-    loading: Object.values(await ky(getUrl("loading", "index.json")).json()),
+    potentialIcons,
+    loading,
   };
 
   let databases = [];

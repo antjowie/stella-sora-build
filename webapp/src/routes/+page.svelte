@@ -14,59 +14,12 @@
   import { page } from "$app/state";
   import { global } from "$lib/global.svelte";
 
-  let localBuilds = $state<BuildData[]>(getLocalStoredBuilds());
+  let localBuilds = $state<BuildData[]>([]);
   let reorderMode = $state(false);
   let draggedIndex: number | null = null;
 
-  $effect(() => {
+  function updateLocalStoredBuilds() {
     localStorage.setItem(localStorageBuildsKey, JSON.stringify(localBuilds));
-  });
-
-  function deleteBuild(buildId: string) {
-    if (browser) {
-      if (confirm("Are you sure you want to remove this build?")) {
-        localBuilds = localBuilds.filter((b) => b.id !== buildId);
-        addToast({ message: "Build removed!", type: "success" });
-      }
-    }
-  }
-
-  function exportBuilds() {
-    if (browser) {
-      const builds = getLocalStoredBuilds();
-      const blob = new Blob([JSON.stringify(builds, null, 2)], {
-        type: "application/json",
-      });
-      const url = URL.createObjectURL(blob);
-
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "builds.json";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      addToast({ message: "Builds exported!", type: "success" });
-    }
-  }
-
-  function importBuilds() {
-    if (browser) {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "application/json";
-
-      input.onchange = async (event: Event) => {
-        const file = (event.target as HTMLInputElement).files?.[0];
-        if (!file) return;
-
-        const text = await file.text();
-        let importedBuilds: BuildData[] = JSON.parse(text);
-        addBuilds(importedBuilds);
-      };
-
-      input.click();
-    }
   }
 
   function addBuilds(importedBuilds: BuildData[]) {
@@ -120,13 +73,64 @@
 
       localBuilds = [...importedBuilds, ...existingBuilds];
       addToast({ message: "Builds imported!", type: "success" });
+      updateLocalStoredBuilds();
     } catch (error) {
       console.error("Import failed:", error);
       addToast({ message: "Invalid format!", type: "error" });
     }
   }
 
+  function deleteBuild(buildId: string) {
+    if (browser) {
+      if (confirm("Are you sure you want to remove this build?")) {
+        localBuilds = localBuilds.filter((b) => b.id !== buildId);
+        addToast({ message: "Build removed!", type: "success" });
+        updateLocalStoredBuilds();
+      }
+    }
+  }
+
+  function importBuilds() {
+    if (browser) {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "application/json";
+
+      input.onchange = async (event: Event) => {
+        const file = (event.target as HTMLInputElement).files?.[0];
+        if (!file) return;
+
+        const text = await file.text();
+        let importedBuilds: BuildData[] = JSON.parse(text);
+        addBuilds(importedBuilds);
+      };
+
+      input.click();
+    }
+  }
+
+  function exportBuilds() {
+    if (browser) {
+      const builds = getLocalStoredBuilds();
+      const blob = new Blob([JSON.stringify(builds, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "builds.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      addToast({ message: "Builds exported!", type: "success" });
+    }
+  }
+
   onMount(() => {
+    localBuilds = getLocalStoredBuilds();
+
     let importBase64 = page.url.searchParams.get("import");
     if (importBase64 !== null) {
       try {
