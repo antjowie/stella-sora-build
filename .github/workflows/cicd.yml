@@ -19,38 +19,36 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 20
-          cache: "npm"
-          cache-dependency-path: webapp/package-lock.json
+          bun-version: latest
 
       - name: Install dependencies
         working-directory: ./webapp
-        run: npm ci
+        run: bun install
 
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('webapp/package-lock.json') }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('webapp/bun.lock') }}
           restore-keys: |
             playwright-${{ runner.os }}-
 
       - name: Install Playwright Browsers
         working-directory: ./webapp
-        run: npx playwright install
+        run: bunx playwright install
 
       - name: Build site
         working-directory: ./webapp
         env:
           BASE_PATH: /${{ github.event.repository.name }}
-        run: npm run build
+        run: bun run build
 
       - name: Run tests
         working-directory: ./webapp
-        run: npm test
+        run: bun test
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

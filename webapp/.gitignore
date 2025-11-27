@@ -1,4 +1,8 @@
 node_modules
+bun.lockb
+
+# Bun
+.bun
 
 # Output
 .output
