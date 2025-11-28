@@ -68,9 +68,9 @@
   }
 
   .error-image img {
-    max-width: 300px;
+    max-width: 80vw;
+    max-height: 80vh;
     height: auto;
     border-radius: 8px;
-    opacity: 0.8;
   }
 </style>
