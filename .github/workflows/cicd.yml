@@ -26,29 +26,17 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./webapp
-        run: npm install
-
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('webapp/bun.lock') }}
-          restore-keys: |
-            playwright-${{ runner.os }}-
-
-      - name: Install Playwright Browsers
-        working-directory: ./webapp
-        run: bunx playwright install
+        run: bun install
 
       - name: Build site
         working-directory: ./webapp
         env:
           BASE_PATH: /${{ github.event.repository.name }}
-        run: npm run build
+        run: bun run build
 
       - name: Run tests
         working-directory: ./webapp
-        run: npm test
+        run: bun test
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
