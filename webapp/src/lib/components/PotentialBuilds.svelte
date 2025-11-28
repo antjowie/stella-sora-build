@@ -19,21 +19,24 @@
   }
   const props: Props = $props();
 
-  const activeEpicPotentials =
-    props.activePotentialIds?.filter(
-      (id) =>
-        props.character.potentials.find((p) => p.id === id)?.rarity ===
-        PotentialRarity.Main,
-    ) ?? [];
-  let blockedPotentialIds: number[] = [];
-  if (activeEpicPotentials.length >= 2) {
-    const epicPotentials = props.character.potentials.filter(
-      (id) => id.rarity === PotentialRarity.Main,
-    );
-    blockedPotentialIds = epicPotentials
-      .filter((p) => activeEpicPotentials.includes(p.id) === false)
-      .map((p) => p.id);
-  }
+  const blockedPotentialIds = $derived.by(() => {
+    const activeMainPotentials =
+      props.activePotentialIds?.filter(
+        (id) =>
+          props.character.potentials.find((p) => p.id === id)?.rarity ===
+          PotentialRarity.Main,
+      ) ?? [];
+    let blockedPotentialIds: number[] = [];
+    if (activeMainPotentials.length >= 2) {
+      const epicPotentials = props.character.potentials.filter(
+        (id) => id.rarity === PotentialRarity.Main,
+      );
+      blockedPotentialIds = epicPotentials
+        .filter((p) => activeMainPotentials.includes(p.id) === false)
+        .map((p) => p.id);
+    }
+    return blockedPotentialIds;
+  });
 
   const data = $derived({
     ...props,
