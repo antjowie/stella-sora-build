@@ -80,4 +80,5 @@ export interface Disc {
   element: number;
   rarity: number;
   skills: DiscSkill[];
+  bg: number;
 }

@@ -26,7 +26,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./webapp
-        run: bun install
+        run: npm install
 
       - name: Cache Playwright browsers
         uses: actions/cache@v4
@@ -44,11 +44,11 @@ jobs:
         working-directory: ./webapp
         env:
           BASE_PATH: /${{ github.event.repository.name }}
-        run: bun run build
+        run: npm run build
 
       - name: Run tests
         working-directory: ./webapp
-        run: bun test
+        run: npm test
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

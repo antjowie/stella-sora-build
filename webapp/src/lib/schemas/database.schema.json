@@ -281,6 +281,9 @@
           "items": {
             "$ref": "#/definitions/DiscSkill"
           }
+        },
+        "bg": {
+          "type": "number"
         }
       },
       "required": [
@@ -289,7 +292,8 @@
         "desc",
         "element",
         "rarity",
-        "skills"
+        "skills",
+        "bg"
       ],
       "additionalProperties": false
     }

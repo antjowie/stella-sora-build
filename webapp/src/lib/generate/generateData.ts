@@ -66,12 +66,15 @@ async function fetchImages(database: Database): Promise<void> {
   const folders = [
     {
       folder: "portraits",
-      names: database.characters.map((character) => character.name + ".webp"),
+      names: database.characters.map(
+        (character) => `head_${character.id}02_XL.webp`,
+      ),
       outNames: database.characters.map((character) => character.id + ".webp"),
     },
     {
       folder: "discs",
-      names: database.discs.map((disc) => disc.id + ".webp"),
+      names: database.discs.map((disc) => `outfit_${disc.bg}.webp`),
+      outNames: database.discs.map((disc) => disc.id + ".webp"),
     },
     {
       folder: "potential-icons",

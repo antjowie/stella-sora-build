@@ -14,10 +14,10 @@ If you want to contribute to this project (much appreciated!), please follow the
 4. Create a pull request.
 
 ## Credits/Dependencies
-- Hiro420 for providing game data used to generate database [GitHub](https://github.com/Hiro420/StellaSoraData.git), licensed under the GNU General Public License v3.0. We rely on [our fork](https://github.com/antjowie/StellaSoraData.git) which syncs with the original repository.
-- Miraheze for providing character portraits and disc covers [Miraheze](https://stellasora.miraheze.org/wiki/Category:Characters)
-- AutumnVN for uploading note icons [GitHub](https://github.com/AutumnVN/ssassets.git)
 - [Data repo](https://github.com/antjowie/StellaSoraData.git) to generate static database
+  - It's a fork of Hiro420's work for providing game data used to generate database [GitHub](https://github.com/Hiro420/StellaSoraData.git), licensed under the GNU General Public License v3.0. We rely on [our fork](https://github.com/antjowie/StellaSoraData.git) which syncs with the original repository.
+- (No longer used) Miraheze for providing character portraits and disc covers [Miraheze](https://stellasora.miraheze.org/wiki/Category:Characters)
+- AutumnVN for uploading note icons [GitHub](https://github.com/AutumnVN/ssassets.git)
 
 ## License
 This project is licensed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html). See the [LICENSE](./LICENSE) file for full details.
