@@ -181,6 +181,12 @@
       href={resolve("/disc")}
       aria-current={page.url.pathname.search("/disc") >= 0}>Discs</a
     >
+    <a
+      class="underline"
+      href={resolve("/about")}
+      aria-current={page.url.pathname.search("/about") >= 0}>About</a
+    >
+
     {#if shouldMigrate}
       <p class="migration-warning">
         Outdated site, please use <a
@@ -548,6 +554,10 @@
 
   :global(button, rem) {
     font-size: 1rem;
+  }
+
+  :global(a) {
+    color: var(--primary);
   }
 
   :global(a.button.primary, button.primary) {

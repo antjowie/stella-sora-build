@@ -106,9 +106,8 @@ async function fetchImages(database: Database): Promise<void> {
     promises.push(promise);
   }
 
-  await Promise.all(promises).then(() => {
-    console.log("Images fetched successfully!");
-  });
+  await Promise.all(promises);
+  console.log("Images fetched successfully!");
 }
 
 function generateSitemap(database: Database) {
