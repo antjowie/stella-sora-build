@@ -27,7 +27,7 @@ export async function load() {
   };
 
   return {
-    title: `${title} - Build Creator`,
+    title: `${title} - Build`,
     description:
       "Create custom builds for Trekkers in Stella Sora. Optimize character potentials and share your builds with the community.",
     structuredData: JSON.stringify(structuredData),
