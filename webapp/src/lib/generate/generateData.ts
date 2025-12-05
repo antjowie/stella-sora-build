@@ -117,6 +117,7 @@ async function fetchImages(database: Database): Promise<void> {
   const totalTasks = tasks.length;
   const maxConcurrentTasks = 10;
   let ongoingTasks = 0;
+  let promises: Promise<void>[] = [];
 
   const interval = setInterval(() => {
     console.log(`Progress: ${completedTasks}/${totalTasks} images downloaded`);
@@ -126,13 +127,17 @@ async function fetchImages(database: Database): Promise<void> {
     while (ongoingTasks < maxConcurrentTasks && tasks.length > 0) {
       const task = tasks.shift()!;
       ongoingTasks++;
-      task().then(() => {
-        ongoingTasks--;
-      });
+      promises.push(
+        task().then(() => {
+          ongoingTasks--;
+        }),
+      );
     }
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
 
+  // Make sure we actually finish the last tasks
+  await Promise.all(promises);
   assert(completedTasks === totalTasks);
   clearInterval(interval);
   console.log(totalTasks + " Images fetched successfully!");
