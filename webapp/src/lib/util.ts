@@ -4,6 +4,7 @@ import type { PotentialConfig } from "./types/buildData.types";
 import {
   type Disc,
   type DiscSkill,
+  type ParamCollection,
   type Potential,
   Element,
 } from "./types/database.types";
@@ -65,7 +66,11 @@ export function sortPotentialPriorities(
   };
 }
 
-export function patchDescription(text: string, inParams: any[], level: number) {
+export function patchDescription(
+  text: string,
+  inParams: ParamCollection[],
+  level: number,
+) {
   // Replace all span color with bold
   text = text.replace(/<span style="/g, '<b class="outline" style="');
   text = text.replace(/<\/span>/g, "</b>");

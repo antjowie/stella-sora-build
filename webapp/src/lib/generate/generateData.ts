@@ -8,6 +8,7 @@ import { ajv } from "$lib/ajv";
 import type { Database } from "$lib/types/database.types";
 import { Language } from "$lib/types/lang.types";
 import { url } from "$lib/consts";
+import assert from "assert";
 
 // In case you want to poll directly but quickly runs into rate limits
 // const getUrl = (folder: string, name: string) =>
@@ -86,28 +87,55 @@ async function fetchImages(database: Database): Promise<void> {
     },
   ];
 
-  let promises = [];
+  let completedTasks = 0;
+  let tasks: (() => Promise<void>)[] = [];
   for (const folder of folders) {
     console.log("Pulling images for " + folder.folder);
     const dir = `static/${folder.folder}`;
     if (fs.existsSync(dir)) {
       fs.rmSync(dir, { recursive: true });
     }
-
     fs.mkdirSync(`static/${folder.folder}`, { recursive: true });
-    const promise = folder.names.map(async (name, i) => {
-      const outName = String(folder.outNames?.[i] ?? name);
-      const url = getUrl(folder.folder, name);
-      const path = `${dir}/${outName}`;
 
-      const buffer = await ky(url).arrayBuffer();
-      fs.writeFileSync(path, Buffer.from(buffer));
-    });
-    promises.push(promise);
+    for (const [i, name] of folder.names.entries()) {
+      const task = async () => {
+        const outName = String(folder.outNames?.[i] ?? name);
+        const url = getUrl(folder.folder, name);
+        const path = `${dir}/${outName}`;
+
+        return ky(url)
+          .arrayBuffer()
+          .then((buffer) => {
+            fs.writeFileSync(path, Buffer.from(buffer));
+            completedTasks++;
+          });
+      };
+      tasks.push(task);
+    }
   }
 
-  await Promise.all(promises);
-  console.log("Images fetched successfully!");
+  const totalTasks = tasks.length;
+  const maxConcurrentTasks = 10;
+  let ongoingTasks = 0;
+
+  const interval = setInterval(() => {
+    console.log(`Progress: ${completedTasks}/${totalTasks} images downloaded`);
+  }, 1000);
+  // Might wanna just zip all assets on data side and then download 1 file instead of all assets
+  while (tasks.length > 0) {
+    while (ongoingTasks < maxConcurrentTasks && tasks.length > 0) {
+      const task = tasks.shift()!;
+      ongoingTasks++;
+      task().then(() => {
+        ongoingTasks--;
+      });
+    }
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+
+  assert(completedTasks === totalTasks);
+  clearInterval(interval);
+  console.log(totalTasks + " Images fetched successfully!");
 }
 
 function generateSitemap(database: Database) {
@@ -118,17 +146,15 @@ function generateSitemap(database: Database) {
     ...database.characters.map((c) => `${url}/trekker/${c.name}`),
     `${url}/disc`,
     ...database.discs.map((d) => `${url}/disc/${d.id}`),
+    `${url}/about`,
   ];
 
-  const lastmod = new Date().toISOString();
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${pages
   .map(
     (page) => `  <url>
     <loc>${page}</loc>
-    <lastmod>${lastmod}</lastmod>
-    <changefreq>weekly</changefreq>
   </url>`,
   )
   .join("\n")}

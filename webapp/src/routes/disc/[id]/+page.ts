@@ -1,6 +1,6 @@
 import { global } from "$lib/global.svelte";
 import { title, url } from "$lib/consts";
-import { getDiscCoverUrl } from "$lib/util";
+import { getDiscCoverUrl, patchDescription } from "$lib/util";
 import type { EntryGenerator } from "./$types";
 
 export const entries: EntryGenerator = async () => {
@@ -16,11 +16,17 @@ export async function load({ params }) {
     return {};
   }
 
+  const melody = patchDescription(
+    disc.skills[0].desc,
+    disc.skills[0].params,
+    1,
+  );
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: disc.name,
-    description: `${disc.desc}`,
+    description: disc.desc,
     image: `${url}/${getDiscCoverUrl(disc.id).replace(/^([^\/]*\/){2}/, "discs/")}`,
     url: `${url}/disc/${disc.name}`,
     mainEntityOfPage: `${url}/disc/${disc.name}`,
@@ -37,7 +43,7 @@ export async function load({ params }) {
 
   return {
     title: `${title} - ${disc.name}`,
-    description: `View harmony and melodies for ${disc.desc} in Stella Sora`,
+    description: disc.desc + " " + melody,
     ogImage: `${url}/${getDiscCoverUrl(disc.id).replace(/^([^\/]*\/){2}/, "discs/")}`,
     structuredData: JSON.stringify(structuredData),
   };
