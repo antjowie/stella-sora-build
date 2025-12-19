@@ -96,7 +96,7 @@
     position: absolute;
     top: 50%;
     left: 2rem;
-    max-width: 3rem;
+    max-width: 3.5rem;
     transform: translate(-50%, -50%);
   }
 

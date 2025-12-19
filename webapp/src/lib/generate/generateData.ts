@@ -64,12 +64,26 @@ async function generateDatabases(): Promise<Database[]> {
 }
 
 async function fetchImages(database: Database): Promise<void> {
+  const images: string[] = Object.values(
+    await ky(getUrl("portraits", "index.json")).json(),
+  );
+
   const folders = [
     {
       folder: "portraits",
-      names: database.characters.map(
-        (character) => `head_${character.id}02_XL.webp`,
-      ),
+      names: database.characters.map((character) => {
+        // Atm data extracted by the data repo is a bit more outdated, so instead of crashing gracefully handle
+        // missing images
+        let name = `head_${character.id}02_XL.webp`;
+        if (images.includes(name) === false) {
+          name = `head_${character.id}01_XL.webp`;
+        }
+        if (images.includes(name) === false) {
+          name = "";
+        }
+
+        return name;
+      }),
       outNames: database.characters.map((character) => character.id + ".webp"),
     },
     {
@@ -107,6 +121,10 @@ async function fetchImages(database: Database): Promise<void> {
           .arrayBuffer()
           .then((buffer) => {
             fs.writeFileSync(path, Buffer.from(buffer));
+            completedTasks++;
+          })
+          .catch((error) => {
+            console.error(`Failed to download ${url}: ${error.message}`);
             completedTasks++;
           });
       };

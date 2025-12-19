@@ -104,8 +104,8 @@
   .toggle img {
     position: absolute;
     top: 50%;
-    right: 6px;
-    width: 3rem;
+    right: 3px;
+    width: 3.5rem;
     transform: translateY(-50%);
     filter: brightness(var(--brightness));
   }

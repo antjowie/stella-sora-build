@@ -76,11 +76,11 @@
 
   .element-icon {
     position: absolute;
-    top: -0.5rem;
-    left: -0.5rem;
+    top: -0.75rem;
+    left: -0.75rem;
     right: 0;
     bottom: 0;
-    width: 3rem;
+    width: 3.5rem;
     filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.2));
     z-index: 5;
   }
