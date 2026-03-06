@@ -268,6 +268,7 @@
   }
 
   .character-name {
+    text-align: right;
     position: absolute;
     right: 5px;
     bottom: var(--bottom-height);
